@@ -1,66 +1,63 @@
 # MedFact
-## Detector multimodal de desinformação
+## Detector de desinformação em saúde para idosos
 
-Em vez de aceitar somente texto, o sistema analisa diferentes modalidades:
+A partir de uma mensagem de texto enviada ao chatbot, o sistema verifica se uma afirmação sobre **vacinação, COVID-19 ou doenças crônicas** é verdadeira, falsa ou enganosa — com foco no público idoso.
 
-**Entrada**
+---
 
-- Texto
-- Link
-- Imagem
-- Vídeo
-- Áudio
+## Escopo
 
-**Análise**
+Reduzimos o escopo original (multimodal, qualquer tema de saúde) para um recorte mais viável de MVP:
 
-- NLP para analisar o texto
-- OCR para extrair texto de imagens
-- Visão computacional para identificar manipulações
-- Speech-to-text para áudio/vídeo
-- Busca de evidências em bases científicas
-- Classificador de desinformação
+| Antes | Agora |
+|---|---|
+| Texto, link, imagem, vídeo, áudio | Somente **texto** |
+| Qualquer tema de saúde | **3 temas**: Vacinação · COVID-19 · Doenças crônicas |
+| Público geral | Foco em **idosos** |
 
-**Saída**
+Por que esses 3 temas: são os que reúnem mais evidência de vulnerabilidade em idosos e mais dados prontos para treino/validação (ver seção de Datasets). Vacinação e COVID concentram a maior parte da desinformação de saúde já estudada no Brasil; doenças crônicas (câncer, diabetes, hipertensão) é onde o risco de dano direto é maior — abandono de tratamento por acreditar em "cura milagrosa".
+
+---
+
+## Entrada
+
+- Texto (mensagem enviada pelo usuário)
+
+## Análise
+
+- NLP para interpretar a afirmação
+- Busca de evidências em bases científicas / fact-checking
+- Classificador de desinformação (veracidade, tipo, risco)
+
+## Saída
 
 Em vez de simplesmente:
 
 > ❌ Fake News
-> 
 
-o sistema poderia retornar algo como:
+o sistema retorna:
 
 > **Probabilidade de desinformação: 87%**
-> 
-> 
+>
 > **Classificação:** Enganosa
-> 
+>
 > **Tema:** Vacinação
-> 
+>
 > **Nível de risco:** Alto
-> 
+>
 > **Evidências encontradas:**
-> 
 > - Estudo X contradiz a afirmação.
 > - Organização Y apresenta dados diferentes.
-> - A imagem utilizada foi originalmente publicada em outro contexto.
-> 
+>
 > **Trechos suspeitos:**
-> 
+>
 > "A vacina causa..." ← afirmação sem evidência científica.
-> 
 
 ---
 
-## Fazer o sistema detectar o tipo de desinformação
+## Tipo de desinformação
 
-Não classificar simplesmente:
-
-> verdadeiro / falso
-> 
-
-Mas identificar **qual é o mecanismo da desinformação**.
-
-Por exemplo:
+Não classificar simplesmente verdadeiro/falso, mas identificar o **mecanismo**:
 
 | Tipo | Exemplo |
 | --- | --- |
@@ -69,136 +66,99 @@ Por exemplo:
 | Exagero | "Remédio X cura 100% dos casos" |
 | Informação parcialmente verdadeira | Mistura de fatos verdadeiros e falsos |
 | Fonte falsa | Site imitando um portal conhecido |
-| Estatística manipulada | Gráfico enganoso |
-| Imagem fora de contexto | Foto real associada a outro acontecimento |
-| Conteúdo manipulado | Imagem alterada por IA |
+| Estatística manipulada | Número ou dado distorcido |
 | Alegação sem evidência | Afirmação sem estudo confiável |
 
+*(Removemos "imagem fora de contexto" e "conteúdo manipulado por IA" da lista original — eram específicos de entrada visual, que saiu do escopo.)*
+
+---
+
+## Datasets
+
+Como o escopo agora é texto + 3 temas, a base de treino/validação fica assim:
+
+| Fase | Tema | Dataset | Uso |
+|---|---|---|---|
+| 1 | COVID-19 | **COVID19.BR** | 11.382 mensagens de WhatsApp em PT-BR rotuladas (jan/2020–fev/2021) — treino/classificação |
+| 1 | Vacinação | **WhaVax** | Discurso sobre vacina em WhatsApp PT-BR, anotado por especialistas — desinformação sobre vacinas |
+| 1 | Vacinação | **ANTiVax** | 15k tweets sobre vacina COVID, ~5.7k rotulados como desinformação — aumenta volume de exemplos |
+| 1 | Geral (evidências) | **PUBHEALTH** | 11.8k claims de saúde com explicação padrão-ouro — fact-checking + evidências prontas |
+| 2 | Doenças crônicas | **Monant Medical Misinformation** / **HealthLies** | Câncer, diabetes, doenças crônicas em geral |
+| 2 | Geral (PT-BR) | **Central de Fatos** | 11.6k checagens de 6 agências brasileiras — complementa dados em português |
+
+**Ponto de atenção para a fase de dados:** os datasets têm esquemas de rótulo diferentes (COVID19.BR é binário; PUBHEALTH tem 4 classes: true/false/mixture/unproven; Central de Fatos varia por agência). Antes de unificar, é preciso um passo de **padronização de rótulos** — isso deve entrar como tarefa própria no cronograma, não como algo automático.
+
+**Abordagem de modelo:** não vale criar um LLM do zero — os dados disponíveis não sustentam isso. Caminho viável: RAG + LLM existente para gerar a explicação e buscar evidência (PUBHEALTH já ajuda aqui), combinado com um classificador leve fine-tunado (ex: BERTimbau) para as três tarefas estruturadas (veracidade, tipo, risco), treinado nos datasets acima.
+
+---
+
 ## Guiding Questions
-(Legenda:  
-🟩​​Responda já
-​🟦 Planejar
-​🟪​ Se sobrar tempo
-🟥​ Cortar)
-Guidind questions:
+(Legenda: 🟩 Responda já · 🟦 Planejar · 🟪 Se sobrar tempo · 🟥 Cortar)
 
-•Dados:
--Quais os sites mais confiáveis sobre saúde que servem como base científica?🟩
--Existem informações sensíveis que o chat bot não pode acessar🟦
--O chatbot precisa consultar dados em tempo real?🟩
+**Dados**
+- Quais os sites mais confiáveis sobre saúde que servem como base científica? 🟩
+- Existem informações sensíveis que o chatbot não pode acessar? 🟦
+- O chatbot precisa consultar dados em tempo real? 🟩
 
-•Usuário:
--Quais são os principais usuários do chatbot?​🟪​
--Como saber se o chatbot realmente resolveu o problema do usuário?🟦
--Como saber se o chatbot entendeu a pergunta do usuário?🟩
+**Usuário**
+- Quais são os principais usuários do chatbot? 🟪
+- Como saber se o chatbot realmente resolveu o problema do usuário? 🟦
+- Como saber se o chatbot entendeu a pergunta do usuário? 🟩
 
-•Modelo:
--Quais os tipo de modelo de ia atende melhor a necessidade do chatbot?🟦
--Modelo precisa ser treinado ou ele acessa uma base de conhecimento?🟩
--Qual o equilíbrio entre qualidade da resposta, velocidade e custo?​🟪​
+**Modelo**
+- Qual tipo de modelo de IA atende melhor a necessidade do chatbot? 🟦
+- O modelo precisa ser treinado ou acessa uma base de conhecimento? 🟩
+- Qual o equilíbrio entre qualidade da resposta, velocidade e custo? 🟪
 
-•Produção:
--Quantos usuários podem ser acessados simultaneamente?​🟪​
--Como atualizar as informações que o chatbot utiliza?🟦
--Qual seria o MVP que já resolve problema?🟩
+**Produção**
+- Quantos usuários podem ser acessados simultaneamente? 🟪
+- Como atualizar as informações que o chatbot utiliza? 🟦
+- Qual seria o MVP que já resolve o problema? 🟩
 
-•Ética:
--Como evitar que o chatbot gere respostas preconceituosas ou discriminatórias🟥​
--Como garantir a privacidade do usuário?🟦
--Como evitar que o usuário apresente uma informação falsa com muita confiança🟦
+**Ética**
+- Como evitar que o chatbot gere respostas preconceituosas ou discriminatórias? 🟥
+- Como garantir a privacidade do usuário? 🟦
+- Como evitar que o usuário apresente uma informação falsa com muita confiança? 🟦
+
+---
 
 ## Objetivo de Negócio
 
-Reduzir o impacto da desinformação sobre saúde na população, oferecendo uma ferramenta acessível capaz de analisar diferentes tipos de conteúdo — texto, links, imagens, vídeos e áudios — e apresentar ao usuário uma avaliação baseada em evidências científicas, indicando o nível de confiabilidade, o tipo de desinformação identificado e as evidências que sustentam a análise.
+Reduzir o impacto da desinformação sobre saúde entre idosos, oferecendo uma ferramenta acessível que analisa uma mensagem de texto sobre vacinação, COVID-19 ou doenças crônicas e apresenta uma avaliação baseada em evidências científicas — indicando confiabilidade, tipo de desinformação e o motivo da classificação.
 
-O que muda para a nossa audiência?
+**Antes:** Recebe uma informação → não sabe se é verdadeira → pesquisa em várias fontes → dificuldade para avaliar as evidências → pode compartilhar uma informação falsa.
 
-Atualmente, uma pessoa que recebe uma informação duvidosa sobre saúde precisa pesquisar manualmente diferentes fontes para descobrir se aquela informação é verdadeira, parcialmente verdadeira ou enganosa.
+**Depois:** Recebe uma informação → envia para o MedFact → sistema analisa o texto → apresenta classificação, nível de risco e evidências → usuário toma uma decisão mais informada.
 
-Com o MedFact, o usuário passa a ter um primeiro ponto de verificação antes de acreditar ou compartilhar uma informação.
+O sistema não só classifica — explica o motivo, para que o usuário desenvolva capacidade própria de avaliar informações de saúde.
 
-A mudança esperada é:
+### Como medir o impacto
 
-Antes:
+1. **Taxa de identificação correta** — F1-score do classificador frente a conteúdos já classificados por especialistas. Meta de exemplo: F1 ≥ 80% no conjunto de validação do MVP.
+2. **Taxa de respostas fundamentadas** — % de análises com pelo menos uma evidência científica verificável.
+3. **Compreensão do usuário** — % de usuários que, após usar o MedFact, identificam corretamente se um conteúdo é confiável, enganoso ou falso (teste antes/depois).
+4. **Redução do tempo de verificação** — tempo médio para concluir sobre uma informação, manualmente vs. com o MedFact.
+5. **Utilidade percebida** — % de usuários que consideram a análise útil para decidir se confiam ou compartilham o conteúdo.
 
-Recebe uma informação → não sabe se é verdadeira → pesquisa em várias fontes → dificuldade para avaliar as evidências → pode compartilhar uma informação falsa.
+*(A métrica de "cobertura multimodal" saiu — não se aplica mais, já que a entrada é só texto.)*
 
-Depois:
+**Indicador principal do MVP:** percentual de idosos que, após usar o MedFact, conseguem identificar corretamente desinformação em saúde e compreender os motivos apresentados pela ferramenta.
 
-Recebe uma informação → envia para o MedFact → sistema analisa o conteúdo → apresenta classificação, nível de risco, trechos suspeitos e evidências → usuário consegue tomar uma decisão mais informada.
+---
 
-Além de dizer se uma informação é confiável ou não, o sistema deve explicar o motivo da classificação, permitindo que o usuário desenvolva maior capacidade de avaliar informações de saúde por conta própria.
+## Objetivo de ML
 
-### Como medir o impacto?
+| Objetivo de ML | O que o modelo prevê | Métrica principal |
+| --- | --- | --- |
+| Detectar desinformação | Verdadeiro, falso ou enganoso | F1-score (macro) |
+| Identificar o tipo de desinformação | Exagero, fora de contexto, fonte falsa, etc. | F1-score (macro) |
+| Classificar o risco | Baixo, médio ou alto | F1-score ponderado / Kappa quadrático |
 
-• 1. Taxa de identificação correta
+**Notas sobre a métrica**, a partir da discussão sobre viabilidade do F1:
 
-Avaliar a capacidade do sistema de identificar corretamente conteúdos previamente classificados por especialistas.
+- Usar **F1 macro**, não micro — os tipos de desinformação não vão aparecer de forma balanceada nos dados.
+- **Risco é ordinal** (baixo/médio/alto): um erro que confunde baixo com alto é pior que confundir baixo com médio. F1 tradicional não captura essa distância — vale complementar com Kappa quadrático ponderado.
+- Reportar separadamente o **recall da classe "falso/enganoso"** como métrica de segurança: deixar passar uma desinformação perigosa como confiável (falso negativo) é mais grave que o oposto.
+- F1 mede o classificador, não o sistema inteiro. O componente de evidências (PUBHEALTH/RAG) precisa de métrica própria — precision@k ou recall@k da recuperação. E "compreensão do usuário" (métrica 3 acima) só se mede com teste de usuário, não com F1.
 
-Métrica:
-Acurácia/F1-score do classificador.
-Precisão na identificação dos diferentes tipos de desinformação.
-
-Exemplo de meta:
-Atingir F1-score ≥ 80% no conjunto de validação do MVP.
-
-• 2. Taxa de respostas fundamentadas
-
-Medir quantas análises apresentadas pelo sistema possuem evidências confiáveis que sustentam a conclusão.
-
-Métrica:
-% de respostas que apresentam pelo menos uma evidência científica relevante e verificável.
-
-• 3. Compreensão do usuário
-
-Verificar se o usuário realmente entende a análise produzida pelo sistema.
-
-Métrica:
-% de usuários que conseguem identificar corretamente, após utilizar o MedFact, se o conteúdo analisado é confiável, enganoso ou falso.
-Pode ser medido através de testes antes e depois do uso da ferramenta.
-
-• 4. Redução do tempo de verificação
-
-Comparar quanto tempo uma pessoa leva para verificar uma informação manualmente contra o tempo utilizando o MedFact.
-
-Métrica:
-Tempo médio necessário para chegar a uma conclusão sobre uma informação de saúde.
-
-• 5. Utilidade percebida
-
-Avaliar se o sistema realmente ajuda o usuário a tomar uma decisão.
-
-Métrica:
-% de usuários que consideram a análise útil para decidir se devem confiar ou compartilhar determinado conteúdo.
-Pode ser coletado através de uma avaliação simples após a análise.
-
-• 6. Cobertura multimodal
-
-Como o diferencial do MedFact é analisar diferentes formatos, também é importante medir a capacidade de atender às diferentes entradas.
-
-Métrica:
-% de análises realizadas com sucesso para texto, links, imagens, vídeos e áudios.
-Indicador principal de sucesso
-
-Para o MVP, o principal indicador poderia ser:
-Percentual de usuários que, após utilizar o MedFact, conseguem identificar corretamente conteúdos de desinformação em saúde e compreender os motivos apresentados pela ferramenta.
-
-Isso mantém o foco no resultado para a audiência, e não apenas em métricas técnicas do sistema.
-
-## Objetivo ML
-
-| Objetivo de ML | O que o modelo prevê? |	Métrica
-| --- | --- |--- |
-| Detectar desinformação | Verdadeiro, falso ou enganoso | F1-score|
-| Identificar o tipo de desinformação	| Fora de contexto, exagero, manipulação etc. | F1-score|
-| Classificar o risco | Baixo, médio ou alto| F1-score|
-
-• Resumido para apresentação
-Detectar desinformação → prevê se a informação é confiável → F1-score
-
-Classificar desinformação → prevê qual é o tipo → F1-score
-
-Avaliar risco → prevê o nível de risco → F1-score
-
-Objetivo geral de ML:
-Identificar, classificar e avaliar o risco de desinformação em conteúdos relacionados à saúde.
+**Objetivo geral de ML:** identificar, classificar e avaliar o risco de desinformação sobre vacinação, COVID-19 e doenças crônicas em textos direcionados ao público idoso.
