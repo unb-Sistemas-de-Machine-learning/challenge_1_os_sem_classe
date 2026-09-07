@@ -1,0 +1,124 @@
+[
+  {
+    "claim": "Pessoas que já tiveram COVID-19 podem ser infectadas novamente pelo vírus.",
+    "label": "true"
+  },
+  {
+    "claim": "As vacinas contra COVID-19 podem reduzir o risco de doença grave causada pelo vírus.",
+    "label": "true"
+  },
+  {
+    "claim": "Algumas pessoas podem apresentar sintomas persistentes após uma infecção por COVID-19.",
+    "label": "true"
+  },
+  {
+    "claim": "A vacina contra COVID-19 contém um vírus vivo capaz de causar COVID-19.",
+    "label": "false"
+  },
+  {
+    "claim": "Beber água sanitária pode prevenir ou curar a COVID-19.",
+    "label": "false"
+  },
+  {
+    "claim": "Os antibióticos são capazes de eliminar o vírus responsável pela COVID-19.",
+    "label": "false"
+  },
+  {
+    "claim": "Uma pessoa vacinada contra COVID-19 nunca poderá ser infectada pelo vírus.",
+    "label": "mixture"
+  },
+  {
+    "claim": "As vacinas contra COVID-19 podem reduzir o risco de doença grave, mas não garantem proteção absoluta contra qualquer infecção.",
+    "label": "mixture"
+  },
+  {
+    "claim": "Uma pessoa que teve COVID-19 fica necessariamente protegida contra qualquer variante futura do vírus.",
+    "label": "mixture"
+  },
+  {
+    "claim": "Comer alho impede completamente que uma pessoa contraia COVID-19.",
+    "label": "false"
+  },
+
+  {
+    "claim": "As vacinas podem estimular o sistema imunológico a desenvolver proteção contra determinadas doenças infecciosas.",
+    "label": "true"
+  },
+  {
+    "claim": "A vacinação é uma das principais estratégias utilizadas para prevenir diversas doenças infecciosas.",
+    "label": "true"
+  },
+  {
+    "claim": "Algumas vacinas precisam de doses de reforço para manter ou aumentar a proteção ao longo do tempo.",
+    "label": "true"
+  },
+  {
+    "claim": "As vacinas fazem com que todas as pessoas desenvolvam a mesma resposta imunológica.",
+    "label": "false"
+  },
+  {
+    "claim": "Vacinas causam autismo em crianças.",
+    "label": "false"
+  },
+  {
+    "claim": "Tomar várias vacinas no mesmo dia sobrecarrega obrigatoriamente o sistema imunológico de uma pessoa saudável.",
+    "label": "false"
+  },
+  {
+    "claim": "Uma vacina pode reduzir significativamente o risco de uma doença sem impedir todos os casos da doença.",
+    "label": "mixture"
+  },
+  {
+    "claim": "A proteção proporcionada por uma vacina pode variar de acordo com a doença, a vacina utilizada e as características da população.",
+    "label": "mixture"
+  },
+  {
+    "claim": "Todas as vacinas existentes proporcionam proteção permanente após uma única dose.",
+    "label": "false"
+  },
+  {
+    "claim": "Existe uma vacina que protege contra todas as doenças infecciosas conhecidas.",
+    "label": "unproven"
+  },
+
+  {
+    "claim": "A hipertensão arterial pode aumentar o risco de doenças cardiovasculares.",
+    "label": "true"
+  },
+  {
+    "claim": "O diabetes tipo 2 está associado a um maior risco de diversas complicações de saúde.",
+    "label": "true"
+  },
+  {
+    "claim": "A prática regular de atividade física pode contribuir para o controle de fatores de risco cardiovascular.",
+    "label": "true"
+  },
+  {
+    "claim": "Uma pessoa com hipertensão nunca precisa de acompanhamento médico se não apresentar sintomas.",
+    "label": "false"
+  },
+  {
+    "claim": "Pessoas com diabetes podem interromper o tratamento assim que os níveis de glicose melhorarem.",
+    "label": "false"
+  },
+  {
+    "claim": "Fumar não aumenta o risco de doenças cardiovasculares em pessoas que praticam exercícios regularmente.",
+    "label": "false"
+  },
+  {
+    "claim": "Uma alimentação saudável pode ajudar no controle de doenças crônicas, mas não substitui automaticamente todos os tratamentos prescritos.",
+    "label": "mixture"
+  },
+  {
+    "claim": "Perder peso sempre cura completamente o diabetes tipo 2, independentemente das características da pessoa.",
+    "label": "mixture"
+  },
+  {
+    "claim": "Todas as pessoas com hipertensão apresentam sintomas perceptíveis antes de ocorrer uma complicação.",
+    "label": "false"
+  },
+  {
+    "claim": "Existe um único alimento capaz de prevenir todas as doenças cardiovasculares em qualquer pessoa.",
+    "label": "unproven"
+  }
+]

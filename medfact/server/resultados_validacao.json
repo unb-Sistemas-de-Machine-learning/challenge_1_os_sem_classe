@@ -1,0 +1,253 @@
+{
+  "resumo": {
+    "total": 30,
+    "classificacoes_validas": 30,
+    "erros_api": 0,
+    "acertos": 1,
+    "erros_modelo": 29,
+    "acuracia": 3.3333,
+    "tempo_total_segundos": 361.7
+  },
+  "resultados": [
+    {
+      "indice": 1,
+      "claim": "School closures will have little impact on COVID-19 control, review finds.",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 2,
+      "claim": "Facebook post Says the CDC now says that the coronavirus can survive on surfaces for up to 17 days.",
+      "esperado": "falsa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 3,
+      "claim": "Thailand bans entry to foreigners, prepares emergency measures against coronavirus.",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 4,
+      "claim": "Ocean coastline, closed to shellfish harvesting due to toxin.",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 5,
+      "claim": "Rick Scott \"was forced to resign as the head of a company that pled guilty to massive amounts of systematic fraud, including 14 felonies, leading to a historic $1.7 billion fine.",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 6,
+      "claim": "People who have survived the COVID-19 coronavirus disease can become reinfected by the virus.",
+      "esperado": "não verificável",
+      "predito": "não verificável",
+      "correto": true,
+      "status": "sucesso"
+    },
+    {
+      "indice": 7,
+      "claim": "Testosterone replacement therapy may slow the progression of COPD",
+      "esperado": "falsa",
+      "predito": "enganosa",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 8,
+      "claim": "Avastin Largely Safe for Patients With Type of Advanced Lung Cancer",
+      "esperado": "enganosa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 9,
+      "claim": "American Atheists are opposing the incorporation of a steel-beam cross found in the World Trade Center rubble into a September 11 memorial and museum.",
+      "esperado": "enganosa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 10,
+      "claim": "Voted the ‘best specialty plate in America’",
+      "esperado": "falsa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 11,
+      "claim": "Butchers just cut cancer out of diseased meat and sell the rest of the contaminated carcass.",
+      "esperado": "falsa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 12,
+      "claim": "New schizophrenia drugs no better, Dutch team find.",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 13,
+      "claim": "Newt Gingrich \"co-sponsored a bill with Nancy Pelosi that would have given $60 million a year to a U.N. program supporting China’s brutal one-child policy.",
+      "esperado": "falsa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 14,
+      "claim": "Prostate Cancer Drug Gets Lukewarm Review",
+      "esperado": "enganosa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 15,
+      "claim": "Joe Barton Says you can buy four light bulbs for $1.99 at Walmart, while a single compact fluorescent lamp (CFL) costs \"$10 a pop.",
+      "esperado": "falsa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 16,
+      "claim": "There are reports of suicides   and even murders resulting from the Doomsday prediction of Family   Radio’s Bible Teacher Harold Camping that judgment day would come on May   21, 2011 and that the true believers in Jesus Christ would be raptured   to heaven.",
+      "esperado": "enganosa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 17,
+      "claim": "Blocking “rogue gene” may stop cancer spread: study",
+      "esperado": "falsa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 18,
+      "claim": "Attacks on Planned Parenthood \"come at a time when the poverty rate among women is the highest in nearly two decades and 1 in 5 women under 65 don’t have access to health care.",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 19,
+      "claim": "Fewer mammograms means more breast cancer deaths",
+      "esperado": "falsa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 20,
+      "claim": "Jon Voight once said \"I pray all Americans who have seen and felt the meltdown of America with the Obama years, to please fight for Donald Trump",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 21,
+      "claim": "World closes borders, restricts travel to contain coronavirus spread.",
+      "esperado": "verdadeira",
+      "predito": "enganosa",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 22,
+      "claim": "Alarmed by instances of Marines imperiling their health by eating liquid laundry detergent, top Marine Corps leaders issued a warning to all junior troops to stop participating in the Tide Pod Challenge.",
+      "esperado": "falsa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 23,
+      "claim": "Erbitux OK for colorectal cancer patients with genetic marker",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 24,
+      "claim": "Nazi Luftwaffe commander Hermann Goering  proclaimed that although \"the people don't want war,\"  they \"can always be brought to the bidding of their leaders.",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 25,
+      "claim": "Eroding trust in vaccines leaves populations vulnerable, global study finds.",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 26,
+      "claim": "Ultrasound jiggles open brain barrier, a step to better care.",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 27,
+      "claim": "All in vein: New varicose veins treatments work quickly",
+      "esperado": "enganosa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 28,
+      "claim": "Inspirational Internet postings recount the high and low points in the life of KFC founder Colonel Harland Sanders.",
+      "esperado": "enganosa",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 29,
+      "claim": "Boy on hospital floor dominates Britain’s election campaign.",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    },
+    {
+      "indice": 30,
+      "claim": "Aspirin cuts heart attacks, not deaths or strokes",
+      "esperado": "verdadeira",
+      "predito": "não verificável",
+      "correto": false,
+      "status": "sucesso"
+    }
+  ]
+}

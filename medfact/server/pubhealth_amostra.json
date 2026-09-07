@@ -1,0 +1,122 @@
+[
+  {
+    "claim": "School closures will have little impact on COVID-19 control, review finds.",
+    "label": "true"
+  },
+  {
+    "claim": "Facebook post Says the CDC now says that the coronavirus can survive on surfaces for up to 17 days.",
+    "label": "false"
+  },
+  {
+    "claim": "Thailand bans entry to foreigners, prepares emergency measures against coronavirus.",
+    "label": "true"
+  },
+  {
+    "claim": "Ocean coastline, closed to shellfish harvesting due to toxin.",
+    "label": "true"
+  },
+  {
+    "claim": "Rick Scott \"was forced to resign as the head of a company that pled guilty to massive amounts of systematic fraud, including 14 felonies, leading to a historic $1.7 billion fine.",
+    "label": "true"
+  },
+  {
+    "claim": "People who have survived the COVID-19 coronavirus disease can become reinfected by the virus.",
+    "label": "unproven"
+  },
+  {
+    "claim": "Testosterone replacement therapy may slow the progression of COPD",
+    "label": "false"
+  },
+  {
+    "claim": "Avastin Largely Safe for Patients With Type of Advanced Lung Cancer",
+    "label": "mixture"
+  },
+  {
+    "claim": "American Atheists are opposing the incorporation of a steel-beam cross found in the World Trade Center rubble into a September 11 memorial and museum.",
+    "label": "mixture"
+  },
+  {
+    "claim": "Voted the ‘best specialty plate in America’",
+    "label": "false"
+  },
+  {
+    "claim": "Butchers just cut cancer out of diseased meat and sell the rest of the contaminated carcass.",
+    "label": "false"
+  },
+  {
+    "claim": "New schizophrenia drugs no better, Dutch team find.",
+    "label": "true"
+  },
+  {
+    "claim": "Newt Gingrich \"co-sponsored a bill with Nancy Pelosi that would have given $60 million a year to a U.N. program supporting China’s brutal one-child policy.",
+    "label": "false"
+  },
+  {
+    "claim": "Prostate Cancer Drug Gets Lukewarm Review",
+    "label": "mixture"
+  },
+  {
+    "claim": "Joe Barton Says you can buy four light bulbs for $1.99 at Walmart, while a single compact fluorescent lamp (CFL) costs \"$10 a pop.",
+    "label": "false"
+  },
+  {
+    "claim": "There are reports of suicides   and even murders resulting from the Doomsday prediction of Family   Radio’s Bible Teacher Harold Camping that judgment day would come on May   21, 2011 and that the true believers in Jesus Christ would be raptured   to heaven.",
+    "label": "mixture"
+  },
+  {
+    "claim": "Blocking “rogue gene” may stop cancer spread: study",
+    "label": "false"
+  },
+  {
+    "claim": "Attacks on Planned Parenthood \"come at a time when the poverty rate among women is the highest in nearly two decades and 1 in 5 women under 65 don’t have access to health care.",
+    "label": "true"
+  },
+  {
+    "claim": "Fewer mammograms means more breast cancer deaths",
+    "label": "false"
+  },
+  {
+    "claim": "Jon Voight once said \"I pray all Americans who have seen and felt the meltdown of America with the Obama years, to please fight for Donald Trump",
+    "label": "true"
+  },
+  {
+    "claim": "World closes borders, restricts travel to contain coronavirus spread.",
+    "label": "true"
+  },
+  {
+    "claim": "Alarmed by instances of Marines imperiling their health by eating liquid laundry detergent, top Marine Corps leaders issued a warning to all junior troops to stop participating in the Tide Pod Challenge.",
+    "label": "false"
+  },
+  {
+    "claim": "Erbitux OK for colorectal cancer patients with genetic marker",
+    "label": "true"
+  },
+  {
+    "claim": "Nazi Luftwaffe commander Hermann Goering  proclaimed that although \"the people don't want war,\"  they \"can always be brought to the bidding of their leaders.",
+    "label": "true"
+  },
+  {
+    "claim": "Eroding trust in vaccines leaves populations vulnerable, global study finds.",
+    "label": "true"
+  },
+  {
+    "claim": "Ultrasound jiggles open brain barrier, a step to better care.",
+    "label": "true"
+  },
+  {
+    "claim": "All in vein: New varicose veins treatments work quickly",
+    "label": "mixture"
+  },
+  {
+    "claim": "Inspirational Internet postings recount the high and low points in the life of KFC founder Colonel Harland Sanders.",
+    "label": "mixture"
+  },
+  {
+    "claim": "Boy on hospital floor dominates Britain’s election campaign.",
+    "label": "true"
+  },
+  {
+    "claim": "Aspirin cuts heart attacks, not deaths or strokes",
+    "label": "true"
+  }
+]
