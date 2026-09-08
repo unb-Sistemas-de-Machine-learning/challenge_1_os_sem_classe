@@ -1,10 +1,6 @@
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 const dotenv = require('dotenv');
-
-// ============================================================
-// CONFIGURAÇÕES
-// ============================================================
 
 dotenv.config({
     path: path.join(__dirname, '..', '.env')
@@ -13,12 +9,12 @@ dotenv.config({
 const { classificarComGroq } = require('../services/groq');
 const { searchPubMed } = require('../services/pubmed');
 
-const CAMINHO_AMOSTRA = path.join(__dirname, '..', 'pubhealth_amostra.json');
-const CAMINHO_RESULTADOS = path.join(
-    __dirname,
-    '..',
-    'resultados_validacao.json'
-);
+// ============================================================
+// CONFIGURAÇÕES
+// ============================================================
+
+const CAMINHO_AMOSTRA = path.join(__dirname, 'pubhealth_amostra.json');
+const CAMINHO_RESULTADOS = path.join(__dirname, 'resultados_validacao.json');
 
 // Tempo entre cada item.
 // 10 segundos ajuda a evitar o limite de tokens da Groq.
@@ -37,10 +33,7 @@ if (!fs.existsSync(CAMINHO_AMOSTRA)) {
     process.exit(1);
 }
 
-const amostra = JSON.parse(
-    fs.readFileSync(CAMINHO_AMOSTRA, 'utf-8')
-);
-
+const amostra = JSON.parse(fs.readFileSync(CAMINHO_AMOSTRA, 'utf-8'));
 // ============================================================
 // FUNÇÕES AUXILIARES
 // ============================================================
@@ -378,11 +371,7 @@ async function validar() {
         resultados: resultados
     };
 
-    fs.writeFileSync(
-        CAMINHO_RESULTADOS,
-        JSON.stringify(dadosFinais, null, 2),
-        'utf-8'
-    );
+    fs.writeFileSync(CAMINHO_RESULTADOS, JSON.stringify(resultados, null, 2));
 
     console.log('\nArquivo salvo em:');
     console.log(CAMINHO_RESULTADOS);

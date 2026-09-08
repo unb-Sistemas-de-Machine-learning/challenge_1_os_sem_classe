@@ -1,0 +1,82 @@
+[
+  {
+    "indice": 1,
+    "claim": "The COVID-19 vaccine causes infertility in women.",
+    "esperado": "falsa",
+    "predito": "falsa",
+    "correto": true,
+    "status": "sucesso"
+  },
+  {
+    "indice": 2,
+    "claim": "People vaccinated against the flu can still get the disease, but they generally have milder symptoms.",
+    "esperado": "verdadeira",
+    "predito": "não verificável",
+    "correto": false,
+    "status": "sucesso"
+  },
+  {
+    "indice": 3,
+    "claim": "The use of masks reduces the transmission of the COVID-19 virus indoors.",
+    "esperado": "verdadeira",
+    "predito": "verdadeira",
+    "correto": true,
+    "status": "sucesso"
+  },
+  {
+    "indice": 4,
+    "claim": "Hydroxychloroquine is an effective and proven treatment for COVID-19.",
+    "esperado": "falsa",
+    "predito": "falsa",
+    "correto": true,
+    "status": "sucesso"
+  },
+  {
+    "indice": 5,
+    "claim": "People with type 2 diabetes can completely reverse the disease through diet alone, without any medical supervision.",
+    "esperado": "enganosa",
+    "predito": "enganosa",
+    "correto": true,
+    "status": "sucesso"
+  },
+  {
+    "indice": 6,
+    "claim": "Regular consumption of green tea reduces the risk of developing certain types of cancer.",
+    "esperado": "não verificável",
+    "predito": "não verificável",
+    "correto": true,
+    "status": "sucesso"
+  },
+  {
+    "indice": 7,
+    "claim": "Drinking warm lemon water on an empty stomach cures cancer.",
+    "esperado": "falsa",
+    "predito": "não verificável",
+    "correto": false,
+    "status": "sucesso"
+  },
+  {
+    "indice": 8,
+    "claim": "Older adults with hypertension have a higher risk of severe complications when they contract COVID-19.",
+    "esperado": "verdadeira",
+    "predito": "verdadeira",
+    "correto": true,
+    "status": "sucesso"
+  },
+  {
+    "indice": 9,
+    "claim": "High doses of vitamin C cure the common cold and are also effective against COVID-19.",
+    "esperado": "enganosa",
+    "predito": "não verificável",
+    "correto": false,
+    "status": "sucesso"
+  },
+  {
+    "indice": 10,
+    "claim": "There is a new experimental drug capable of completely reversing memory loss caused by Alzheimer's disease.",
+    "esperado": "não verificável",
+    "predito": "não verificável",
+    "correto": true,
+    "status": "sucesso"
+  }
+]

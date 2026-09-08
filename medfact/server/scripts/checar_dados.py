@@ -1,7 +1,8 @@
-import json
-from sklearn.metrics import classification_report
+import os
+PASTA_ATUAL = os.path.dirname(os.path.abspath(__file__))
+CAMINHO_RESULTADOS = os.path.join(PASTA_ATUAL, 'resultados_validacao.json')
 
-with open('resultados_validacao.json', encoding='utf-8') as f:
+with open(CAMINHO_RESULTADOS, encoding='utf-8') as f:
     dados = json.load(f)
 
 esperados = [d['esperado'] for d in dados]
