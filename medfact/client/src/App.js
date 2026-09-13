@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 
+
 const TEMAS = [
   {
     id: 'vacinacao',
@@ -31,7 +32,6 @@ function App() {
     setTexto(consulta);
     setCarregando(true);
     setResultado(null);
-
     try {
       const res = await fetch('http://localhost:3001/api/verify', {
         method: 'POST',
