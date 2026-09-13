@@ -14,533 +14,651 @@ const TIPOS_DESINFORMACAO = [
     'alegação sem evidência',
 ];
 
-const TEMAS = [
-    'vacinação',
-    'COVID-19',
-    'doenças crônicas',
-    'fora do escopo',
-];
-
-async function classificarComGroq(claimText, evidencias) {
+/**
+ * Classifica uma alegação utilizando o modelo da Groq
+ * e as evidências recuperadas pelo sistema.
+ */
+async function classificarComGroq(claimText, evidencias = []) {
     const cacheKey = `groq:${claimText}`;
 
     const cacheado = pegarDoCache(cacheKey);
 
     if (cacheado !== null) {
+        console.log('💾 Resultado encontrado no cache da Groq.');
         return cacheado;
     }
 
     if (!podeChamarGroq()) {
-        return {
-            probabilidade_desinformacao: null,
-            classificacao: 'indisponível',
-            tipo: 'alegação sem evidência',
-            tema: 'fora do escopo',
-            nivel_risco: 'baixo',
-            explicacao:
-                'Muitas verificações estão sendo realizadas agora. Tente novamente em instantes.',
-            trecho_suspeito: null,
-        };
+        console.log('⚠️ Limite de taxa da Groq atingido.');
+        return null;
     }
 
-    const listaEvidencias = Array.isArray(evidencias)
-        ? evidencias
-        : [];
-
-    const contextoEvidencias = listaEvidencias
-        .map((e, index) => `
-EVIDÊNCIA ${index + 1}:
-
-Título: ${e.titulo || 'Não informado'}
-
-Revista: ${e.revista || 'Não informado'}
-
-Data: ${e.data || 'Não informada'}
-
-Resumo científico:
-${e.resumo || e.abstract || 'Resumo não disponível'}
-
-URL: ${e.url || 'Não disponível'}
-`)
-        .join('\n')
-        || 'Nenhuma evidência científica encontrada.';
+    const evidenciasFormatadas = evidencias.map((artigo, index) => ({
+        id: index + 1,
+        titulo: artigo.titulo || '',
+        revista: artigo.revista || '',
+        data: artigo.data || '',
+        resumo: artigo.resumo || '',
+        url: artigo.url || ''
+    }));
 
     const prompt = `
-Você é um sistema de verificação de alegações de saúde.
+Você é um sistema de verificação de alegações médicas e científicas.
 
-Sua tarefa é determinar se uma afirmação é:
+Sua tarefa é analisar uma alegação e classificá-la com base nas
+evidências fornecidas e em conhecimento médico/científico estabelecido.
+
+A classificação deve ser uma destas quatro categorias:
 
 - verdadeira
 - falsa
 - enganosa
 - não verificável
 
-A análise deve considerar as evidências científicas recuperadas e, quando necessário,
-o conhecimento médico científico geral estabelecido.
+Também determine:
 
-AFIRMAÇÃO:
-"${claimText}"
+- o tipo de desinformação;
+- o tema da alegação;
+- uma explicação curta e objetiva.
 
-EVIDÊNCIAS CIENTÍFICAS RECUPERADAS:
-${contextoEvidencias}
+==================================================
+PRINCÍPIOS FUNDAMENTAIS
+==================================================
 
-========================
-REGRA PRINCIPAL
-========================
+1. ANALISE A ALEGAÇÃO EXATA
 
-A ausência de um artigo específico nas evidências recuperadas NÃO significa
-automaticamente que a afirmação seja "não verificável".
+Avalie o que a alegação realmente afirma.
 
-Você deve distinguir entre:
+Não classifique uma alegação apenas porque existem estudos
+relacionados ao mesmo assunto.
 
-1. uma afirmação que realmente não pode ser determinada com segurança;
-
-2. uma afirmação sobre um conhecimento médico amplamente estabelecido,
-   que pode ser classificada mesmo quando a busca recuperada não contém
-   um artigo diretamente correspondente.
-
-Quando uma afirmação refletir um consenso médico ou científico bem estabelecido,
-você PODE utilizar esse conhecimento geral para classificá-la.
-
-Por outro lado, NÃO invente evidências, estudos, números, autores ou resultados
-científicos que não estejam nas evidências fornecidas.
-
-========================
-CLASSIFICAÇÃO
-========================
-
-1. VERDADEIRA
-
-Classifique como "verdadeira" quando:
-
-- as evidências fornecidas apoiam claramente a afirmação; OU
-- a afirmação representa conhecimento médico ou científico geral bem estabelecido
-  e não apresenta uma generalização indevida.
+Uma evidência deve ser relevante para a afirmação específica
+que está sendo analisada.
 
 Exemplo conceitual:
-Uma afirmação básica sobre um fator de risco médico amplamente reconhecido
-pode ser classificada como verdadeira mesmo se a busca não retornar um artigo
-perfeito para aquela frase.
 
-2. FALSA
+Uma alegação afirma que determinado tratamento "cura" uma doença.
 
-Classifique como "falsa" quando:
+Um estudo que apenas investigou um mecanismo biológico relacionado
+ao tratamento não é, por si só, evidência suficiente para afirmar
+que o tratamento cura a doença.
 
-- as evidências contradizem claramente a afirmação; OU
-- a afirmação contradiz conhecimento médico ou científico bem estabelecido.
+==================================================
+2. VERDADEIRA
+==================================================
 
-3. ENGANOSA
+Classifique como "verdadeira" quando houver evidência suficiente
+para sustentar a alegação.
 
-Classifique como "enganosa" quando:
+Isso pode ocorrer quando:
 
-- existe uma parte verdadeira, mas a conclusão é exagerada;
-- uma associação é apresentada como causalidade;
-- existe omissão importante de contexto;
-- um resultado específico é generalizado para toda a população;
-- um resultado experimental é apresentado como tratamento comprovado;
-- uma afirmação verdadeira é apresentada de maneira que induza a uma conclusão
-  incorreta;
-- utiliza palavras absolutas como "sempre", "nunca", "cura", "garante" ou "100%"
-  sem que as evidências sustentem esse grau de certeza.
+- estudos relevantes sustentam diretamente a afirmação;
+- múltiplas evidências convergem para a mesma conclusão;
+- a afirmação corresponde a conhecimento médico ou científico
+  bem estabelecido.
 
-4. NÃO VERIFICÁVEL
+A força da conclusão deve ser compatível com a força da evidência.
 
-Use "não verificável" SOMENTE quando:
+Não transforme evidência limitada em uma conclusão mais forte
+do que ela permite.
 
-- não houver evidência suficiente para apoiar ou contradizer a afirmação;
-- a afirmação depender de uma informação específica que não pode ser determinada
-  pelas evidências disponíveis;
-- não existir consenso médico/científico suficiente para fazer uma classificação
-  confiável.
+==================================================
+3. FALSA
+==================================================
+
+Classifique como "falsa" somente quando houver base suficiente
+para concluir que a alegação está incorreta.
+
+Isso ocorre principalmente quando:
+
+- evidências relevantes contradizem diretamente a alegação;
+- existe consenso ou conhecimento científico estabelecido
+  incompatível com a alegação;
+- a alegação afirma como fato algo que é conhecido como incorreto.
 
 IMPORTANTE:
 
-Não use "não verificável" simplesmente porque:
+A ausência de evidência NÃO é automaticamente evidência de falsidade.
 
-- o artigo encontrado utiliza palavras diferentes da afirmação;
-- a busca do PubMed não encontrou um artigo específico;
-- não existe uma evidência textual que repita exatamente a frase da afirmação.
+Não encontrar estudos que comprovem uma alegação não significa,
+por si só, que a alegação seja falsa.
 
-Porém, não transforme toda afirmação plausível em "verdadeira".
-Se a afirmação exigir uma evidência específica que não está disponível e não puder
-ser julgada pelo conhecimento médico geral, use "não verificável".
+Quando não houver evidência suficiente para confirmar ou contradizer
+a afirmação, considere "não verificável".
 
-========================
-CONFLITO ENTRE EVIDÊNCIAS
-========================
+==================================================
+4. ENGANOSA
+==================================================
 
-Se diferentes evidências entrarem em conflito:
+Classifique como "enganosa" somente quando houver um núcleo
+verdadeiro ou plausível na alegação, mas a forma como esse núcleo
+é apresentado causar uma distorção relevante.
 
-- considere a qualidade e a força das evidências;
-- considere se os estudos tratam da mesma população;
-- considere se tratam do mesmo desfecho;
-- não escolha automaticamente a primeira evidência;
-- explique resumidamente a existência do conflito.
+Isso pode ocorrer por:
 
-========================
-PROBABILIDADE DE DESINFORMAÇÃO
-========================
+- exagero;
+- generalização indevida;
+- omissão de uma condição importante;
+- interpretação incorreta de uma evidência;
+- retirada de uma informação de seu contexto;
+- transformar uma associação em causalidade;
+- transformar evidência preliminar em conclusão definitiva;
+- atribuir a seres humanos resultados observados apenas
+  em modelos experimentais.
 
-A probabilidade representa o quanto a afirmação parece ser desinformação:
+IMPORTANTE:
 
-0-20: provavelmente verdadeira
-21-40: baixa suspeita
-41-60: dúvida significativa
-61-80: provavelmente desinformação
-81-100: forte evidência de desinformação
+A existência de estudos relacionados ao assunto NÃO é suficiente
+para classificar uma alegação como "enganosa".
 
-Sugestão:
+É necessário identificar uma relação clara entre a evidência
+e o núcleo da alegação.
 
-- verdadeira normalmente deve ter probabilidade baixa;
-- falsa normalmente deve ter probabilidade alta;
-- enganosa normalmente deve ter probabilidade intermediária ou alta,
-  dependendo da gravidade da distorção;
-- não verificável não significa necessariamente desinformação.
+Se a evidência simplesmente não for suficiente para determinar
+se a afirmação é verdadeira ou falsa, prefira "não verificável".
 
-========================
-TIPO
-========================
+==================================================
+5. NÃO VERIFICÁVEL
+==================================================
 
-Se a classificação for "falsa" ou "enganosa", escolha o tipo mais adequado:
+Classifique como "não verificável" quando as evidências disponíveis
+não permitirem determinar adequadamente a veracidade da alegação.
 
-${TIPOS_DESINFORMACAO.join(' | ')}
+Isso inclui situações em que:
 
-Se a classificação for "verdadeira" ou "não verificável",
-use "alegação sem evidência" como valor padrão.
+- não existem evidências relevantes suficientes;
+- os estudos encontrados são apenas indiretamente relacionados;
+- os resultados são inconclusivos;
+- existem resultados conflitantes sem evidência suficiente
+  para determinar uma conclusão;
+- a afirmação é muito específica e os estudos não a testam diretamente;
+- existem evidências experimentais preliminares, mas não suficientes
+  para confirmar a afirmação;
+- a alegação envolve seres humanos, mas as evidências disponíveis
+  são exclusivamente laboratoriais ou em animais;
+- não há evidência suficiente para afirmar que a alegação é falsa.
 
-========================
-TEMA
-========================
+"Não verificável" não significa que a alegação seja verdadeira.
 
-Escolha exatamente um:
+Significa apenas que as evidências disponíveis não permitem
+uma classificação mais forte.
 
-${TEMAS.join(' | ')}
+==================================================
+6. EVIDÊNCIA EM ANIMAIS E LABORATÓRIO
+==================================================
 
-Use "fora do escopo" quando a afirmação não tratar de:
+Diferencie claramente:
+
+- estudos in vitro;
+- estudos em células;
+- estudos em animais;
+- estudos observacionais em humanos;
+- ensaios clínicos em humanos;
+- revisões sistemáticas e meta-análises.
+
+Resultados in vitro ou em animais podem fornecer evidências
+preliminares ou indicar mecanismos possíveis, mas não devem ser
+automaticamente tratados como prova de eficácia ou segurança
+em seres humanos.
+
+Quando uma alegação sobre seres humanos é sustentada apenas
+por evidências experimentais, avalie cuidadosamente se a conclusão
+apropriada é "não verificável" ou "enganosa".
+
+==================================================
+7. AFIRMAÇÕES ABSOLUTAS
+==================================================
+
+Tenha cuidado especial com palavras como:
+
+- sempre;
+- nunca;
+- cura;
+- elimina;
+- garante;
+- completamente;
+- definitivamente;
+- comprovado;
+- 100%.
+
+Afirmações absolutas exigem evidências proporcionalmente fortes.
+
+Uma evidência parcial ou preliminar não deve ser usada para
+sustentar uma conclusão absoluta.
+
+==================================================
+8. ASSOCIAÇÃO NÃO É CAUSALIDADE
+==================================================
+
+Não trate automaticamente uma associação estatística como
+uma relação causal.
+
+Por exemplo, um estudo observacional pode encontrar associação
+entre dois fatores sem demonstrar que um deles causou o outro.
+
+Quando uma alegação transforma associação em causalidade,
+considere se isso configura uma distorção ou se a evidência
+é simplesmente insuficiente para determinar a conclusão.
+
+==================================================
+9. EVIDÊNCIAS CONFLITANTES
+==================================================
+
+Quando existirem estudos com resultados diferentes:
+
+- considere a qualidade das evidências;
+- considere o tipo de estudo;
+- considere o tamanho e a relevância dos estudos;
+- considere se existem revisões sistemáticas ou meta-análises;
+- não escolha arbitrariamente apenas o estudo que confirma
+  ou contradiz a alegação.
+
+Se o conjunto de evidências permanecer inconclusivo,
+prefira "não verificável".
+
+==================================================
+10. ORDEM DE DECISÃO
+==================================================
+
+Antes de produzir a classificação final, siga esta ordem:
+
+PASSO 1:
+Existe evidência suficiente e relevante que sustente diretamente
+a alegação?
+
+→ Se sim, considere "verdadeira".
+
+PASSO 2:
+Existe evidência suficiente e relevante que contradiga diretamente
+a alegação, ou a alegação contradiz conhecimento científico
+bem estabelecido?
+
+→ Se sim, considere "falsa".
+
+PASSO 3:
+Existe um núcleo verdadeiro ou plausível, mas a alegação apresenta
+exagero, distorção, generalização indevida ou erro de contexto?
+
+→ Se sim, considere "enganosa".
+
+PASSO 4:
+Nenhuma das situações anteriores possui evidência suficiente?
+
+→ Classifique como "não verificável".
+
+IMPORTANTE:
+
+Não pule diretamente de "não encontrei evidências suficientes"
+para "falsa".
+
+==================================================
+11. TIPO DE DESINFORMAÇÃO
+==================================================
+
+Escolha o tipo que melhor descreve o problema da alegação.
+
+Opções:
+
+${TIPOS_DESINFORMACAO.map(tipo => `- ${tipo}`).join('\n')}
+
+Se a alegação for "não verificável" e não houver evidência
+de uma forma específica de manipulação, utilize:
+
+"alegação sem evidência"
+
+==================================================
+12. TEMA
+==================================================
+
+Determine o principal tema da alegação.
+
+Exemplos de temas:
 
 - vacinação;
-- COVID-19;
-- doenças crônicas.
+- doenças infecciosas;
+- medicamentos;
+- nutrição;
+- câncer;
+- saúde cardiovascular;
+- saúde mental;
+- diabetes;
+- neurologia;
+- prevenção;
+- tratamentos;
+- epidemiologia;
+- outro;
+- fora do escopo.
 
-Não force uma afirmação para um dos três temas apenas para preencher o campo.
+Se a alegação não estiver relacionada à saúde ou ciência médica,
+utilize "fora do escopo".
 
-========================
-NÍVEL DE RISCO
-========================
+==================================================
+13. EXPLICAÇÃO
+==================================================
 
-- baixo: pouca possibilidade de causar dano;
-- médio: pode influenciar decisões de saúde;
-- alto: pode incentivar comportamentos perigosos, desencorajar vacinas,
-  tratamentos ou cuidados médicos.
+A explicação deve:
 
-Considere o possível impacto da afirmação sobre uma pessoa,
-especialmente uma pessoa idosa.
+- ser curta;
+- justificar a classificação;
+- mencionar a principal evidência utilizada;
+- deixar claro quando a evidência é insuficiente;
+- não inventar resultados de estudos;
+- não afirmar que um estudo prova algo que ele não investigou.
 
-========================
-EXPLICAÇÃO
-========================
+Se a classificação for "não verificável", explique brevemente
+por que as evidências disponíveis são insuficientes.
 
-Explique de maneira simples, objetiva e compreensível para uma pessoa
-sem conhecimento técnico.
+Se a classificação for "falsa", indique qual evidência
+ou conhecimento estabelecido contradiz a alegação.
 
-Não invente estudos ou resultados.
+Se for "enganosa", identifique qual é o núcleo plausível
+e qual é a distorção.
 
-Quando houver evidência científica relevante, explique como ela se relaciona
-com a afirmação.
+==================================================
+EVIDÊNCIAS DISPONÍVEIS
+==================================================
 
-Quando utilizar conhecimento médico geral por ser uma questão de consenso,
-deixe isso claro de forma simples, sem inventar uma referência específica.
+${JSON.stringify(evidenciasFormatadas, null, 2)}
 
-========================
-TRECHO SUSPEITO
-========================
+==================================================
+ALEGAÇÃO
+==================================================
 
-Se existir uma parte específica da afirmação que seja enganosa ou falsa,
-retorne esse trecho.
+"${claimText}"
 
-Caso contrário, use null.
+==================================================
+FORMATO DA RESPOSTA
+==================================================
 
-========================
-FORMATO
-========================
-
-Responda SOMENTE com JSON válido:
+Responda SOMENTE com JSON válido, seguindo exatamente esta estrutura:
 
 {
-    "probabilidade_desinformacao": 0,
-    "classificacao": "verdadeira",
-    "tipo": "alegação sem evidência",
-    "tema": "COVID-19",
-    "nivel_risco": "baixo",
-    "explicacao": "Explicação simples e objetiva.",
-    "trecho_suspeito": null
+  "classificacao": "verdadeira | falsa | enganosa | não verificável",
+  "tipo": "tipo de desinformação",
+  "tema": "tema principal",
+  "explicacao": "explicação objetiva"
 }
-`.trim();
-
-    const response = await fetch(
-        'https://api.groq.com/openai/v1/chat/completions',
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${GROQ_KEY}`,
-            },
-            body: JSON.stringify({
-                model: 'openai/gpt-oss-120b',
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt,
-                    },
-                ],
-                response_format: {
-                    type: 'json_object',
-                },
-                temperature: 0.1,
-
-                // E05
-                reasoning_effort: 'low',
-                max_completion_tokens: 700,
-            }),
-        }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        console.error(
-            'Erro da Groq:',
-            response.status,
-            JSON.stringify(data)
-        );
-
-        throw new Error(
-            `Groq retornou HTTP ${response.status}`
-        );
-    }
-
-    if (
-        !data.choices ||
-        !data.choices[0]?.message?.content
-    ) {
-        console.error(
-            'Resposta inesperada da Groq:',
-            JSON.stringify(data)
-        );
-
-        throw new Error(
-            'Groq não retornou uma classificação válida.'
-        );
-    }
-
-    let resultado;
+`;
 
     try {
-        resultado = JSON.parse(
-            data.choices[0].message.content
+        const response = await fetch(
+            'https://api.groq.com/openai/v1/chat/completions',
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${GROQ_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'openai/gpt-oss-120b',
+                    messages: [
+                        {
+                            role: 'system',
+                            content:
+                                'Você é um verificador rigoroso de alegações médicas e científicas.'
+                        },
+                        {
+                            role: 'user',
+                            content: prompt
+                        }
+                    ],
+                    temperature: 0.1,
+                    reasoning_effort: 'low',
+                    max_completion_tokens: 700,
+                    response_format: {
+                        type: 'json_object'
+                    }
+                })
+            }
         );
-    } catch (error) {
+
+        if (!response.ok) {
+            const erro = await response.text();
+
+            console.log(
+                `⚠️ Erro da Groq (${response.status}): ${erro}`
+            );
+
+            throw new Error(`Groq API ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const conteudo =
+            data.choices?.[0]?.message?.content;
+
+        if (!conteudo) {
+            throw new Error('Resposta vazia da Groq.');
+        }
+
+        let resultado;
+
+        try {
+            resultado = JSON.parse(conteudo);
+        } catch (erro) {
+            console.log('⚠️ Groq retornou JSON inválido.');
+            console.log(conteudo);
+
+            throw new Error('JSON inválido retornado pela Groq.');
+        }
+
+        const classificacoesValidas = [
+            'verdadeira',
+            'falsa',
+            'enganosa',
+            'não verificável'
+        ];
+
+        if (!classificacoesValidas.includes(resultado.classificacao)) {
+            console.log(
+                `⚠️ Classificação inválida retornada pela Groq: ${resultado.classificacao}`
+            );
+
+            throw new Error('Classificação inválida.');
+        }
+
+        if (!resultado.tipo) {
+            resultado.tipo = 'alegação sem evidência';
+        }
+
+        if (!resultado.tema) {
+            resultado.tema = 'outro';
+        }
+
+        if (!resultado.explicacao) {
+            resultado.explicacao =
+                'Não foi possível obter uma explicação adequada.';
+        }
+
+        salvarNoCache(cacheKey, resultado);
+
+        return resultado;
+
+    } catch (erro) {
         console.error(
-            'JSON inválido retornado pela Groq:',
-            data.choices[0].message.content
+            `❌ Falha ao classificar alegação: ${erro.message}`
         );
 
-        throw new Error(
-            'Groq retornou um JSON inválido.'
-        );
+        throw erro;
     }
-
-    salvarNoCache(cacheKey, resultado);
-
-    return resultado;
 }
 
 
-/*
- * E04b
+/**
+ * Filtra os artigos recuperados pelo PubMed usando a Groq.
  *
- * Avalia se os artigos recuperados pelo PubMed são realmente
- * relevantes para a afirmação.
+ * A função não classifica a alegação.
+ * Ela apenas verifica quais evidências possuem relação direta
+ * com a alegação.
  */
-async function filtrarRelevancia(
-    claimText,
-    artigos,
-    max = 3
-) {
-    if (!Array.isArray(artigos) || artigos.length === 0) {
+async function filtrarRelevancia(claimText, artigos, max = 3) {
+    if (!artigos || artigos.length === 0) {
         return [];
     }
 
+    const ids = artigos
+        .map(artigo => artigo.id)
+        .join(',');
+
     const cacheKey =
-        `groq:relevancia:${claimText}:` +
-        artigos.map((a) => a.id).join(',');
+        `groq:relevancia:${claimText}:${ids}`;
 
     const cacheado = pegarDoCache(cacheKey);
 
     if (cacheado !== null) {
+        console.log('💾 Relevância encontrada no cache da Groq.');
         return cacheado;
     }
 
     if (!podeChamarGroq()) {
         console.log(
-            '⚠️ Limite de taxa da Groq atingido ' +
-            '(filtro de relevância) — ' +
-            'usando pré-filtro por keyword.'
+            '⚠️ Limite de taxa da Groq atingido durante filtro de relevância.'
         );
 
         return artigos.slice(0, max);
     }
 
-    const candidatos = artigos
-        .map(
-            (artigo, i) =>
-                `[${i}] ${artigo.titulo}\n` +
-                `Resumo: ${(artigo.resumo || '').slice(0, 300)}`
-        )
-        .join('\n\n');
+    const candidatos = artigos.map((artigo, index) => ({
+        indice: index + 1,
+        titulo: artigo.titulo || '',
+        resumo: (artigo.resumo || '').slice(0, 300)
+    }));
 
     const prompt = `
-Você está filtrando evidências científicas para um sistema
-de verificação de alegações de saúde.
+Você é um sistema de seleção de evidências científicas.
 
-AFIRMAÇÃO:
+Determine quais artigos são diretamente relevantes para verificar
+a alegação apresentada.
+
+Não selecione artigos apenas porque compartilham palavras-chave
+com a alegação.
+
+Um artigo é relevante quando seus resultados, objetivo ou conteúdo
+podem ajudar diretamente a confirmar, contradizer ou avaliar
+a alegação.
+
+A alegação é:
+
 "${claimText}"
 
-CANDIDATOS DE EVIDÊNCIA:
-${candidatos}
+Artigos:
 
-Para cada candidato, avalie se ele responde DIRETAMENTE à afirmação.
+${JSON.stringify(candidatos, null, 2)}
 
-Um artigo é relevante quando:
-
-- confirma a afirmação;
-- contradiz a afirmação;
-- ou fornece contexto científico diretamente relacionado ao ponto principal.
-
-NÃO considere relevante um artigo apenas porque compartilha palavras-chave.
-
-Exemplo:
-Um estudo sobre atividade anticâncer de um composto em laboratório
-NÃO é evidência direta de que um alimento caseiro cure câncer em humanos.
-
-Considere também:
-
-- população estudada;
-- doença ou condição;
-- intervenção;
-- desfecho;
-- contexto clínico;
-- diferença entre estudos laboratoriais e estudos em humanos.
-
-Retorne somente os candidatos realmente relevantes.
-
-Responda SOMENTE em JSON:
+Retorne SOMENTE JSON válido:
 
 {
-    "relevantes": [0, 2]
+  "relevantes": [1, 2, 3]
 }
 
-Inclua no máximo ${max} índices.
-Coloque os índices em ordem de relevância.
-`.trim();
+Regras:
 
-    const response = await fetch(
-        'https://api.groq.com/openai/v1/chat/completions',
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${GROQ_KEY}`,
-            },
-            body: JSON.stringify({
-                model: 'openai/gpt-oss-120b',
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt,
-                    },
-                ],
-                response_format: {
-                    type: 'json_object',
-                },
-                temperature: 0.1,
-
-                // E05
-                reasoning_effort: 'low',
-                max_completion_tokens: 300,
-            }),
-        }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        console.error(
-            'Erro da Groq no filtro de relevância:',
-            response.status,
-            JSON.stringify(data)
-        );
-
-        return artigos.slice(0, max);
-    }
-
-    if (
-        !data.choices ||
-        !data.choices[0]?.message?.content
-    ) {
-        console.error(
-            'Resposta inesperada da Groq (relevância):',
-            JSON.stringify(data)
-        );
-
-        return artigos.slice(0, max);
-    }
-
-    let indices = [];
+- selecione no máximo ${max} artigos;
+- utilize somente os índices fornecidos;
+- não invente índices;
+- prefira evidências diretamente relacionadas à alegação;
+- se um artigo tratar apenas de um assunto relacionado,
+  mas não ajudar a verificar a alegação, não o selecione.
+`;
 
     try {
-        const resultado = JSON.parse(
-            data.choices[0].message.content
+        const response = await fetch(
+            'https://api.groq.com/openai/v1/chat/completions',
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${GROQ_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'openai/gpt-oss-120b',
+                    messages: [
+                        {
+                            role: 'user',
+                            content: prompt
+                        }
+                    ],
+                    temperature: 0.1,
+                    reasoning_effort: 'low',
+                    max_completion_tokens: 300,
+                    response_format: {
+                        type: 'json_object'
+                    }
+                })
+            }
         );
 
-        if (Array.isArray(resultado.relevantes)) {
-            indices = resultado.relevantes;
+        if (!response.ok) {
+            const erro = await response.text();
+
+            console.log(
+                `⚠️ Erro da Groq no filtro de relevância (${response.status}): ${erro}`
+            );
+
+            throw new Error(
+                `Groq relevância API ${response.status}`
+            );
         }
+
+        const data = await response.json();
+
+        const conteudo =
+            data.choices?.[0]?.message?.content;
+
+        if (!conteudo) {
+            throw new Error(
+                'Resposta vazia da Groq no filtro de relevância.'
+            );
+        }
+
+        const resultado = JSON.parse(conteudo);
+
+        const indices = Array.isArray(resultado.relevantes)
+            ? resultado.relevantes
+            : [];
+
+        const selecionados = indices
+            .filter(
+                indice =>
+                    Number.isInteger(indice) &&
+                    indice >= 1 &&
+                    indice <= artigos.length
+            )
+            .map(indice => artigos[indice - 1])
+            .filter(Boolean)
+            .slice(0, max);
+
+        if (selecionados.length === 0) {
+            console.log(
+                '⚠️ Filtro de relevância não selecionou artigos. Mantendo pré-seleção.'
+            );
+
+            const fallback = artigos.slice(0, max);
+
+            salvarNoCache(cacheKey, fallback);
+
+            return fallback;
+        }
+
+        console.log(
+            `✓ ${selecionados.length} artigos confirmados como relevantes pela Groq.`
+        );
+
+        salvarNoCache(cacheKey, selecionados);
+
+        return selecionados;
+
     } catch (erro) {
         console.error(
-            'Não consegui interpretar o JSON de relevância:',
-            erro.message
+            `❌ Falha no filtro de relevância: ${erro.message}`
         );
 
         return artigos.slice(0, max);
     }
-
-    const selecionados = indices
-        .map((indice) => artigos[indice])
-        .filter(Boolean)
-        .slice(0, max);
-
-    /*
-     * Se o filtro retornar zero artigos, mantemos os artigos
-     * pré-selecionados em vez de transformar automaticamente
-     * a ausência de evidência em ausência total de contexto.
-     */
-    if (selecionados.length === 0) {
-        console.log(
-            '⚠️ Filtro de relevância não selecionou artigos. ' +
-            'Mantendo pré-seleção.'
-        );
-
-        return artigos.slice(0, max);
-    }
-
-    salvarNoCache(cacheKey, selecionados);
-
-    return selecionados;
 }
 
 
 module.exports = {
     classificarComGroq,
-    filtrarRelevancia,
+    filtrarRelevancia
 };
