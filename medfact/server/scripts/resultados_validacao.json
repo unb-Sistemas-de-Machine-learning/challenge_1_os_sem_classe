@@ -1,82 +1,379 @@
-[
-  {
-    "indice": 1,
-    "claim": "The COVID-19 vaccine causes infertility in women.",
-    "esperado": "falsa",
-    "predito": "falsa",
-    "correto": true,
-    "status": "sucesso"
-  },
-  {
-    "indice": 2,
-    "claim": "People vaccinated against the flu can still get the disease, but they generally have milder symptoms.",
-    "esperado": "verdadeira",
-    "predito": "não verificável",
-    "correto": false,
-    "status": "sucesso"
-  },
-  {
-    "indice": 3,
-    "claim": "The use of masks reduces the transmission of the COVID-19 virus indoors.",
-    "esperado": "verdadeira",
-    "predito": "verdadeira",
-    "correto": true,
-    "status": "sucesso"
-  },
-  {
-    "indice": 4,
-    "claim": "Hydroxychloroquine is an effective and proven treatment for COVID-19.",
-    "esperado": "falsa",
-    "predito": "falsa",
-    "correto": true,
-    "status": "sucesso"
-  },
-  {
-    "indice": 5,
-    "claim": "People with type 2 diabetes can completely reverse the disease through diet alone, without any medical supervision.",
-    "esperado": "enganosa",
-    "predito": "enganosa",
-    "correto": true,
-    "status": "sucesso"
-  },
-  {
-    "indice": 6,
-    "claim": "Regular consumption of green tea reduces the risk of developing certain types of cancer.",
-    "esperado": "não verificável",
-    "predito": "não verificável",
-    "correto": true,
-    "status": "sucesso"
-  },
-  {
-    "indice": 7,
-    "claim": "Drinking warm lemon water on an empty stomach cures cancer.",
-    "esperado": "falsa",
-    "predito": "não verificável",
-    "correto": false,
-    "status": "sucesso"
-  },
-  {
-    "indice": 8,
-    "claim": "Older adults with hypertension have a higher risk of severe complications when they contract COVID-19.",
-    "esperado": "verdadeira",
-    "predito": "verdadeira",
-    "correto": true,
-    "status": "sucesso"
-  },
-  {
-    "indice": 9,
-    "claim": "High doses of vitamin C cure the common cold and are also effective against COVID-19.",
-    "esperado": "enganosa",
-    "predito": "não verificável",
-    "correto": false,
-    "status": "sucesso"
-  },
-  {
-    "indice": 10,
-    "claim": "There is a new experimental drug capable of completely reversing memory loss caused by Alzheimer's disease.",
-    "esperado": "não verificável",
-    "predito": "não verificável",
-    "correto": true,
-    "status": "sucesso"
-  }
-]
+{
+    "experimento": "E06",
+    "configuracao": {
+        "filtro_relevancia": true,
+        "reasoning_effort": "low",
+        "max_completion_tokens": 700,
+        "candidatos_pubmed": 10,
+        "pre_selecionados": 5,
+        "evidencias_finais": 3
+    },
+    "resumo": {
+        "total": 10,
+        "validos": 10,
+        "corretos": 7,
+        "incorretos": 3,
+        "erros_api": 0,
+        "acuracia": 70,
+        "taxa_erro_api": 0,
+        "tempo_segundos": 274.5
+    },
+    "resultados": [
+        {
+            "indice": 1,
+            "claim": "The COVID-19 vaccine causes infertility in women.",
+            "esperado": "falsa",
+            "predicao": "falsa",
+            "probabilidade_desinformacao": 92,
+            "tipo": "informação falsa",
+            "tema": "vacinação",
+            "nivel_risco": "alto",
+            "explicacao": "Não há evidência científica de que as vacinas contra COVID‑19 causem infertilidade em mulheres. Estudos grandes, como o realizado na Suécia com quase 370 mil mulheres, não encontraram associação entre vacinação e taxas de parto ou abortos. Além disso, o consenso médico atual afirma que as vacinas não afetam a fertilidade. O medo de infertilidade relatado em pesquisas de aceitação de vacinas reflete preocupação, não efeito real.",
+            "trecho_suspeito": "The COVID-19 vaccine causes infertility in women.",
+            "evidencias": [
+                {
+                    "id": "42335759",
+                    "titulo": "Factors associated with COVID-19 vaccine acceptance among refugee women at Dzaleka refugee camp in Malawi.",
+                    "revista": "Vaccine",
+                    "data": "2026-Aug",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42335759/"
+                },
+                {
+                    "id": "40219638",
+                    "titulo": "COVID-19 vaccination and pregnancy-induced hypertension risk in women undergoing assisted reproduction.",
+                    "revista": "Human reproduction (Oxford, England)",
+                    "data": "2025-Jun",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/40219638/"
+                },
+                {
+                    "id": "41565977",
+                    "titulo": "COVID-19 vaccination carries no association with childbirth rates in Sweden.",
+                    "revista": "Communications medicine",
+                    "data": "2026-Jan",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/41565977/"
+                }
+            ],
+            "status": "ok",
+            "acertou": true
+        },
+        {
+            "indice": 2,
+            "claim": "People vaccinated against the flu can still get the disease, but they generally have milder symptoms.",
+            "esperado": "verdadeira",
+            "predicao": "verdadeira",
+            "probabilidade_desinformacao": 10,
+            "tipo": "alegação sem evidência",
+            "tema": "vacinação",
+            "nivel_risco": "baixo",
+            "explicacao": "A vacina contra a gripe não impede todas as infecções; pessoas vacinadas ainda podem contrair a doença (infecção breakthrough). Contudo, estudos recentes mostram que, quando isso ocorre, os sintomas tendem a ser menos intensos, há menor carga viral e menor risco de complicações graves, como hospitalização e morte. Portanto, a afirmação de que quem é vacinado pode ainda pegar a gripe, mas geralmente tem sintomas mais leves, está alinhada com a evidência científica.",
+            "trecho_suspeito": null,
+            "evidencias": [
+                {
+                    "id": "41150433",
+                    "titulo": "Effect of Influenza Vaccination on the Disease Severity and Viral Load Among Adult Outpatients and Inpatients.",
+                    "revista": "Vaccines",
+                    "data": "2025-Oct",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/41150433/"
+                },
+                {
+                    "id": "42565186",
+                    "titulo": "The impact of influenza vaccination on the clinical severity of influenza among children aged 6 months to 6 years living in the community: a prospective cohort study.",
+                    "revista": "Clinical and experimental vaccine research",
+                    "data": "2026-Jul",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42565186/"
+                }
+            ],
+            "status": "ok",
+            "acertou": true
+        },
+        {
+            "indice": 3,
+            "claim": "The use of masks reduces the transmission of the COVID-19 virus indoors.",
+            "esperado": "verdadeira",
+            "predicao": "verdadeira",
+            "probabilidade_desinformacao": 10,
+            "tipo": "alegação sem evidência",
+            "tema": "COVID-19",
+            "nivel_risco": "baixo",
+            "explicacao": "Estudos científicos, como o que modelou risco de transmissão em ambientes internos, mostram que o uso de máscaras diminui significativamente a probabilidade de transmissão do SARS‑CoV‑2. Esse resultado está alinhado com o consenso amplo da comunidade de saúde pública de que máscaras são eficazes para reduzir a propagação do vírus em ambientes fechados.",
+            "trecho_suspeito": null,
+            "evidencias": [
+                {
+                    "id": "39600549",
+                    "titulo": "Carbon Dioxide Levels as a Key Indicator for Managing SARS-CoV-2 Airborne Transmission Risks Across 10 Indoor Scenarios.",
+                    "revista": "Cureus",
+                    "data": "2024-Nov",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/39600549/"
+                },
+                {
+                    "id": "39548532",
+                    "titulo": "Canada needs a national COVID-19 inquiry now.",
+                    "revista": "BMC medicine",
+                    "data": "2024-Nov",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/39548532/"
+                },
+                {
+                    "id": "41786463",
+                    "titulo": "Respiratory Infectious Disease Transmission in a Nursing Home Based on Real Close-Contact Behaviors.",
+                    "revista": "Geriatrics & gerontology international",
+                    "data": "2026-Mar",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/41786463/"
+                }
+            ],
+            "status": "ok",
+            "acertou": true
+        },
+        {
+            "indice": 4,
+            "claim": "Hydroxychloroquine is an effective and proven treatment for COVID-19.",
+            "esperado": "falsa",
+            "predicao": "falsa",
+            "probabilidade_desinformacao": 88,
+            "tipo": "informação falsa",
+            "tema": "COVID-19",
+            "nivel_risco": "médio",
+            "explicacao": "Os estudos mais recentes mostram que a hidroxicloroquina não reduz a hospitalização nem melhora os desfechos de COVID-19 e pode aumentar o risco de progressão da doença e pneumonia. Não há evidência de que seja um tratamento comprovado; ao contrário, as diretrizes médicas internacionais recomendam contra seu uso rotineiro para COVID-19.",
+            "trecho_suspeito": "Hydroxychloroquine is an effective and proven treatment for COVID-19.",
+            "evidencias": [
+                {
+                    "id": "41746719",
+                    "titulo": "Efficacy of hydroxychloroquine with azithromycin in mild COVID-19: randomized clinical trial.",
+                    "revista": "Cirugia y cirujanos",
+                    "data": "2026-3",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/41746719/"
+                },
+                {
+                    "id": "42091717",
+                    "titulo": "Exploring the long-term hydroxychloroquine's effects on COVID-19 outcomes in patients with autoimmune diseases: a systematic review and meta-analysis.",
+                    "revista": "European journal of clinical pharmacology",
+                    "data": "2026-May",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42091717/"
+                }
+            ],
+            "status": "ok",
+            "acertou": true
+        },
+        {
+            "indice": 5,
+            "claim": "People with type 2 diabetes can completely reverse the disease through diet alone, without any medical supervision.",
+            "esperado": "enganosa",
+            "predicao": "enganosa",
+            "probabilidade_desinformacao": 70,
+            "tipo": "exagero",
+            "tema": "doenças crônicas",
+            "nivel_risco": "médio",
+            "explicacao": "Estudos mostram que intervenções dietéticas intensivas podem levar à remissão da diabetes tipo 2 em muitos pacientes, mas isso geralmente ocorre dentro de programas estruturados, com acompanhamento médico para ajuste ou retirada segura de medicamentos. A afirmação de que a doença pode ser \"completamente revertida\" apenas com dieta e sem qualquer supervisão médica ignora a necessidade de monitoramento, risco de hipoglicemia e a possibilidade de que nem todos os pacientes alcancem remissão. Portanto, a frase exagera os resultados e omite contextos críticos.",
+            "trecho_suspeito": "People with type 2 diabetes can completely reverse the disease through diet alone, without any medical supervision.",
+            "evidencias": [
+                {
+                    "id": "42703432",
+                    "titulo": "Primary Care-Linked Lifestyle Interventions for Type 2 Diabetes Mellitus Remission and Glucose-Lowering Medication Deintensification: A Systematic Review.",
+                    "revista": "Cureus",
+                    "data": "2026-Aug",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42703432/"
+                },
+                {
+                    "id": "42460222",
+                    "titulo": "Sustained Type 2 Diabetes Remission and Metabolic Health Through Intensive Lifestyle Intervention: A Case Report With a Nine-Year Follow-Up.",
+                    "revista": "Cureus",
+                    "data": "2026-Jun",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42460222/"
+                },
+                {
+                    "id": "42603220",
+                    "titulo": "&#x3b2;-hydroxybutyrate as an early predictive biomarker of diabetes remission following intensive dietary intervention.",
+                    "revista": "Endocrine",
+                    "data": "2026-Aug",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42603220/"
+                }
+            ],
+            "status": "ok",
+            "acertou": true
+        },
+        {
+            "indice": 6,
+            "claim": "Regular consumption of green tea reduces the risk of developing certain types of cancer.",
+            "esperado": "não verificável",
+            "predicao": "enganosa",
+            "probabilidade_desinformacao": 68,
+            "tipo": "exagero",
+            "tema": "doenças crônicas",
+            "nivel_risco": "médio",
+            "explicacao": "Alguns estudos, como o que discute catequinas do chá verde e sua influência no microbioma intestinal, sugerem que componentes do chá verde podem ter efeitos protetores contra o câncer. No entanto, a evidência científica geral é mista e não comprova que o consumo regular de chá verde reduz de forma consistente o risco de desenvolver tipos específicos de câncer. A afirmação apresenta o benefício como certo, o que exagera o que os dados realmente suportam.",
+            "trecho_suspeito": "\"Regular consumption of green tea reduces the risk of developing certain types of cancer.\"",
+            "evidencias": [
+                {
+                    "id": "42689363",
+                    "titulo": "Catechins and Their Effect on the Gut Microbiome in Health and Cancer.",
+                    "revista": "Phytotherapy research : PTR",
+                    "data": "2026-Sep",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42689363/"
+                },
+                {
+                    "id": "42710538",
+                    "titulo": "Hot Drinks and Oesophageal Cancer: Prospective Analyses in Around 1 Million UK Adults.",
+                    "revista": "International journal of cancer",
+                    "data": "2026-Sep",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42710538/"
+                },
+                {
+                    "id": "42572223",
+                    "titulo": "[The role of indole-3-carbinol and epigallocatechin-3-gallate in maintaining men's health (a systematic literature review)].",
+                    "revista": "Voprosy pitaniia",
+                    "data": "2026-06",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42572223/"
+                }
+            ],
+            "status": "ok",
+            "acertou": false
+        },
+        {
+            "indice": 7,
+            "claim": "Drinking warm lemon water on an empty stomach cures cancer.",
+            "esperado": "falsa",
+            "predicao": "enganosa",
+            "probabilidade_desinformacao": 88,
+            "tipo": "exagero",
+            "tema": "doenças crônicas",
+            "nivel_risco": "alto",
+            "explicacao": "Não há evidência científica de que beber água morna com limão em jejum cure o câncer. Estudos mostram que compostos de citrinos podem ter atividade anticâncer em células de laboratório, mas isso não se traduz em cura em humanos. A afirmação usa termos absolutos como \"cura\" sem suporte clínico, o que pode levar as pessoas a abandonar tratamentos comprovados.",
+            "trecho_suspeito": "cures cancer",
+            "evidencias": [
+                {
+                    "id": "41568490",
+                    "titulo": "Exploring the Therapeutic Potential of Processed Citrus reticulata Peel Extracts in the Treatment of Prostate Cancer and Benign Prostatic Hyperplasia.",
+                    "revista": "Current pharmaceutical design",
+                    "data": "2026-Jan",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/41568490/"
+                },
+                {
+                    "id": "42577427",
+                    "titulo": "Shu Gan Jie Yu herbal combination enhances tamoxifen sensitivity in breast cancer cells via modulation of the SNCG/<i>p</i>-ER&#x3b1;,mTOR /AKT and <i>p</i>-ERK pathway.",
+                    "revista": "Frontiers in pharmacology",
+                    "data": "2026-07",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42577427/"
+                },
+                {
+                    "id": "42430314",
+                    "titulo": "Heptapharmacological activity of Quercetin-3-O-phosphate against lung cancer pathways.",
+                    "revista": "PloS one",
+                    "data": "2026-07",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42430314/"
+                }
+            ],
+            "status": "ok",
+            "acertou": false
+        },
+        {
+            "indice": 8,
+            "claim": "Older adults with hypertension have a higher risk of severe complications when they contract COVID-19.",
+            "esperado": "verdadeira",
+            "predicao": "verdadeira",
+            "probabilidade_desinformacao": 10,
+            "tipo": "alegação sem evidência",
+            "tema": "COVID-19",
+            "nivel_risco": "baixo",
+            "explicacao": "A literatura médica e os dados de saúde pública mostram que tanto a idade avançada quanto a hipertensão são fatores de risco independentes para complicações graves da COVID-19, como hospitalização, necessidade de ventilação mecânica e morte. Embora as evidências apresentadas não tratem especificamente da combinação de idade avançada e hipertensão, o consenso científico reconhece que idosos hipertensos têm maior probabilidade de desenvolver formas graves da doença.",
+            "trecho_suspeito": null,
+            "evidencias": [
+                {
+                    "id": "41995569",
+                    "titulo": "Effectiveness of oral antivirals in reducing adverse outcomes in asthmatic patients with non-severe COVID-19: A multi-institutional retrospective cohort study.",
+                    "revista": "Medicine",
+                    "data": "2026-Apr",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/41995569/"
+                },
+                {
+                    "id": "42247829",
+                    "titulo": "Body mass index and baricitinib treatment effect in hospitalized adults with COVID-19: A secondary analysis of ACTT-2.",
+                    "revista": "Heart & lung : the journal of critical care",
+                    "data": "2026-06",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42247829/"
+                },
+                {
+                    "id": "42178532",
+                    "titulo": "CT-adipose measures identify severe SARS-CoV-2 risk beyond traditional obesity metrics: a C4R cohort study.",
+                    "revista": "BMC pulmonary medicine",
+                    "data": "2026-May",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42178532/"
+                }
+            ],
+            "status": "ok",
+            "acertou": true
+        },
+        {
+            "indice": 9,
+            "claim": "High doses of vitamin C cure the common cold and are also effective against COVID-19.",
+            "esperado": "enganosa",
+            "predicao": "enganosa",
+            "probabilidade_desinformacao": 85,
+            "tipo": "exagero",
+            "tema": "COVID-19",
+            "nivel_risco": "médio",
+            "explicacao": "Os estudos disponíveis mostram que doses altas de vitamina C podem reduzir levemente a duração do resfriado em pessoas sob estresse, mas não curam a doença. Não há evidência de que a vitamina C cure o resfriado comum nem que seja um tratamento eficaz contra a COVID-19; os ensaios clínicos não demonstraram benefício significativo. Portanto, afirmar que altas doses de vitamina C curam o resfriado e são eficazes contra a COVID-19 exagera os resultados e pode induzir a uso inadequado.",
+            "trecho_suspeito": "High doses of vitamin C cure the common cold and are also effective against COVID-19.",
+            "evidencias": [
+                {
+                    "id": "36838362",
+                    "titulo": "Pleiotropic Functions of Nitric Oxide Produced by Ascorbate for the Prevention and Mitigation of COVID-19: A Revaluation of Pauling's Vitamin C Therapy.",
+                    "revista": "Microorganisms",
+                    "data": "2023-Feb",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/36838362/"
+                },
+                {
+                    "id": "36415746",
+                    "titulo": "The Role of Vitamin C: From Prevention of Pneumonia to Treatment of Covid-19.",
+                    "revista": "Materials today. Proceedings",
+                    "data": "2022-Nov",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/36415746/"
+                },
+                {
+                    "id": "34104701",
+                    "titulo": "Potential Role of Vitamins and Zinc on Acute Respiratory Infections Including Covid-19.",
+                    "revista": "Global pediatric health",
+                    "data": "2021-05",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/34104701/"
+                }
+            ],
+            "status": "ok",
+            "acertou": true
+        },
+        {
+            "indice": 10,
+            "claim": "There is a new experimental drug capable of completely reversing memory loss caused by Alzheimer's disease.",
+            "esperado": "não verificável",
+            "predicao": "enganosa",
+            "probabilidade_desinformacao": 88,
+            "tipo": "exagero",
+            "tema": "doenças crônicas",
+            "nivel_risco": "alto",
+            "explicacao": "Nenhum dos estudos apresentados demonstra que exista um medicamento experimental que reverta completamente a perda de memória em pacientes com Alzheimer. Os artigos citam pesquisas preliminares sobre novos compostos, inibidores de CETP e curcumina, mas todos são estudos em fase inicial, em modelos animais ou in vitro, e não provam cura total da doença. Portanto, a afirmação de que há um fármaco capaz de reverter totalmente a perda de memória é exagerada e não sustentada pela evidência científica disponível.",
+            "trecho_suspeito": "completely reversing memory loss caused by Alzheimer's disease",
+            "evidencias": [
+                {
+                    "id": "42691753",
+                    "titulo": "Comparative QSAR and Q-RASAR modeling of benzimidazole derivatives as dual AChE/BuChE inhibitors and design of novel anti- Alzheimer drug candidates supported by molecular docking, ADMET and molecular dynamic simulation.",
+                    "revista": "Journal of molecular graphics & modelling",
+                    "data": "2026-Aug",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42691753/"
+                },
+                {
+                    "id": "42547584",
+                    "titulo": "Reducing CETP activity prevents memory decline in an Alzheimer's disease mouse model.",
+                    "revista": "EMBO molecular medicine",
+                    "data": "2026-Sep",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42547584/"
+                },
+                {
+                    "id": "42470923",
+                    "titulo": "Therapeutic potential of curcumin in Alzheimer's disease: Multi-target mechanisms of action, experimental and clinical evidence, safety aspects.",
+                    "revista": "Biomedicine & pharmacotherapy = Biomedecine & pharmacotherapie",
+                    "data": "2026-Sep",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/42470923/"
+                }
+            ],
+            "status": "ok",
+            "acertou": false
+        }
+    ]
+}

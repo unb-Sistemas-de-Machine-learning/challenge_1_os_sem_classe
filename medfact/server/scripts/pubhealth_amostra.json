@@ -1,21 +1,52 @@
 [
-  {"claim": "The COVID-19 vaccine causes infertility in women.", "label": "false"},
-
-  {"claim": "People vaccinated against the flu can still get the disease, but they generally have milder symptoms.", "label": "true"},
-
-  {"claim": "The use of masks reduces the transmission of the COVID-19 virus indoors.", "label": "true"},
-
-  {"claim": "Hydroxychloroquine is an effective and proven treatment for COVID-19.", "label": "false"},
-
-  {"claim": "People with type 2 diabetes can completely reverse the disease through diet alone, without any medical supervision.", "label": "mixture"},
-
-  {"claim": "Regular consumption of green tea reduces the risk of developing certain types of cancer.", "label": "unproven"},
-
-  {"claim": "Drinking warm lemon water on an empty stomach cures cancer.", "label": "false"},
-
-  {"claim": "Older adults with hypertension have a higher risk of severe complications when they contract COVID-19.", "label": "true"},
-
-  {"claim": "High doses of vitamin C cure the common cold and are also effective against COVID-19.", "label": "mixture"},
-
-  {"claim": "There is a new experimental drug capable of completely reversing memory loss caused by Alzheimer's disease.", "label": "unproven"}
+  {
+    "claim": "The COVID-19 vaccine causes infertility in women.",
+    "pubmedQuery": "COVID-19 AND vaccines AND infertility AND women",
+    "label": "false"
+  },
+  {
+    "claim": "People vaccinated against the flu can still get the disease, but they generally have milder symptoms.",
+    "pubmedQuery": "influenza vaccination AND breakthrough infection AND disease severity",
+    "label": "true"
+  },
+  {
+    "claim": "The use of masks reduces the transmission of the COVID-19 virus indoors.",
+    "pubmedQuery": "COVID-19 AND masks AND indoor transmission",
+    "label": "true"
+  },
+  {
+    "claim": "Hydroxychloroquine is an effective and proven treatment for COVID-19.",
+    "pubmedQuery": "hydroxychloroquine AND COVID-19 AND treatment efficacy",
+    "label": "false"
+  },
+  {
+    "claim": "People with type 2 diabetes can completely reverse the disease through diet alone, without any medical supervision.",
+    "pubmedQuery": "type 2 diabetes AND diet AND remission",
+    "label": "mixture"
+  },
+  {
+    "claim": "Regular consumption of green tea reduces the risk of developing certain types of cancer.",
+    "pubmedQuery": "green tea AND cancer risk",
+    "label": "unproven"
+  },
+  {
+    "claim": "Drinking warm lemon water on an empty stomach cures cancer.",
+    "pubmedQuery": "lemon water AND cancer treatment",
+    "label": "false"
+  },
+  {
+    "claim": "Older adults with hypertension have a higher risk of severe complications when they contract COVID-19.",
+    "pubmedQuery": "COVID-19 AND hypertension AND older adults AND severe complications",
+    "label": "true"
+  },
+  {
+    "claim": "High doses of vitamin C cure the common cold and are also effective against COVID-19.",
+    "pubmedQuery": "vitamin C AND common cold AND COVID-19",
+    "label": "mixture"
+  },
+  {
+    "claim": "There is a new experimental drug capable of completely reversing memory loss caused by Alzheimer's disease.",
+    "pubmedQuery": "Alzheimer disease AND memory loss AND experimental drug",
+    "label": "unproven"
+  }
 ]

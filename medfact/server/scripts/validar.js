@@ -1,43 +1,69 @@
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 const dotenv = require('dotenv');
 
 dotenv.config({
-    path: path.join(__dirname, '..', '.env')
+    path: path.join(
+        __dirname,
+        '..',
+        '.env'
+    ),
 });
 
 const { classificarComGroq } = require('../services/groq');
 const { searchPubMed } = require('../services/pubmed');
 
-// ============================================================
-// CONFIGURAÇÕES
-// ============================================================
+/*
+ * Como validar.js e pubhealth_amostra.json
+ * estão dentro de server/scripts:
+ *
+ * server/
+ * └── scripts/
+ *     ├── validar.js
+ *     └── pubhealth_amostra.json
+ */
+const CAMINHO_AMOSTRA = path.join(
+    __dirname,
+    'pubhealth_amostra.json'
+);
 
-const CAMINHO_AMOSTRA = path.join(__dirname, 'pubhealth_amostra.json');
-const CAMINHO_RESULTADOS = path.join(__dirname, 'resultados_validacao.json');
+const CAMINHO_RESULTADOS = path.join(
+    __dirname,
+    'resultados_validacao.json'
+);
 
-// Tempo entre cada item.
-// 10 segundos ajuda a evitar o limite de tokens da Groq.
-const INTERVALO_ENTRE_ITENS = 10000;
 
-// Número máximo de tentativas para uma classificação.
+/*
+ * Configuração da validação.
+ */
+const INTERVALO_ENTRE_ITENS =
+    10000;
+
 const MAX_TENTATIVAS = 4;
 
-// ============================================================
-// CARREGAMENTO DA AMOSTRA
-// ============================================================
 
-if (!fs.existsSync(CAMINHO_AMOSTRA)) {
-    console.error('Arquivo da amostra não encontrado:');
-    console.error(CAMINHO_AMOSTRA);
-    process.exit(1);
-}
+/*
+ * E06:
+ *
+ * Exibe no terminal a configuração usada
+ * para deixar o experimento reproduzível.
+ */
+console.log('\n========================================');
+console.log('        VALIDAÇÃO MEDFACT — E06');
+console.log('========================================');
+console.log('Experimento: E06');
+console.log('Dataset: PUBHEALTH — Gold Test Set');
+console.log('Amostra: 10 claims');
+console.log('PubMed: busca + ranking + filtro semântico');
+console.log('Groq: classificação + conhecimento geral');
+console.log('E05: reasoning_effort = low');
+console.log('========================================\n');
 
-const amostra = JSON.parse(fs.readFileSync(CAMINHO_AMOSTRA, 'utf-8'));
-// ============================================================
-// FUNÇÕES AUXILIARES
-// ============================================================
 
+/*
+ * Mapeamento dos rótulos originais do PUBHEALTH
+ * para a taxonomia usada pelo MedFact.
+ */
 function mapearRotulo(labelPubhealth) {
     const mapa = {
         true: 'verdadeira',
@@ -46,47 +72,82 @@ function mapearRotulo(labelPubhealth) {
         unproven: 'não verificável',
     };
 
-    return mapa[labelPubhealth] || labelPubhealth;
-}
-
-function esperar(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-/**
- * Tenta descobrir se o erro veio de Rate Limit.
- */
-function ehRateLimit(erro) {
-    const mensagem = erro?.message || '';
-
     return (
-        mensagem.includes('rate_limit_exceeded') ||
-        mensagem.includes('Rate limit') ||
-        mensagem.includes('rate limit') ||
-        mensagem.includes('TPM') ||
-        mensagem.includes('tokens per minute')
+        mapa[labelPubhealth] ||
+        labelPubhealth
     );
 }
 
-/**
- * Classifica uma claim usando retry automático.
- *
- * Se o Groq estiver temporariamente limitado,
- * espera e tenta novamente.
+
+/*
+ * Espera entre uma claim e outra.
  */
-async function classificarComRetry(claim, evidencias) {
-    for (let tentativa = 1; tentativa <= MAX_TENTATIVAS; tentativa++) {
+function esperar(ms) {
+    return new Promise(
+        (resolve) =>
+            setTimeout(resolve, ms)
+    );
+}
+
+
+/*
+ * Identifica erros relacionados a limite
+ * de requisições/tokens.
+ */
+function ehRateLimit(erro) {
+    const mensagem =
+        erro?.message || '';
+
+    return (
+        mensagem.includes(
+            'rate_limit_exceeded'
+        ) ||
+        mensagem.includes(
+            'Rate limit'
+        ) ||
+        mensagem.includes(
+            'rate limit'
+        ) ||
+        mensagem.includes(
+            'TPM'
+        ) ||
+        mensagem.includes(
+            'tokens per minute'
+        ) ||
+        mensagem.includes(
+            'Too Many Requests'
+        ) ||
+        mensagem.includes(
+            'HTTP 429'
+        )
+    );
+}
+
+
+/*
+ * Classificação com retry.
+ */
+async function classificarComRetry(
+    claim,
+    evidencias
+) {
+    for (
+        let tentativa = 1;
+        tentativa <= MAX_TENTATIVAS;
+        tentativa++
+    ) {
         try {
             console.log(
-                `  → Consultando Groq (tentativa ${tentativa}/${MAX_TENTATIVAS})...`
+                `  → Consultando Groq ` +
+                `(tentativa ${tentativa}/${MAX_TENTATIVAS})...`
             );
 
-            const resultado = await classificarComGroq(
-                claim,
-                evidencias
-            );
+            const resultado =
+                await classificarComGroq(
+                    claim,
+                    evidencias
+                );
 
-            // Verificação básica da resposta
             if (
                 !resultado ||
                 !resultado.classificacao
@@ -97,292 +158,574 @@ async function classificarComRetry(claim, evidencias) {
             }
 
             return resultado;
-
         } catch (erro) {
-
             const ultimaTentativa =
-                tentativa === MAX_TENTATIVAS;
+                tentativa ===
+                MAX_TENTATIVAS;
+
+            console.error(
+                `  ⚠️ Erro na tentativa ${tentativa}: ` +
+                `${erro.message}`
+            );
 
             if (ultimaTentativa) {
                 throw erro;
             }
 
-            // Se for Rate Limit, espera mais tempo.
+            let espera;
+
             if (ehRateLimit(erro)) {
-
-                // Backoff progressivo:
-                // 1ª falha → 5s
-                // 2ª falha → 10s
-                // 3ª falha → 15s
-                const espera = tentativa * 5000;
-
-                console.log(
-                    `  ⚠ Rate Limit da Groq.`
-                );
-
-                console.log(
-                    `  → Aguardando ${espera / 1000}s antes de tentar novamente...`
-                );
-
-                await esperar(espera);
-
+                /*
+                 * Espera maior para rate limit.
+                 */
+                espera =
+                    30000 *
+                    tentativa;
             } else {
-
-                // Para outros erros, espera um pouco
-                // antes de tentar novamente.
-                const espera = 3000;
-
-                console.log(
-                    `  ⚠ Erro na Groq: ${erro.message}`
-                );
-
-                console.log(
-                    `  → Tentando novamente em ${espera / 1000}s...`
-                );
-
-                await esperar(espera);
+                espera =
+                    5000 *
+                    tentativa;
             }
+
+            console.log(
+                `  ⏳ Aguardando ${espera / 1000}s antes de tentar novamente...`
+            );
+
+            await esperar(espera);
         }
+    }
+
+    throw new Error(
+        'Não foi possível classificar a claim.'
+    );
+}
+
+
+/*
+ * Carrega a amostra.
+ */
+function carregarAmostra() {
+    if (
+        !fs.existsSync(
+            CAMINHO_AMOSTRA
+        )
+    ) {
+        console.error(
+            'Arquivo da amostra não encontrado:'
+        );
+
+        console.error(
+            CAMINHO_AMOSTRA
+        );
+
+        process.exit(1);
+    }
+
+    try {
+        const conteudo =
+            fs.readFileSync(
+                CAMINHO_AMOSTRA,
+                'utf8'
+            );
+
+        return JSON.parse(
+            conteudo
+        );
+    } catch (erro) {
+        console.error(
+            'Erro ao ler o arquivo da amostra:'
+        );
+
+        console.error(
+            erro.message
+        );
+
+        process.exit(1);
     }
 }
 
-// ============================================================
-// VALIDAÇÃO
-// ============================================================
 
-async function validar() {
+/*
+ * Calcula as métricas da validação.
+ */
+function calcularMetricas(
+    resultados
+) {
+    const validos =
+        resultados.filter(
+            (resultado) =>
+                resultado.status ===
+                'ok'
+        );
 
-    console.log('==========================================');
-    console.log('VALIDAÇÃO DO MODELO');
-    console.log('==========================================');
+    const errosApi =
+        resultados.filter(
+            (resultado) =>
+                resultado.status ===
+                'erro_api'
+        );
 
-    console.log(`Amostra: ${amostra.length} claims`);
-    console.log(`Intervalo: ${INTERVALO_ENTRE_ITENS / 1000}s`);
-    console.log(`Máximo de tentativas: ${MAX_TENTATIVAS}`);
-    console.log('==========================================\n');
+    const corretos =
+        validos.filter(
+            (resultado) =>
+                resultado.predicao ===
+                resultado.esperado
+        );
 
-    let acertos = 0;
-    let classificacoesValidas = 0;
-    let erros = 0;
+    const incorretos =
+        validos.filter(
+            (resultado) =>
+                resultado.predicao !==
+                resultado.esperado
+        );
+
+    const acuracia =
+        validos.length > 0
+            ? (
+                  corretos.length /
+                  validos.length
+              ) * 100
+            : 0;
+
+    const taxaErroApi =
+        resultados.length > 0
+            ? (
+                  errosApi.length /
+                  resultados.length
+              ) * 100
+            : 0;
+
+    return {
+        total: resultados.length,
+
+        validos:
+            validos.length,
+
+        corretos:
+            corretos.length,
+
+        incorretos:
+            incorretos.length,
+
+        erros_api:
+            errosApi.length,
+
+        acuracia:
+            Number(
+                acuracia.toFixed(1)
+            ),
+
+        taxa_erro_api:
+            Number(
+                taxaErroApi.toFixed(1)
+            ),
+    };
+}
+
+
+/*
+ * Execução principal.
+ */
+async function main() {
+    const inicio =
+        Date.now();
+
+    const amostra =
+        carregarAmostra();
+
+    console.log(
+        `📂 Amostra carregada: ${CAMINHO_AMOSTRA}`
+    );
+
+    console.log(
+        `📊 Total de claims: ${amostra.length}`
+    );
+
+    console.log(
+        `⏱️ Intervalo entre itens: ` +
+        `${INTERVALO_ENTRE_ITENS / 1000}s`
+    );
+
+    console.log(
+        `🔁 Máximo de tentativas Groq: ` +
+        `${MAX_TENTATIVAS}`
+    );
 
     const resultados = [];
 
-    const inicioTotal = Date.now();
 
-    for (let i = 0; i < amostra.length; i++) {
+    for (
+        let i = 0;
+        i < amostra.length;
+        i++
+    ) {
+        const item =
+            amostra[i];
 
-        const item = amostra[i];
+        const claim =
+            item.claim;
 
-        const numero = i + 1;
+        const esperado =
+            mapearRotulo(
+                item.label
+            );
 
-        const esperado = mapearRotulo(item.label);
+        console.log(
+            '\n----------------------------------------'
+        );
 
-        console.log('------------------------------------------');
-        console.log(`Processando ${numero}/${amostra.length}`);
-        console.log(`Claim: ${item.claim}`);
-        console.log(`Esperado: ${esperado}`);
+        console.log(
+            `CLAIM ${i + 1}/${amostra.length}`
+        );
+
+        console.log(
+            `Afirmação: ${claim}`
+        );
+
+        console.log(
+            `Esperado: ${esperado}`
+        );
+
 
         try {
-
-            // ====================================================
-            // 1. BUSCA NO PUBMED
-            // ====================================================
-
-            console.log('  → Buscando evidências no PubMed...');
-
-            const inicioPubMed = Date.now();
-
-            const evidencias = await searchPubMed(item.claim, 3);
-
-            console.dir(evidencias, {
-                depth: null
-            });
-
-            const tempoPubMed =
-                ((Date.now() - inicioPubMed) / 1000).toFixed(1);
+            /*
+             * Busca direcionada do PubMed.
+             *
+             * O dataset pode possuir pubmedQuery.
+             * Se não possuir, usa a própria claim.
+             */
+            const query =
+                item.pubmedQuery ||
+                item.claim;
 
             console.log(
-                `  ✓ PubMed respondeu em ${tempoPubMed}s`
+                `\n🔎 Query PubMed: ${query}`
             );
 
-            // ====================================================
-            // 2. CLASSIFICAÇÃO PELO GROQ
-            // ====================================================
-
-            const inicioGroq = Date.now();
-
-            const predicao = await classificarComRetry(
-                item.claim,
-                evidencias
-            );
-
-            const tempoGroq =
-                ((Date.now() - inicioGroq) / 1000).toFixed(1);
-
-            console.log(
-                `  ✓ Groq respondeu em ${tempoGroq}s`
-            );
-
-            // ====================================================
-            // 3. COMPARAÇÃO
-            // ====================================================
-
-            const predito = predicao.classificacao;
-
-            const correto =
-                predito === esperado;
-
-            classificacoesValidas++;
-
-            if (correto) {
-                acertos++;
-                console.log('  ✓ CLASSIFICAÇÃO CORRETA');
-            } else {
-                console.log('  ✗ CLASSIFICAÇÃO INCORRETA');
-            }
-
-            console.log(`  Predito: ${predito}`);
-
-            resultados.push({
-                indice: numero,
-                claim: item.claim,
-                esperado: esperado,
-                predito: predito,
-                correto: correto,
-                status: 'sucesso'
-            });
-
-        } catch (erro) {
-
-            // ====================================================
-            // ERRO
-            // ====================================================
-
-            erros++;
-
-            console.error(
-                `  ✗ Falhou nessa claim: "${item.claim}"`
-            );
-
-            console.error(
-                `  Motivo: ${erro.message}`
-            );
+            const evidencias =
+                await searchPubMed(
+                    query,
+                    3
+                );
 
             /*
-             * IMPORTANTE:
+             * Segurança adicional:
              *
-             * Não colocamos "correto: false".
-             *
-             * Isso impediria diferenciar:
-             *
-             *   - modelo errou
-             *   - API falhou
-             *
-             * O erro será ignorado no cálculo do F1.
+             * searchPubMed deve sempre retornar array.
              */
+            const evidenciasSeguras =
+                Array.isArray(
+                    evidencias
+                )
+                    ? evidencias
+                    : [];
+
+            console.log(
+                `📚 Evidências utilizadas na classificação: ` +
+                `${evidenciasSeguras.length}`
+            );
+
+
+            const predicao =
+                await classificarComRetry(
+                    claim,
+                    evidenciasSeguras
+                );
+
+
+            const classificacao =
+                predicao.classificacao;
+
+            const acertou =
+                classificacao ===
+                esperado;
+
+
+            console.log(
+                `\n🤖 Predito: ${classificacao}`
+            );
+
+            console.log(
+                `🎯 Esperado: ${esperado}`
+            );
+
+            console.log(
+                acertou
+                    ? '✅ CORRETO'
+                    : '❌ INCORRETO'
+            );
+
+
+            if (predicao.explicacao) {
+                console.log(
+                    `💬 ${predicao.explicacao}`
+                );
+            }
+
 
             resultados.push({
-                indice: numero,
-                claim: item.claim,
-                esperado: esperado,
-                predito: null,
-                correto: null,
-                status: 'erro',
-                erro: erro.message
+                indice:
+                    i + 1,
+
+                claim,
+
+                esperado,
+
+                predicao:
+                    classificacao,
+
+                probabilidade_desinformacao:
+                    predicao.probabilidade_desinformacao ??
+                    null,
+
+                tipo:
+                    predicao.tipo ??
+                    null,
+
+                tema:
+                    predicao.tema ??
+                    null,
+
+                nivel_risco:
+                    predicao.nivel_risco ??
+                    null,
+
+                explicacao:
+                    predicao.explicacao ??
+                    null,
+
+                trecho_suspeito:
+                    predicao.trecho_suspeito ??
+                    null,
+
+                evidencias:
+                    evidenciasSeguras.map(
+                        (e) => ({
+                            id:
+                                e.id,
+
+                            titulo:
+                                e.titulo,
+
+                            revista:
+                                e.revista,
+
+                            data:
+                                e.data,
+
+                            url:
+                                e.url,
+                        })
+                    ),
+
+                status:
+                    'ok',
+
+                acertou,
+            });
+        } catch (erro) {
+            console.error(
+                `❌ Erro na claim ${i + 1}:`,
+                erro.message
+            );
+
+            resultados.push({
+                indice:
+                    i + 1,
+
+                claim,
+
+                esperado,
+
+                predicao:
+                    null,
+
+                probabilidade_desinformacao:
+                    null,
+
+                tipo:
+                    null,
+
+                tema:
+                    null,
+
+                nivel_risco:
+                    null,
+
+                explicacao:
+                    null,
+
+                trecho_suspeito:
+                    null,
+
+                evidencias:
+                    [],
+
+                status:
+                    'erro_api',
+
+                erro:
+                    erro.message,
+
+                acertou:
+                    false,
             });
         }
 
-        // ========================================================
-        // INTERVALO ENTRE OS ITENS
-        // ========================================================
 
-        if (i < amostra.length - 1) {
-
+        /*
+         * Não espera depois do último item.
+         */
+        if (
+            i <
+            amostra.length - 1
+        ) {
             console.log(
-                `  → Aguardando ${INTERVALO_ENTRE_ITENS / 1000}s...`
+                `\n⏳ Aguardando ` +
+                `${INTERVALO_ENTRE_ITENS / 1000}s...`
             );
 
-            await esperar(INTERVALO_ENTRE_ITENS);
+            await esperar(
+                INTERVALO_ENTRE_ITENS
+            );
         }
     }
 
-    // ============================================================
-    // MÉTRICAS
-    // ============================================================
+
+    /*
+     * Métricas finais.
+     */
+    const metricas =
+        calcularMetricas(
+            resultados
+        );
 
     const tempoTotal =
-        ((Date.now() - inicioTotal) / 1000).toFixed(1);
+        (
+            Date.now() -
+            inicio
+        ) / 1000;
 
-    const acuracia =
-        classificacoesValidas > 0
-            ? (acertos / classificacoesValidas) * 100
-            : 0;
-
-    console.log('\n');
-    console.log('==========================================');
-    console.log('RESULTADO DA VALIDAÇÃO');
-    console.log('==========================================');
 
     console.log(
-        `Total de claims: ${amostra.length}`
+        '\n========================================'
     );
 
     console.log(
-        `Classificações válidas: ${classificacoesValidas}`
+        '          RESULTADO FINAL — E06'
     );
 
     console.log(
-        `Erros de API: ${erros}`
+        '========================================'
     );
 
     console.log(
-        `Acertos: ${acertos}`
+        `Total: ${metricas.total}`
     );
 
     console.log(
-        `Erros do modelo: ${classificacoesValidas - acertos}`
+        `Válidos: ${metricas.validos}`
     );
 
     console.log(
-        `Acurácia: ${acuracia.toFixed(1)}%`
+        `Corretos: ${metricas.corretos}`
     );
 
     console.log(
-        `Tempo total: ${tempoTotal}s`
+        `Incorretos: ${metricas.incorretos}`
     );
 
-    console.log('==========================================');
+    console.log(
+        `Erros de API: ${metricas.erros_api}`
+    );
 
-    // ============================================================
-    // SALVAR RESULTADOS
-    // ============================================================
+    console.log(
+        `Acurácia: ${metricas.acuracia}%`
+    );
 
-    const dadosFinais = {
-        resumo: {
-            total: amostra.length,
-            classificacoes_validas: classificacoesValidas,
-            erros_api: erros,
-            acertos: acertos,
-            erros_modelo: classificacoesValidas - acertos,
-            acuracia: Number(acuracia.toFixed(4)),
-            tempo_total_segundos: Number(tempoTotal)
+    console.log(
+        `Taxa de erro de API: ${metricas.taxa_erro_api}%`
+    );
+
+    console.log(
+        `Tempo total: ${tempoTotal.toFixed(1)}s`
+    );
+
+    console.log(
+        '========================================\n'
+    );
+
+
+    /*
+     * Salva os resultados.
+     */
+    const saida = {
+        experimento: 'E06',
+
+        configuracao: {
+            filtro_relevancia:
+                true,
+
+            reasoning_effort:
+                'low',
+
+            max_completion_tokens:
+                700,
+
+            candidatos_pubmed:
+                10,
+
+            pre_selecionados:
+                5,
+
+            evidencias_finais:
+                3,
         },
 
-        resultados: resultados
+        resumo: {
+            ...metricas,
+
+            tempo_segundos:
+                Number(
+                    tempoTotal.toFixed(1)
+                ),
+        },
+
+        resultados,
     };
 
-    fs.writeFileSync(CAMINHO_RESULTADOS, JSON.stringify(resultados, null, 2));
 
-    console.log('\nArquivo salvo em:');
-    console.log(CAMINHO_RESULTADOS);
+    fs.writeFileSync(
+        CAMINHO_RESULTADOS,
+        JSON.stringify(
+            saida,
+            null,
+            4
+        ),
+        'utf8'
+    );
+
+
+    console.log(
+        `💾 Resultados salvos em:`
+    );
+
+    console.log(
+        CAMINHO_RESULTADOS
+    );
 }
 
-// ============================================================
-// EXECUTAR
-// ============================================================
 
-validar().catch((erro) => {
-    console.error('\nErro inesperado na validação:');
-    console.error(erro);
-    process.exit(1);
-});
+main().catch(
+    (erro) => {
+        console.error(
+            '\n❌ Erro fatal na validação:'
+        );
+
+        console.error(
+            erro
+        );
+
+        process.exit(1);
+    }
+);
