@@ -39,6 +39,7 @@ function App() {
         body: JSON.stringify({ texto: consulta }),
       });
       const data = await res.json();
+      console.log('RESPOSTA DO BACKEND:', data);
       setResultado(data);
     } catch (erro) {
       setResultado({ erro: 'Não foi possível conectar ao servidor. Tente novamente.' });
@@ -61,7 +62,7 @@ function App() {
       <main className="conteudo">
         {!resultado && !carregando && (
           <>
-            <h1 className="titulo-principal">O que você quer verificar hoje?</h1>
+            <h1 className="titulo-principal">Como posso te ajudar hoje?</h1>
 
             <form
               className="caixa-busca"
@@ -71,7 +72,7 @@ function App() {
               }}
             >
               <label htmlFor="campo-consulta" className="rotulo-busca">
-                Cole ou digite a mensagem que você recebeu
+                Digite a informação que você recebeu
               </label>
               <textarea
                 id="campo-consulta"
@@ -112,39 +113,122 @@ function App() {
 
         {resultado && !carregando && (
           <section className="resultado" aria-live="polite">
-            <p className="pergunta-verificada">"{texto}"</p>
+            
+            <p className="pergunta-verificada">
+              "{texto}"
+            </p>
 
             {resultado.erro ? (
-              <p className="linha-erro">{resultado.erro}</p>
+              <p className="linha-erro">
+                {resultado.erro}
+              </p>
             ) : (
               <>
-                <p className={`selo selo-${(resultado.classificacao || '').replace(/\s/g, '-')}`}>
-                  {resultado.origem === 'camada_1'
-                    ? `Já verificado por ${resultado.agencia}`
-                    : (resultado.classificacao || 'Resultado indisponível')}
-                </p>
-
-                {resultado.nivel_risco && (
-                  <p className="linha-detalhe">
-                    <strong>Nível de risco:</strong> {resultado.nivel_risco}
+                {/* RESULTADO */}
+                <div className="selo-container">
+                  <p
+                    className={`selo selo-${(resultado.classificacao || '')
+                      .replace(/\s/g, '-')}`}
+                  >
+                    {resultado.origem === 'camada_1'
+                      ? `Já verificado por ${resultado.agencia}`
+                      : (resultado.classificacao || 'Resultado indisponível')}
                   </p>
+                </div>
+
+                {/* NÍVEL DE RISCO */}
+                {resultado.nivel_risco && (
+                  <div className="bloco-explicacao">
+                    <h2 className="titulo-bloco">
+                      Nível de risco
+                    </h2>
+
+                    <p className="linha-detalhe">
+                      {resultado.nivel_risco}
+                    </p>
+                  </div>
                 )}
 
+                {/* EXPLICAÇÃO */}
                 {resultado.explicacao && (
-                  <p className="explicacao">{resultado.explicacao}</p>
+                  <div className="bloco-explicacao">
+                    <h2 className="titulo-bloco">
+                      O que encontramos
+                    </h2>
+
+                    <p className="explicacao">
+                      {resultado.explicacao}
+                    </p>
+                  </div>
                 )}
 
-                {resultado.url && (
-                  <a className="link-fonte" href={resultado.url} target="_blank" rel="noreferrer">
-                    Ver checagem completa
-                  </a>
+                {/* FONTE */}
+                {resultado.origem === 'camada_1' && resultado.url && (
+                  <div className="bloco-fonte">
+                    <h2 className="titulo-bloco">
+                      Fonte da checagem
+                    </h2>
+
+                    <p className="revista-fonte">
+                      {resultado.agencia}
+                    </p>
+
+                    <a
+                      className="link-fonte"
+                      href={resultado.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Ver checagem completa
+                    </a>
+                  </div>
+                )}
+
+                {resultado.origem === 'camada_2' &&
+                  resultado.evidencias &&
+                  resultado.evidencias.length > 0 && (
+                    <div className="bloco-fonte">
+                      <h2 className="titulo-bloco">
+                        Fontes consultadas
+                      </h2>
+
+                      <div className="lista-fontes">
+                        {resultado.evidencias.map((fonte, index) => (
+                          <div className="fonte" key={fonte.id || index}>
+                            <p className="titulo-fonte">
+                              {fonte.titulo}
+                            </p>
+
+                            <p className="revista-fonte">
+                              {fonte.revista}
+                              {fonte.data ? ` • ${fonte.data}` : ''}
+                            </p>
+
+                            {fonte.url && (
+                              <a
+                                className="link-fonte"
+                                href={fonte.url}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                Ver pesquisa no PubMed
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                 )}
               </>
             )}
 
-            <button className="botao-nova-consulta" onClick={novaConsulta}>
+            <button
+              className="botao-nova-consulta"
+              onClick={novaConsulta}
+            >
               Verificar outra informação
             </button>
+
           </section>
         )}
       </main>
