@@ -15,13 +15,17 @@ router.post('/verify', async (req, res) => {
   try {
     const checagemExistente = await searchFactCheck(texto);
 
-    if (checagemExistente && !checagemExistente.indisponivel) {
-      return res.json({
-        origem: 'camada_1',
-        classificacao: checagemExistente.classificacao,
-        agencia: checagemExistente.agencia,
-        url: checagemExistente.url,
-      });
+    if (
+        checagemExistente &&
+        !checagemExistente.indisponivel &&
+        checagemExistente.encontrado &&
+        checagemExistente.evidencias.length > 0
+    ) {
+        return res.json({
+            origem: 'camada_1',
+            fonteEvidencia: 'Google Fact Check',
+            evidencias: checagemExistente.evidencias
+        });
     }
 
     // Se a camada 1 não encontrou nada (ou estava indisponível por limite de taxa),
