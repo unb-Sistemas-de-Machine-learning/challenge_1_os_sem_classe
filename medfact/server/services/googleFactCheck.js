@@ -36,7 +36,15 @@ async function searchFactCheck(claimText) {
     console.log('----------------------------------------');
     console.log('GOOGLE FACT CHECK');
     console.log('CLAIM:', claimText);
-    console.log('URL:', url.toString());
+    console.log(
+        'URL GOOGLE:',
+        url.origin + url.pathname
+    );
+
+    console.log(
+        'QUERY:',
+        url.searchParams.get('query')
+    );
 
     try {
         const response = await fetch(url);
