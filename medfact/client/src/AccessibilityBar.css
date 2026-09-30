@@ -1,0 +1,157 @@
+/* =========================================================
+   BARRA DE ACESSIBILIDADE E NAVEGAÇÃO
+   ========================================================= */
+
+.barra-acessibilidade {
+  background-color: #0b5045;
+  color: #ffffff;
+  padding: 8px 24px;
+  border-bottom: 2px solid #083c34;
+  font-family: inherit;
+}
+
+.grupo-ferramentas {
+  max-width: 850px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.controle-fonte {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rotulo-ferramenta {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e2f5f1;
+}
+
+.botoes-fonte {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.btn-acessivel {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1.5px solid #ffffff;
+  border-radius: 6px;
+  min-width: 38px;
+  min-height: 38px;
+  padding: 4px 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-acessivel.btn-medio {
+  font-weight: 800;
+}
+
+.btn-acessivel:hover,
+.btn-acessivel:focus-visible {
+  background-color: #ffffff;
+  color: #0f6b5c;
+  outline: 3px solid #f4b41a;
+  outline-offset: 2px;
+}
+
+.btn-acessivel.ativo {
+  background-color: #f4b41a;
+  color: #0f6b5c;
+  border-color: #f4b41a;
+  box-shadow: 0 0 8px rgba(244, 180, 26, 0.5);
+}
+
+.grupo-acoes-direita {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-acessibilidade-opcao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1.5px solid #ffffff;
+  border-radius: 8px;
+  padding: 6px 14px;
+  min-height: 38px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.svg-icone {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.btn-acessibilidade-opcao:hover,
+.btn-acessibilidade-opcao:focus-visible {
+  background: #ffffff;
+  color: #0f6b5c;
+  outline: 3px solid #f4b41a;
+  outline-offset: 2px;
+}
+
+.btn-acessibilidade-opcao.ativo {
+  background: #f4b41a;
+  color: #0f6b5c;
+  border-color: #f4b41a;
+}
+
+.btn-acessibilidade-opcao.btn-audio {
+  background-color: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+}
+
+.btn-acessibilidade-opcao.btn-audio:hover {
+  background-color: #0369a1;
+}
+
+.btn-acessibilidade-opcao.btn-audio.lendo {
+  background-color: #e91e63;
+  border-color: #e91e63;
+  color: #ffffff;
+  animation: pulsarAudio 1.5s infinite alternate;
+}
+
+.btn-acessibilidade-opcao.btn-sobre {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #2dd4bf;
+  color: #2dd4bf;
+}
+
+.btn-acessibilidade-opcao.btn-sobre:hover {
+  background-color: #2dd4bf;
+  color: #0f6b5c;
+}
+
+@keyframes pulsarAudio {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.04); }
+}
+
+@media (max-width: 650px) {
+  .grupo-ferramentas {
+    justify-content: center;
+  }
+}
