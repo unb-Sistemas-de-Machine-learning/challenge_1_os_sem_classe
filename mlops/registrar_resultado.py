@@ -5,6 +5,8 @@ import mlflow
 
 CAMINHO_RESULTADO = "medfact/server/scripts/resultados_validacao.json"
 
+CAMINHO_MATRIZ = "mlops/matriz_confusao.png"
+
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment("medfact-validacao")
 
@@ -67,5 +69,6 @@ with mlflow.start_run(run_name=experimento):
 
     # Guarda o JSON completo como artefato
     mlflow.log_artifact(CAMINHO_RESULTADO)
-
+    mlflow.log_artifact(CAMINHO_MATRIZ)
+    
 print(f"Experimento {experimento} registrado no MLflow com sucesso.")
