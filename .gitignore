@@ -8,3 +8,7 @@ node_modules/
 .venv/
 __pycache__/
 *.pyc
+# MLflow
+mlflow.db
+mlruns/
+mlartifacts/
