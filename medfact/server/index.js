@@ -9,4 +9,7 @@ app.use(express.json());
 app.use('/api', verifyRoute);
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`MedFact backend rodando na porta ${PORT}`));
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+});
