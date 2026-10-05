@@ -12,3 +12,5 @@ __pycache__/
 mlflow.db
 mlruns/
 mlartifacts/
+# Artefatos gerados
+mlops/matriz_confusao.png
