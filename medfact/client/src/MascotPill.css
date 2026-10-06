@@ -1,0 +1,174 @@
+/* =========================================================
+   ESTILOS E ANIMAÇÕES DO MASCOTE (PÍLULA COM OLHOS)
+   ========================================================= */
+
+.mascote-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.3s ease;
+}
+
+.mascote-container:hover {
+  transform: translateY(-4px);
+}
+
+/* Balão de Fala do Mascote */
+.mascote-balao {
+  position: relative;
+  background: #ffffff;
+  border: 3px solid #0f6b5c;
+  border-radius: 20px;
+  padding: 18px 24px;
+  box-shadow: 0 8px 24px rgba(15, 107, 92, 0.12);
+  flex: 1;
+  animation: balancarBalao 4s ease-in-out infinite alternate;
+}
+
+/* Rabicho do balão apontando para o mascote */
+.mascote-balao::after {
+  content: '';
+  position: absolute;
+  right: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 10px 0 10px 16px;
+  border-style: solid;
+  border-color: transparent transparent transparent #0f6b5c;
+}
+
+.mascote-balao::before {
+  content: '';
+  position: absolute;
+  right: -11px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 7px 0 7px 12px;
+  border-style: solid;
+  border-color: transparent transparent transparent #ffffff;
+  z-index: 2;
+}
+
+.mascote-texto-balao {
+  margin: 0;
+  color: #0f6b5c;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+/* Figura do Mascote SVG */
+.mascote-figura-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mascote-corpo-grupo {
+  transform-origin: center bottom;
+  animation: flutuarMascote 3.5s ease-in-out infinite alternate;
+}
+
+.mascote-sombra-chao {
+  transform-origin: center;
+  animation: pulsarSombra 3.5s ease-in-out infinite alternate;
+}
+
+/* Animações por estado */
+.mascote-estado-loading .mascote-corpo-grupo {
+  animation: rodarInvestigando 1.8s ease-in-out infinite alternate;
+}
+
+.mascote-estado-result .mascote-corpo-grupo {
+  animation: comemorarPulando 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite alternate;
+}
+
+.mascote-estado-typing .mascote-corpo-grupo {
+  transform: rotate(-6deg) translateY(2px);
+}
+
+/* =========================================================
+   KEYFRAMES DE ANIMAÇÕES
+   ========================================================= */
+
+@keyframes flutuarMascote {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(-18px) rotate(-2deg);
+  }
+}
+
+@keyframes pulsarSombra {
+  0% {
+    transform: scale(1);
+    opacity: 0.25;
+  }
+  100% {
+    transform: scale(0.75);
+    opacity: 0.12;
+  }
+}
+
+@keyframes balancarBalao {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes rodarInvestigando {
+  0% {
+    transform: translateY(0) rotate(-5deg) scale(1);
+  }
+  50% {
+    transform: translateY(-12px) rotate(5deg) scale(1.04);
+  }
+  100% {
+    transform: translateY(-4px) rotate(-5deg) scale(0.98);
+  }
+}
+
+@keyframes comemorarPulando {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    transform: translateY(-22px) scale(1.08);
+  }
+}
+
+/* Responsividade do Mascote */
+@media (max-width: 650px) {
+  .mascote-container {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mascote-balao::after,
+  .mascote-balao::before {
+    display: none;
+  }
+
+  .mascote-balao {
+    width: 100%;
+    text-align: center;
+    border-radius: 16px;
+    padding: 14px 18px;
+  }
+
+  .mascote-texto-balao {
+    font-size: 1.05rem;
+  }
+}

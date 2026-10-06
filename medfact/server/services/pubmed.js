@@ -1,17 +1,18 @@
 const { criarLimitador } = require('./rateLimiter');
-const { filtrarRelevancia } = require('./groq');
+const { avaliarEvidenciaDaClaim } = require('./groq');
 
 const PUBMED_KEY = process.env.PUBMED_API_KEY;
-
 const BASE =
     'https://eutils.ncbi.nlm.nih.gov/entrez/eutils';
 
 const EMAIL =
-    process.env.PUBMED_EMAIL || 'medfact@localhost';
+    process.env.PUBMED_EMAIL ||
+    'medfact@localhost';
 
-const TOOL =
-    'MedFact';
+const TOOL = 'MedFact';
 
+// O PubMed permite uma taxa maior com API key.
+// O limitador local evita rajadas.
 const podeChamarPubmed =
     criarLimitador(PUBMED_KEY ? 60 : 3);
 
@@ -20,14 +21,6 @@ const CACHE_TTL =
 
 const cacheBuscas = new Map();
 
-const USAR_FILTRO_RELEVANCIA =
-    process.env.PUBMED_FILTRO_RELEVANCIA !== 'false';
-
-
-/* =========================================================
- * CACHE
- * ========================================================= */
-
 function pegarCache(chave) {
     const item = cacheBuscas.get(chave);
 
@@ -35,7 +28,10 @@ function pegarCache(chave) {
         return null;
     }
 
-    if (Date.now() - item.timestamp > CACHE_TTL) {
+    if (
+        Date.now() - item.timestamp >
+        CACHE_TTL
+    ) {
         cacheBuscas.delete(chave);
         return null;
     }
@@ -43,18 +39,12 @@ function pegarCache(chave) {
     return item.valor;
 }
 
-
 function salvarCache(chave, valor) {
     cacheBuscas.set(chave, {
         valor,
         timestamp: Date.now()
     });
 }
-
-
-/* =========================================================
- * NORMALIZAÇÃO
- * ========================================================= */
 
 function normalizarTexto(texto) {
     return String(texto || '')
@@ -66,7 +56,6 @@ function normalizarTexto(texto) {
         .trim();
 }
 
-
 function escaparXML(texto) {
     return String(texto || '')
         .replace(/&amp;/g, '&')
@@ -75,25 +64,23 @@ function escaparXML(texto) {
         .replace(/&quot;/g, '"')
         .replace(/&#39;/g, "'")
         .replace(/&#x27;/g, "'")
-        .replace(/&#(\d+);/g, (_, codigo) => {
-            return String.fromCharCode(Number(codigo));
-        })
-        .replace(/&#x([0-9a-f]+);/gi, (_, codigo) => {
-            return String.fromCharCode(parseInt(codigo, 16));
-        });
+        .replace(
+            /&#(\d+);/g,
+            (_, codigo) =>
+                String.fromCharCode(
+                    Number(codigo)
+                )
+        )
+        .replace(
+            /&#x([0-9a-f]+);/gi,
+            (_, codigo) =>
+                String.fromCharCode(
+                    parseInt(codigo, 16)
+                )
+        );
 }
 
-
-/* =========================================================
- * DICIONÁRIO MÉDICO
- *
- * O objetivo aqui não é traduzir a frase inteira.
- * É identificar conceitos médicos importantes.
- * ========================================================= */
-
 const CONCEITOS_MEDICOS = [
-
-    /* Vacinação */
     {
         termos: [
             'vacina',
@@ -126,7 +113,7 @@ const CONCEITOS_MEDICOS = [
             'flu'
         ],
         query:
-            '("Influenza, Human"[MeSH Terms] OR influenza OR "flu")'
+            '("Influenza, Human"[MeSH Terms] OR influenza OR flu)'
     },
 
     {
@@ -161,12 +148,8 @@ const CONCEITOS_MEDICOS = [
             '("Hepatitis"[MeSH Terms] OR hepatitis)'
     },
 
-
-    /* Doenças neurológicas */
-
     {
         termos: [
-            'alzheimer',
             'alzheimer'
         ],
         query:
@@ -189,9 +172,6 @@ const CONCEITOS_MEDICOS = [
         query:
             '("Parkinson Disease"[MeSH Terms] OR "Parkinson disease")'
     },
-
-
-    /* Doenças cardiovasculares */
 
     {
         termos: [
@@ -227,9 +207,6 @@ const CONCEITOS_MEDICOS = [
             '("Cardiovascular Diseases"[MeSH Terms] OR "cardiovascular disease" OR "heart disease")'
     },
 
-
-    /* Diabetes */
-
     {
         termos: [
             'diabetes',
@@ -240,22 +217,15 @@ const CONCEITOS_MEDICOS = [
             '("Diabetes Mellitus, Type 2"[MeSH Terms] OR "type 2 diabetes" OR "type II diabetes")'
     },
 
-
-    /* Câncer */
-
     {
         termos: [
             'cancer',
             'câncer',
-            'tumor',
             'tumor'
         ],
         query:
             '("Neoplasms"[MeSH Terms] OR cancer OR neoplasm OR tumor)'
     },
-
-
-    /* Medicamentos */
 
     {
         termos: [
@@ -275,9 +245,6 @@ const CONCEITOS_MEDICOS = [
             '("Chloroquine"[MeSH Terms] OR chloroquine)'
     },
 
-
-    /* Vitaminas / suplementos */
-
     {
         termos: [
             'vitamina c',
@@ -295,9 +262,6 @@ const CONCEITOS_MEDICOS = [
         query:
             '("Vitamin D"[MeSH Terms] OR "vitamin D")'
     },
-
-
-    /* Alimentação */
 
     {
         termos: [
@@ -319,14 +283,12 @@ const CONCEITOS_MEDICOS = [
             '("Citrus"[MeSH Terms] OR lemon OR citrus)'
     },
 
-
-    /* Sintomas / condições */
-
     {
         termos: [
             'resfriado',
             'resfriados',
-            'gripe comum'
+            'gripe comum',
+            'common cold'
         ],
         query:
             '("Common Cold"[MeSH Terms] OR "common cold")'
@@ -346,13 +308,101 @@ const CONCEITOS_MEDICOS = [
         ],
         query:
             '("Fever"[MeSH Terms] OR fever)'
+    },
+
+    {
+        termos: [
+            'dieta',
+            'diet'
+        ],
+        query:
+            '("Diet Therapy"[MeSH Terms] OR diet OR dietary)'
+    },
+
+    {
+        termos: [
+            'remissao',
+            'remissão',
+            'remission'
+        ],
+        query:
+            '("Remission, Induced"[MeSH Terms] OR remission)'
+    },
+
+    {
+        termos: [
+            'idoso',
+            'idosos',
+            'older adults',
+            'elderly'
+        ],
+        query:
+            '("Aged"[MeSH Terms] OR elderly OR "older adults")'
+    },
+
+    {
+        termos: [
+            'gravidade',
+            'grave',
+            'severo',
+            'severa',
+            'severidade',
+            'severity'
+        ],
+        query:
+            '("Severity of Illness Index"[MeSH Terms] OR severity OR severe)'
+    },
+
+    {
+        termos: [
+            'transmissao',
+            'transmissão',
+            'transmission'
+        ],
+        query:
+            '("Disease Transmission, Infectious"[MeSH Terms] OR transmission)'
+    },
+
+    {
+        termos: [
+            'mascara',
+            'máscara',
+            'mascaras',
+            'máscaras',
+            'mask',
+            'masks'
+        ],
+        query:
+            '("Masks"[MeSH Terms] OR mask OR masks OR face covering)'
+    },
+
+    {
+        termos: [
+            'infertilidade',
+            'infertility'
+        ],
+        query:
+            '("Infertility"[MeSH Terms] OR infertility)'
+    },
+
+    {
+        termos: [
+            'fertilidade',
+            'fertility'
+        ],
+        query:
+            '("Fertility"[MeSH Terms] OR fertility)'
+    },
+
+    {
+        termos: [
+            'risco',
+            'risk'
+        ],
+        query:
+            '("Risk"[MeSH Terms] OR risk OR risk factors)'
     }
 ];
-
-
-/* =========================================================
- * TERMOS QUE NÃO AJUDAM NA BUSCA
- * ========================================================= */
 
 const STOPWORDS = new Set([
     'a',
@@ -363,177 +413,107 @@ const STOPWORDS = new Set([
     'uma',
     'uns',
     'umas',
-
     'da',
     'do',
     'das',
     'dos',
     'de',
-
     'na',
     'no',
     'nas',
     'nos',
     'em',
-
     'por',
     'para',
     'com',
     'sem',
-
     'que',
     'se',
-
     'pode',
     'podem',
     'poderia',
     'poderiam',
-
     'causa',
     'causar',
-    'causa',
     'causam',
     'causaria',
-    'causaria',
-
     'faz',
     'fazer',
     'fazem',
-
     'ser',
     'sao',
     'são',
     'é',
-
     'tem',
     'ter',
     'têm',
-
     'pessoa',
     'pessoas',
-
     'isso',
     'isto',
-
     'verdade',
     'verdadeiro',
     'verdadeira',
-
     'falso',
     'falsa',
-
     'mesmo',
     'mesma',
-
     'realmente',
-
     'porem',
     'porém',
-
     'pode-se',
-
     'e',
     'ou',
-
     'como',
-
     'quanto',
-
-    'sobre',
-
-    'uma'
+    'sobre'
 ]);
 
-
-/* =========================================================
- * EXTRAÇÃO DE CONCEITOS MÉDICOS
- * ========================================================= */
-
 function encontrarConceitos(query) {
-
-    const texto = normalizarTexto(query);
+    const texto =
+        normalizarTexto(query);
 
     const encontrados = [];
 
     for (const conceito of CONCEITOS_MEDICOS) {
-
-        const encontrou = conceito.termos.some(termo => {
-
-            const termoNormalizado =
-                normalizarTexto(termo);
-
-            return texto.includes(termoNormalizado);
-        });
-
-        if (encontrou) {
+        if (
+            conceito.termos.some(
+                termo =>
+                    texto.includes(
+                        normalizarTexto(termo)
+                    )
+            )
+        ) {
             encontrados.push(conceito);
         }
     }
 
-    /*
-     * Remove conceitos duplicados.
-     */
-    const unicos = [];
-
-    for (const conceito of encontrados) {
-
-        if (!unicos.some(
-            item => item.query === conceito.query
-        )) {
-            unicos.push(conceito);
-        }
-    }
-
-    return unicos;
+    return encontrados.filter(
+        (conceito, index, array) =>
+            array.findIndex(
+                item =>
+                    item.query === conceito.query
+            ) === index
+    );
 }
 
-
-/* =========================================================
- * GERAÇÃO DA QUERY BIOMÉDICA
- * ========================================================= */
-
 function gerarQueryBiomedica(claimText) {
-
     const conceitos =
         encontrarConceitos(claimText);
 
-    /*
-     * Caso tenhamos conceitos conhecidos,
-     * fazemos AND entre eles.
-     *
-     * Exemplo:
-     *
-     * "A vacina da gripe pode causar Alzheimer?"
-     *
-     * vira aproximadamente:
-     *
-     * influenza AND Alzheimer
-     */
     if (conceitos.length > 0) {
-
-        const partes =
-            conceitos
-                .slice(0, 4)
-                .map(item => item.query);
-
-        return partes.join(' AND ');
+        // Mantemos até 6 conceitos para não
+        // perder partes importantes da claim.
+        return conceitos
+            .slice(0, 6)
+            .map(item => item.query)
+            .join(' AND ');
     }
 
-    /*
-     * Fallback:
-     * caso não reconheçamos termos médicos específicos,
-     * retiramos palavras muito genéricas.
-     */
     return simplificarQuery(claimText);
 }
 
-
-/* =========================================================
- * QUERY ALTERNATIVA MAIS AMPLA
- * ========================================================= */
-
 function gerarQueryAmpla(claimText) {
-
     const conceitos =
         encontrarConceitos(claimText);
 
@@ -541,68 +521,49 @@ function gerarQueryAmpla(claimText) {
         return simplificarQuery(claimText);
     }
 
-    /*
-     * Em vez de exigir todos os conceitos,
-     * procuramos qualquer combinação relevante.
-     *
-     * Isso evita ficar sem resultado quando a query
-     * principal estiver restritiva demais.
-     */
+    // A busca ampla usa os conceitos principais
+    // em OR para recuperar candidatos.
     return conceitos
-        .slice(0, 4)
+        .slice(0, 6)
         .map(item => item.query)
         .join(' OR ');
 }
 
-
-/* =========================================================
- * SIMPLIFICAÇÃO DA QUERY ORIGINAL
- * ========================================================= */
+function normalizarClaimParaPipeline(texto) {
+    return String(texto || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[?!.;,]+$/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
 
 function simplificarQuery(query) {
-
-    const texto =
-        normalizarTexto(query);
-
-    const palavras =
-        texto
-            .split(/\s+/)
-            .filter(Boolean)
-            .filter(palavra => {
-                return !STOPWORDS.has(palavra);
-            })
-            .slice(0, 12);
-
-    return palavras.join(' ');
+    return normalizarTexto(query)
+        .split(/\s+/)
+        .filter(Boolean)
+        .filter(
+            palavra =>
+                !STOPWORDS.has(palavra)
+        )
+        .slice(0, 14)
+        .join(' ');
 }
 
+function limitarQuery(
+    query,
+    maxCaracteres = 1200
+) {
+    if (!query) return '';
 
-/* =========================================================
- * LIMITAR QUERY
- * ========================================================= */
-
-function limitarQuery(query, maxCaracteres = 900) {
-
-    if (!query) {
-        return '';
-    }
-
-    if (query.length <= maxCaracteres) {
-        return query;
-    }
-
-    return query.slice(0, maxCaracteres);
+    return query.length <= maxCaracteres
+        ? query
+        : query.slice(0, maxCaracteres);
 }
-
-
-/* =========================================================
- * REQUISIÇÃO GENÉRICA AO PUBMED
- * ========================================================= */
 
 async function requisitarPubMed(url) {
-
     if (!podeChamarPubmed()) {
-
         console.log(
             '⚠️ Limite local do PubMed atingido.'
         );
@@ -611,7 +572,6 @@ async function requisitarPubMed(url) {
     }
 
     try {
-
         const response =
             await fetch(url, {
                 headers: {
@@ -621,7 +581,6 @@ async function requisitarPubMed(url) {
             });
 
         if (!response.ok) {
-
             console.error(
                 `❌ PubMed HTTP ${response.status}`
             );
@@ -632,7 +591,6 @@ async function requisitarPubMed(url) {
         return await response.text();
 
     } catch (erro) {
-
         console.error(
             '❌ Erro na requisição ao PubMed:',
             erro.message
@@ -642,13 +600,10 @@ async function requisitarPubMed(url) {
     }
 }
 
-
-/* =========================================================
- * BUSCAR IDs
- * ========================================================= */
-
-async function buscarIds(query, max = 10) {
-
+async function buscarIds(
+    query,
+    max = 10
+) {
     if (!query || !query.trim()) {
         return [];
     }
@@ -657,22 +612,19 @@ async function buscarIds(query, max = 10) {
         limitarQuery(query);
 
     const chave =
-        `ids:${queryLimitada}`;
+        `v3:ids:${queryLimitada}`;
 
     const cacheado =
         pegarCache(chave);
 
     if (cacheado !== null) {
-
-        console.log(
-            '📦 IDs recuperados do cache.'
-        );
-
         return cacheado;
     }
 
     const url =
-        new URL(`${BASE}/esearch.fcgi`);
+        new URL(
+            `${BASE}/esearch.fcgi`
+        );
 
     url.searchParams.set(
         'db',
@@ -694,10 +646,6 @@ async function buscarIds(query, max = 10) {
         String(max)
     );
 
-    /*
-     * "relevance" aproxima o comportamento de
-     * "Best Match" do PubMed.
-     */
     url.searchParams.set(
         'sort',
         'relevance'
@@ -714,7 +662,6 @@ async function buscarIds(query, max = 10) {
     );
 
     if (PUBMED_KEY) {
-
         url.searchParams.set(
             'api_key',
             PUBMED_KEY
@@ -732,13 +679,13 @@ async function buscarIds(query, max = 10) {
         return [];
     }
 
-    const ids =
-        [
-            ...xml.matchAll(
-                /<Id>(\d+)<\/Id>/g
-            )
-        ]
-            .map(match => match[1]);
+    const ids = [
+        ...xml.matchAll(
+            /<Id>(\d+)<\/Id>/g
+        )
+    ].map(
+        match => match[1]
+    );
 
     const unicos =
         [...new Set(ids)];
@@ -751,42 +698,36 @@ async function buscarIds(query, max = 10) {
     return unicos;
 }
 
-
-/* =========================================================
- * BUSCAR ARTIGOS
- * ========================================================= */
-
 async function buscarArtigos(ids) {
-
     if (!ids || ids.length === 0) {
         return [];
     }
 
     const idsUnicos =
         [...new Set(ids)]
-            .filter(id => /^\d+$/.test(id));
+            .filter(
+                id =>
+                    /^\d+$/.test(id)
+            );
 
     if (idsUnicos.length === 0) {
         return [];
     }
 
     const chave =
-        `artigos:${idsUnicos.join(',')}`;
+        `v3:artigos:${idsUnicos.join(',')}`;
 
     const cacheado =
         pegarCache(chave);
 
     if (cacheado !== null) {
-
-        console.log(
-            '📦 Artigos recuperados do cache.'
-        );
-
         return cacheado;
     }
 
     const url =
-        new URL(`${BASE}/efetch.fcgi`);
+        new URL(
+            `${BASE}/efetch.fcgi`
+        );
 
     url.searchParams.set(
         'db',
@@ -819,7 +760,6 @@ async function buscarArtigos(ids) {
     );
 
     if (PUBMED_KEY) {
-
         url.searchParams.set(
             'api_key',
             PUBMED_KEY
@@ -841,7 +781,6 @@ async function buscarArtigos(ids) {
         ) || [];
 
     for (const bloco of blocos) {
-
         const id =
             extrairTag(
                 bloco,
@@ -852,47 +791,35 @@ async function buscarArtigos(ids) {
             continue;
         }
 
-        const titulo =
-            limparTextoXML(
-                extrairTag(
-                    bloco,
-                    'ArticleTitle'
-                )
-            );
-
-        const resumo =
-            extrairResumo(
-                bloco
-            );
-
-        const revista =
-            limparTextoXML(
-                extrairTag(
-                    bloco,
-                    'Title'
-                )
-            );
-
-        const data =
-            extrairDataPublicacao(
-                bloco
-            );
-
         artigos.push({
-
             id,
 
             titulo:
-                titulo || 'Título não disponível',
+                limparTextoXML(
+                    extrairTag(
+                        bloco,
+                        'ArticleTitle'
+                    )
+                ) ||
+                'Título não disponível',
 
             resumo:
-                resumo || 'Resumo não disponível',
+                extrairResumo(bloco) ||
+                'Resumo não disponível',
 
             revista:
-                revista || 'Revista não informada',
+                limparTextoXML(
+                    extrairTag(
+                        bloco,
+                        'Title'
+                    )
+                ) ||
+                'Revista não informada',
 
             data:
-                data || '',
+                extrairDataPublicacao(
+                    bloco
+                ) || '',
 
             url:
                 `https://pubmed.ncbi.nlm.nih.gov/${id}/`
@@ -907,25 +834,7 @@ async function buscarArtigos(ids) {
     return artigos;
 }
 
-
-/* =========================================================
- * EXTRAIR TAG XML
- * ========================================================= */
-
 function extrairTag(xml, tag) {
-
-    /*
-     * Permite atributos dentro da tag.
-     *
-     * Exemplo:
-     *
-     * <ArticleTitle>...</ArticleTitle>
-     *
-     * e também:
-     *
-     * <ArticleTitle Language="en">...</ArticleTitle>
-     */
-
     const regex =
         new RegExp(
             `<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`,
@@ -935,20 +844,12 @@ function extrairTag(xml, tag) {
     const match =
         xml.match(regex);
 
-    if (!match) {
-        return '';
-    }
-
-    return match[1];
+    return match
+        ? match[1]
+        : '';
 }
 
-
-/* =========================================================
- * EXTRAIR RESUMO
- * ========================================================= */
-
 function extrairResumo(xml) {
-
     const bloco =
         xml.match(
             /<Abstract>([\s\S]*?)<\/Abstract>/i
@@ -958,19 +859,13 @@ function extrairResumo(xml) {
         return '';
     }
 
-    /*
-     * Um Abstract pode possuir vários AbstractText,
-     * eventualmente com Label.
-     */
-    const partes =
-        [
-            ...bloco[1].matchAll(
-                /<AbstractText(?:\s+Label="([^"]*)")?[^>]*>([\s\S]*?)<\/AbstractText>/gi
-            )
-        ];
+    const partes = [
+        ...bloco[1].matchAll(
+            /<AbstractText(?:\s+Label="([^"]*)")?[^>]*>([\s\S]*?)<\/AbstractText>/gi
+        )
+    ];
 
     if (partes.length === 0) {
-
         return limparTextoXML(
             bloco[1]
         );
@@ -978,7 +873,6 @@ function extrairResumo(xml) {
 
     return partes
         .map(match => {
-
             const label =
                 match[1]
                     ? `${match[1]}: `
@@ -986,23 +880,15 @@ function extrairResumo(xml) {
 
             return (
                 label +
-                limparTextoXML(match[2])
+                limparTextoXML(
+                    match[2]
+                )
             );
-
         })
         .join(' ');
 }
 
-
-/* =========================================================
- * DATA DE PUBLICAÇÃO
- * ========================================================= */
-
 function extrairDataPublicacao(xml) {
-
-    /*
-     * Primeiro tenta PubDate.
-     */
     const pubDate =
         extrairTag(
             xml,
@@ -1010,54 +896,34 @@ function extrairDataPublicacao(xml) {
         );
 
     if (pubDate) {
-
         return limparTextoXML(
             pubDate
         );
     }
 
-    /*
-     * Fallback para Year.
-     */
     const year =
         extrairTag(
             xml,
             'Year'
         );
 
-    if (year) {
-        return limparTextoXML(year);
-    }
-
-    return '';
+    return year
+        ? limparTextoXML(year)
+        : '';
 }
 
-
-/* =========================================================
- * LIMPEZA DO XML
- * ========================================================= */
-
 function limparTextoXML(texto) {
-
     if (!texto) {
         return '';
     }
 
     let resultado =
-        escaparXML(texto);
+        escaparXML(texto)
+            .replace(
+                /<[^>]+>/g,
+                ' '
+            );
 
-    /*
-     * Remove tags restantes.
-     */
-    resultado =
-        resultado.replace(
-            /<[^>]+>/g,
-            ' '
-        );
-
-    /*
-     * Decodifica algumas entidades comuns.
-     */
     resultado =
         resultado
             .replace(/&amp;/g, '&')
@@ -1071,97 +937,86 @@ function limparTextoXML(texto) {
         .trim();
 }
 
-
-/* =========================================================
- * TERMOS RELEVANTES
- * ========================================================= */
-
 function extrairTermosRelevantes(query) {
-
     const texto =
         normalizarTexto(query);
 
-    const termos =
-        texto
-            .split(/\s+/)
-            .filter(Boolean)
-            .filter(termo => {
-
-                if (STOPWORDS.has(termo)) {
-                    return false;
-                }
-
-                /*
-                 * Termos muito pequenos geram muitos
-                 * falsos positivos.
-                 */
-                if (termo.length < 4) {
-                    return false;
-                }
-
-                return true;
-            });
-
-    return [...new Set(termos)];
+    return [
+        ...new Set(
+            texto
+                .split(/\s+/)
+                .filter(Boolean)
+                .filter(
+                    termo =>
+                        !STOPWORDS.has(termo) &&
+                        termo.length >= 4
+                )
+        )
+    ];
 }
-
-
-/* =========================================================
- * RANKING LEXICAL
- * ========================================================= */
 
 function selecionarMaisRelevantes(
     artigos,
     query,
     max = 5
 ) {
-
-    if (!artigos || artigos.length === 0) {
+    if (
+        !artigos ||
+        artigos.length === 0
+    ) {
         return [];
     }
 
     const termosQuery =
-        extrairTermosRelevantes(query);
+        extrairTermosRelevantes(
+            query
+        );
 
     const conceitos =
         encontrarConceitos(query);
 
-    /*
-     * Também considera os termos ingleses
-     * presentes nas queries médicas.
-     */
     const termosConceituais = [];
 
     for (const conceito of conceitos) {
-
         const termos =
             conceito.query
-                .replace(/[()"[\]]/g, ' ')
-                .split(/\s+OR\s+|\s+AND\s+/i)
-                .map(item =>
-                    item
-                        .replace(/["']/g, '')
-                        .trim()
+                .replace(
+                    /[()\[\]"]/g,
+                    ' '
+                )
+                .split(
+                    /\s+OR\s+|\s+AND\s+/i
+                )
+                .map(
+                    item =>
+                        item
+                            .replace(
+                                /['"]/g,
+                                ''
+                            )
+                            .trim()
                 )
                 .filter(Boolean);
 
-        termosConceituais.push(...termos);
+        termosConceituais.push(
+            ...termos
+        );
     }
 
-    const todosOsTermos =
-        [
-            ...termosQuery,
-            ...termosConceituais
-        ]
-            .map(normalizarTexto)
-            .filter(Boolean);
-
     const termosUnicos =
-        [...new Set(todosOsTermos)];
+        [
+            ...new Set(
+                [
+                    ...termosQuery,
+                    ...termosConceituais
+                ]
+                    .map(normalizarTexto)
+                    .filter(Boolean)
+            )
+        ];
 
     const classificados =
         artigos.map(artigo => {
-
             const titulo =
                 normalizarTexto(
                     artigo.titulo
@@ -1172,22 +1027,23 @@ function selecionarMaisRelevantes(
                     artigo.resumo
                 );
 
-            const texto =
-                `${titulo} ${resumo}`;
-
             let pontuacao = 0;
 
-            for (const termo of termosUnicos) {
-
-                if (!termo) {
-                    continue;
-                }
-
-                if (titulo.includes(termo)) {
+            for (
+                const termo of termosUnicos
+            ) {
+                if (
+                    titulo.includes(
+                        termo
+                    )
+                ) {
                     pontuacao += 4;
-                }
 
-                else if (resumo.includes(termo)) {
+                } else if (
+                    resumo.includes(
+                        termo
+                    )
+                ) {
                     pontuacao += 1;
                 }
             }
@@ -1210,108 +1066,75 @@ function selecionarMaisRelevantes(
 
     classificados.forEach(
         (item, index) => {
-
             console.log(
-                `${index + 1}. ` +
-                `[${item.pontuacao}] ` +
-                `${item.artigo.titulo}`
+                `${index + 1}. [${item.pontuacao}] ${item.artigo.titulo}`
             );
         }
     );
 
     return classificados
         .slice(0, max)
-        .map(item => item.artigo);
+        .map(
+            item =>
+                item.artigo
+        );
 }
-
-
-/* =========================================================
- * BUSCA MULTI-ESTRATÉGIA
- * ========================================================= */
 
 async function buscarIdsComEstrategias(
     claimText,
     maxPorBusca = 10
 ) {
-
-    const queries = [];
-
-    /*
-     * 1. Query biomédica.
-     *
-     * É a principal.
-     */
     const queryBiomedica =
         gerarQueryBiomedica(
             claimText
         );
 
-    if (queryBiomedica) {
+    const queryAmpla =
+        gerarQueryAmpla(
+            claimText
+        );
 
+    const querySimplificada =
+        simplificarQuery(
+            claimText
+        );
+
+    const queries = [];
+
+    if (queryBiomedica) {
         queries.push({
             nome: 'biomédica',
             query: queryBiomedica
         });
     }
 
-
-    /*
-     * 2. Query ampla.
-     *
-     * Serve de fallback quando AND ficou
-     * restritivo demais.
-     */
-    const queryAmpla =
-        gerarQueryAmpla(
-            claimText
-        );
-
     if (
         queryAmpla &&
         queryAmpla !== queryBiomedica
     ) {
-
         queries.push({
             nome: 'ampla',
             query: queryAmpla
         });
     }
 
-
-    /*
-     * 3. Query simplificada em português.
-     *
-     * Não é a principal, mas pode encontrar
-     * artigos que contenham termos semelhantes.
-     */
-    const querySimplificada =
-        simplificarQuery(
-            claimText
-        );
-
     if (
         querySimplificada &&
         querySimplificada !== queryBiomedica &&
         querySimplificada !== queryAmpla
     ) {
-
         queries.push({
             nome: 'simplificada',
             query: querySimplificada
         });
     }
 
-
-    /*
-     * Limita o número de estratégias.
-     */
-    const estrategias =
-        queries.slice(0, 3);
-
     const todosIds = [];
 
-    for (const estrategia of estrategias) {
-
+    for (
+        const estrategia of
+        queries.slice(0, 3)
+    ) {
         console.log(
             `\n🔎 Estratégia: ${estrategia.nome}`
         );
@@ -1330,56 +1153,37 @@ async function buscarIdsComEstrategias(
             `   → ${ids.length} PMIDs encontrados.`
         );
 
-        todosIds.push(...ids);
-
-        /*
-         * Se a estratégia principal encontrou
-         * bastante coisa, ainda podemos continuar
-         * para enriquecer a busca.
-         */
+        todosIds.push(
+            ...ids
+        );
     }
 
-    const idsUnicos =
-        [...new Set(todosIds)];
-
-    return idsUnicos;
+    return [
+        ...new Set(todosIds)
+    ];
 }
-
-
-/* =========================================================
- * BUSCA PRINCIPAL
- * ========================================================= */
 
 async function searchPubMed(
     query,
     max = 3
 ) {
+    const claimPipeline =
+        normalizarClaimParaPipeline(
+            query
+        );
 
     console.log(
         `\n🔎 Buscando evidências no PubMed para: "${query}"`
     );
 
-    if (!query || !query.trim()) {
-
-        console.log(
-            '⚠️ Query vazia.'
-        );
-
+    if (!claimPipeline) {
         return [];
     }
 
     try {
-
-        /*
-         * =====================================================
-         * ETAPA 1
-         * Geração de queries + busca de PMIDs
-         * =====================================================
-         */
-
         const ids =
             await buscarIdsComEstrategias(
-                query,
+                claimPipeline,
                 10
             );
 
@@ -1388,21 +1192,8 @@ async function searchPubMed(
         );
 
         if (ids.length === 0) {
-
-            console.log(
-                '⚠️ Nenhum artigo encontrado no PubMed.'
-            );
-
             return [];
         }
-
-
-        /*
-         * =====================================================
-         * ETAPA 2
-         * Recuperação dos artigos
-         * =====================================================
-         */
 
         const artigos =
             await buscarArtigos(
@@ -1414,183 +1205,63 @@ async function searchPubMed(
         );
 
         if (artigos.length === 0) {
-
-            console.log(
-                '⚠️ PMIDs encontrados, mas não foi possível recuperar os artigos.'
-            );
-
             return [];
         }
 
-
-        /*
-         * =====================================================
-         * ETAPA 3
-         * Ranking lexical
-         * =====================================================
-         */
-
-        const preFiltrados =
+        // Mantemos 5 candidatos para a avaliação
+        // semântica/evidencial.
+        const candidatos =
             selecionarMaisRelevantes(
                 artigos,
-                query,
+                claimPipeline,
                 Math.max(5, max)
             );
 
         console.log(
-            `✓ ${preFiltrados.length} artigos pré-selecionados.`
+            `✓ ${candidatos.length} artigos pré-selecionados.`
         );
 
-        console.log(
-            '\nARTIGOS PRÉ-SELECIONADOS:'
-        );
-
-        preFiltrados.forEach(
-            artigo => {
+        candidatos.forEach(
+            (artigo, index) => {
                 console.log(
-                    `- ${artigo.titulo}`
+                    `${index + 1}. ${artigo.titulo}`
                 );
             }
         );
-
-        if (preFiltrados.length === 0) {
-
-            console.log(
-                '⚠️ Ranking não encontrou artigos relevantes.'
-            );
-
-            /*
-             * Segurança:
-             * ainda devolvemos artigos recuperados.
-             *
-             * Isso evita evidencias: [] quando
-             * o ranking falhar.
-             */
-            return artigos.slice(0, max);
-        }
-
-
-        /*
-         * =====================================================
-         * ETAPA 4
-         * Filtro semântico
-         * =====================================================
-         */
-
-        let selecionados;
-
-        if (USAR_FILTRO_RELEVANCIA) {
-
-            try {
-
-                selecionados =
-                    await filtrarRelevancia(
-                        query,
-                        preFiltrados,
-                        max
-                    );
-
-            } catch (erro) {
-
-                console.error(
-                    '⚠️ Erro no filtro semântico:',
-                    erro.message
-                );
-
-                selecionados = [];
-            }
-
-            /*
-             * PROBLEMA IMPORTANTE:
-             *
-             * A Groq pode retornar [] mesmo quando
-             * temos artigos relevantes.
-             *
-             * Nesse caso NÃO podemos devolver [].
-             */
-            if (
-                !selecionados ||
-                selecionados.length === 0
-            ) {
-
-                console.log(
-                    '⚠️ Filtro semântico não selecionou artigos.'
-                );
-
-                console.log(
-                    '→ Usando fallback lexical.'
-                );
-
-                selecionados =
-                    preFiltrados.slice(
-                        0,
-                        max
-                    );
-            }
-
-        } else {
-
-            selecionados =
-                preFiltrados.slice(
-                    0,
-                    max
-                );
-        }
-
-
-        /*
-         * =====================================================
-         * ETAPA 5
-         * Garantia final
-         * =====================================================
-         */
 
         if (
-            !selecionados ||
-            selecionados.length === 0
+            candidatos.length === 0
         ) {
-
-            console.log(
-                '⚠️ Nenhuma evidência após todas as etapas.'
-            );
-
-            /*
-             * Último fallback possível.
-             */
-            return artigos.slice(
-                0,
-                max
-            );
+            return [];
         }
 
-
         /*
-         * Remove duplicados novamente.
+         * IMPORTANTE:
+         *
+         * Não usamos mais o fallback lexical quando
+         * a avaliação semântica falha ou retorna zero.
+         *
+         * Isso impede distinguir "artigo relacionado"
+         * de "evidência da claim".
+         *
+         * A avaliação abaixo faz relevância + evidência
+         * em uma única chamada da Groq.
+         *
+         * Isso também reduz o consumo de TPM.
          */
-        const resultadoFinal =
-            Array.from(
-                new Map(
-                    selecionados.map(
-                        artigo => [
-                            artigo.id,
-                            artigo
-                        ]
-                    )
-                ).values()
-            ).slice(0, max);
-
+        const evidencias =
+            await avaliarEvidenciaDaClaim(
+                claimPipeline,
+                candidatos,
+                max
+            );
 
         console.log(
-            `\n✓ ${resultadoFinal.length} artigos finais selecionados.`
+            `✓ ${evidencias.length} evidências finais.`
         );
 
-        console.log(
-            '\nARTIGOS FINAIS:'
-        );
-
-        resultadoFinal.forEach(
+        evidencias.forEach(
             (artigo, index) => {
-
                 console.log(
                     `${index + 1}. ${artigo.titulo}`
                 );
@@ -1602,49 +1273,30 @@ async function searchPubMed(
                 console.log(
                     `   URL: ${artigo.url}`
                 );
+
+                console.log(
+                    `   Tipo: ${artigo.avaliacaoEvidencia}`
+                );
             }
         );
 
-
-        /*
-         * O validar.js e a rota /verify esperam
-         * um ARRAY.
-         */
-        return resultadoFinal;
+        return evidencias;
 
     } catch (erro) {
-
         console.error(
             '❌ Erro geral no searchPubMed:',
-            erro
+            erro.message
         );
 
-        /*
-         * Nunca deixar undefined chegar
-         * ao classificarComGroq().
-         */
         return [];
     }
 }
 
-
-/* =========================================================
- * EXPORTS
- * ========================================================= */
-
 module.exports = {
-
     searchPubMed,
-
-    /*
-     * Exportamos também algumas funções para facilitar
-     * testes unitários futuros.
-     */
     simplificarQuery,
-
     gerarQueryBiomedica,
-
     gerarQueryAmpla,
-
-    selecionarMaisRelevantes
+    selecionarMaisRelevantes,
+    normalizarClaimParaPipeline
 };

@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
-
+import { AccessibilityBar } from './AccessibilityBar';
+import { LogoIcon } from './LogoIcon';
+import { AboutModal } from './AboutModal';
 
 const TEMAS = [
   {
@@ -24,25 +26,55 @@ function App() {
   const [texto, setTexto] = useState('');
   const [resultado, setResultado] = useState(null);
   const [carregando, setCarregando] = useState(false);
+  const [modalSobreAberto, setModalSobreAberto] = useState(false);
 
   async function verificar(textoParaVerificar) {
     const consulta = textoParaVerificar ?? texto;
-    if (!consulta || consulta.trim().length < 5) return;
+
+    if (!consulta || consulta.trim().length < 5) {
+      return;
+    }
 
     setTexto(consulta);
     setCarregando(true);
     setResultado(null);
+
     try {
-      const res = await fetch('http://localhost:3001/api/verify', {
+      const API_URL =
+        process.env.REACT_APP_API_URL ||
+        'http://localhost:3001';
+
+      const res = await fetch(`${API_URL}/api/verify`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texto: consulta }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          texto: consulta,
+        }),
       });
+
       const data = await res.json();
+
       console.log('RESPOSTA DO BACKEND:', data);
+
+      if (!res.ok) {
+        setResultado({
+          erro:
+            data.erro ||
+            'Não foi possível realizar a verificação.',
+        });
+        return;
+      }
+
       setResultado(data);
     } catch (erro) {
-      setResultado({ erro: 'Não foi possível conectar ao servidor. Tente novamente.' });
+      console.error(erro);
+
+      setResultado({
+        erro:
+          'Não foi possível conectar ao servidor de verificação. Tente novamente em alguns instantes.',
+      });
     } finally {
       setCarregando(false);
     }
@@ -53,16 +85,68 @@ function App() {
     setResultado(null);
   }
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (
+        event.key === 'Enter' &&
+        (event.ctrlKey || event.metaKey)
+      ) {
+        verificar();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  });
+
   return (
     <div className="pagina">
+
+      {/* Barra superior */}
+      <AccessibilityBar
+        aoAbrirSobre={() => setModalSobreAberto(true)}
+      />
+
+      {/* Modal Sobre o Projeto */}
+      <AboutModal
+        aberto={modalSobreAberto}
+        aoFechar={() => setModalSobreAberto(false)}
+      />
+
+      {/* Cabeçalho */}
       <header className="topo">
-        <span className="marca">MedFact</span>
+        <div className="topo-conteudo">
+          <div className="marca-container">
+            <LogoIcon
+              width={40}
+              height={40}
+              className="logo-imagem-site"
+            />
+
+            <span className="marca">
+              MedFact
+            </span>
+          </div>
+
+          <span className="tag-subtitulo">
+            Plataforma de Checagem em Saúde
+          </span>
+        </div>
       </header>
 
+      {/* Conteúdo */}
       <main className="conteudo">
+
+        {/* Tela inicial */}
         {!resultado && !carregando && (
-          <>
-            <h1 className="titulo-principal">Como posso te ajudar hoje?</h1>
+          <div className="bloco-inicial-animado">
+
+            <h1 className="titulo-principal">
+              Como posso ajudar hoje?
+            </h1>
 
             <form
               className="caixa-busca"
@@ -71,76 +155,161 @@ function App() {
                 verificar();
               }}
             >
-              <label htmlFor="campo-consulta" className="rotulo-busca">
-                Digite a informação que você recebeu
+              <label
+                htmlFor="campo-consulta"
+                className="rotulo-busca"
+              >
+                Digite a informação de saúde que você recebeu:
               </label>
-              <textarea
-                id="campo-consulta"
-                className="campo-texto"
-                rows={4}
-                placeholder="Exemplo: essa vacina causa problema no coração?"
-                value={texto}
-                onChange={(e) => setTexto(e.target.value)}
-              />
-              <button type="submit" className="botao-verificar" disabled={!texto.trim()}>
-                Verificar
+
+              <div className="wrapper-campo-texto">
+                <textarea
+                  id="campo-consulta"
+                  className="campo-texto"
+                  rows={4}
+                  placeholder="Exemplo: Falaram que a vacina da gripe causa complicações graves... é verdade?"
+                  value={texto}
+                  onChange={(e) => setTexto(e.target.value)}
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="botao-verificar"
+                disabled={
+                  !texto.trim() ||
+                  texto.trim().length < 5
+                }
+              >
+                <svg
+                  className="svg-icone"
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <line
+                    x1="21"
+                    y1="21"
+                    x2="16.65"
+                    y2="16.65"
+                  />
+                </svg>
+
+                <span>
+                  Verificar Informação
+                </span>
               </button>
             </form>
 
-            <section className="temas" aria-label="Temas mais consultados hoje">
-              <h2 className="titulo-secao">Perguntas mais frequentes hoje</h2>
+            {/* Temas frequentes */}
+            <section
+              className="temas"
+              aria-label="Perguntas mais consultadas hoje"
+            >
+              <h2 className="titulo-secao">
+                Dúvidas frequentes de hoje:
+              </h2>
+
               <div className="lista-temas">
                 {TEMAS.map((tema) => (
                   <button
                     key={tema.id}
                     className="card-tema"
-                    onClick={() => verificar(tema.pergunta)}
+                    onClick={() =>
+                      verificar(tema.pergunta)
+                    }
                   >
-                    <span className="rotulo-tema">{tema.titulo}</span>
-                    <span className="pergunta-tema">{tema.pergunta}</span>
+                    <div className="card-header-tema">
+                      <span className="rotulo-tema">
+                        {tema.titulo}
+                      </span>
+                    </div>
+
+                    <span className="pergunta-tema">
+                      "{tema.pergunta}"
+                    </span>
                   </button>
                 ))}
               </div>
             </section>
-          </>
-        )}
-
-        {carregando && (
-          <div className="estado-carregando" role="status">
-            <p>Verificando essa informação, um momento...</p>
           </div>
         )}
 
-        {resultado && !carregando && (
-          <section className="resultado" aria-live="polite">
-            
-            <p className="pergunta-verificada">
-              "{texto}"
-            </p>
+        {/* Carregando */}
+        {carregando && (
+          <div
+            className="estado-carregando"
+            role="status"
+            aria-live="assertive"
+          >
+            <div className="spinner-medico"></div>
 
-            {resultado.erro ? (
-              <p className="linha-erro">
-                {resultado.erro}
+            <p className="texto-carregando">
+              Verificando a informação nas bases oficiais
+              de saúde...
+            </p>
+          </div>
+        )}
+
+        {/* Resultado */}
+        {resultado && !carregando && (
+          <section
+            className="resultado"
+            aria-live="polite"
+          >
+            <div className="cabecalho-resultado">
+              <span className="subtitulo-resultado">
+                Informação consultada:
+              </span>
+
+              <p className="pergunta-verificada">
+                "{texto}"
               </p>
+            </div>
+
+            {/* Erro */}
+            {resultado.erro ? (
+              <div className="bloco-erro">
+                <p className="linha-erro">
+                  {resultado.erro}
+                </p>
+              </div>
             ) : (
               <>
-                {/* RESULTADO */}
+                {/* Selo de classificação */}
                 <div className="selo-container">
-                  <p
-                    className={`selo selo-${(resultado.classificacao || '')
+                  <div
+                    className={`selo selo-${(
+                      resultado.classificacao ||
+                      'indisponivel'
+                    )
+                      .toLowerCase()
                       .replace(/\s/g, '-')}`}
                   >
-                    {resultado.origem === 'camada_1'
-                      ? `Já verificado por ${resultado.agencia}`
-                      : (resultado.classificacao || 'Resultado indisponível')}
-                  </p>
+                    <span>
+                      {resultado.origem === 'camada_1'
+                        ? `Checado por ${
+                            resultado.evidencias?.[0]
+                              ?.fonte ||
+                            'uma fonte de checagem'
+                          }`
+                        : (
+                            resultado.classificacao ||
+                            'Resultado indisponível'
+                          )}
+                    </span>
+                  </div>
                 </div>
 
-                {/* NÍVEL DE RISCO */}
+                {/* Nível de risco */}
                 {resultado.nivel_risco && (
-                  <div className="bloco-explicacao">
+                  <div className="bloco-explicacao bloco-risco">
                     <h2 className="titulo-bloco">
-                      Nível de risco
+                      Nível de Risco
                     </h2>
 
                     <p className="linha-detalhe">
@@ -149,11 +318,11 @@ function App() {
                   </div>
                 )}
 
-                {/* EXPLICAÇÃO */}
+                {/* Explicação */}
                 {resultado.explicacao && (
                   <div className="bloco-explicacao">
                     <h2 className="titulo-bloco">
-                      O que encontramos
+                      O que dizem os órgãos de saúde e pesquisas:
                     </h2>
 
                     <p className="explicacao">
@@ -162,30 +331,8 @@ function App() {
                   </div>
                 )}
 
-                {/* FONTE */}
-                {resultado.origem === 'camada_1' && resultado.url && (
-                  <div className="bloco-fonte">
-                    <h2 className="titulo-bloco">
-                      Fonte da checagem
-                    </h2>
-
-                    <p className="revista-fonte">
-                      {resultado.agencia}
-                    </p>
-
-                    <a
-                      className="link-fonte"
-                      href={resultado.url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Ver checagem completa
-                    </a>
-                  </div>
-                )}
-
-                {resultado.origem === 'camada_2' &&
-                  resultado.evidencias &&
+                {/* Fontes */}
+                {resultado.evidencias &&
                   resultado.evidencias.length > 0 && (
                     <div className="bloco-fonte">
                       <h2 className="titulo-bloco">
@@ -193,42 +340,82 @@ function App() {
                       </h2>
 
                       <div className="lista-fontes">
-                        {resultado.evidencias.map((fonte, index) => (
-                          <div className="fonte" key={fonte.id || index}>
-                            <p className="titulo-fonte">
-                              {fonte.titulo}
-                            </p>
+                        {resultado.evidencias.map(
+                          (fonte, index) => (
+                            <div
+                              className="fonte"
+                              key={
+                                fonte.id || index
+                              }
+                            >
+                              <p className="titulo-fonte">
+                                {fonte.titulo ||
+                                  'Fonte sem título'}
+                              </p>
 
-                            <p className="revista-fonte">
-                              {fonte.revista}
-                              {fonte.data ? ` • ${fonte.data}` : ''}
-                            </p>
+                              <p className="revista-fonte">
+                                {fonte.fonte ||
+                                  fonte.revista ||
+                                  fonte.journal ||
+                                  'Fonte não informada'}
 
-                            {fonte.url && (
-                              <a
-                                className="link-fonte"
-                                href={fonte.url}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                Ver pesquisa no PubMed
-                              </a>
-                            )}
-                          </div>
-                        ))}
+                                {fonte.data
+                                  ? ` • ${fonte.data}`
+                                  : ''}
+                              </p>
+
+                              {fonte.classificacao && (
+                                <p className="classificacao-fonte">
+                                  Resultado da checagem:{' '}
+                                  <strong>
+                                    {
+                                      fonte.classificacao
+                                    }
+                                  </strong>
+                                </p>
+                              )}
+
+                              {fonte.url && (
+                                <a
+                                  className="link-fonte"
+                                  href={fonte.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  Ver fonte completa
+                                </a>
+                              )}
+                            </div>
+                          )
+                        )}
                       </div>
                     </div>
+                  )}
+
+                {/* Nenhuma fonte */}
+                {(!resultado.evidencias ||
+                  resultado.evidencias.length === 0) && (
+                  <div className="bloco-fonte">
+                    <h2 className="titulo-bloco">
+                      Fontes consultadas
+                    </h2>
+
+                    <p>
+                      Não foram encontradas fontes
+                      específicas para esta verificação.
+                    </p>
+                  </div>
                 )}
               </>
             )}
 
+            {/* Nova consulta */}
             <button
               className="botao-nova-consulta"
               onClick={novaConsulta}
             >
-              Verificar outra informação
+              Fazer Nova Consulta
             </button>
-
           </section>
         )}
       </main>

@@ -1,266 +1,342 @@
-# MedFact
-## Detector de desinformação em saúde para idosos — v3
+# MedFact — Escopo do Projeto
 
-A partir de uma mensagem de texto enviada ao chatbot, o sistema verifica se uma afirmação sobre **vacinação, COVID-19 ou doenças crônicas** é verdadeira, falsa ou enganosa — com foco no público idoso. O fluxo tem **duas camadas**: uma verificação rápida contra checagens já publicadas, e uma análise completa quando não há checagem pronta.
+## 1. Visão Geral
 
----
+O MedFact é um sistema inteligente de verificação de desinformação em saúde.
 
-## Escopo
+O sistema recebe uma afirmação fornecida pelo usuário e realiza uma análise em múltiplas camadas, buscando evidências em fontes externas antes de produzir uma classificação.
 
-Reduzimos o escopo original (multimodal, qualquer tema de saúde) para um recorte mais viável de MVP:
+O fluxo principal do sistema é:
 
-| Antes | Agora |
-|---|---|
-| Texto, link, imagem, vídeo, áudio | Somente **texto** |
-| Qualquer tema de saúde | **3 temas**: Vacinação · COVID-19 · Doenças crônicas |
-| Público geral | Foco em **idosos** |
-| Um único fluxo de análise para toda mensagem | Dois fluxos: **camada 1** (checagem já existente) e **camada 2** (análise completa) |
+Usuário
+→ Google Fact Check
+→ PubMed
+→ avaliação de relevância
+→ avaliação de evidência
+→ Groq
+→ classificação
+→ resposta ao usuário
 
-Por que esses 3 temas: são os que reúnem mais evidência de vulnerabilidade em idosos e mais dados prontos para treino/validação (ver seção de Datasets). Vacinação e COVID concentram a maior parte da desinformação de saúde já estudada no Brasil; doenças crônicas (câncer, diabetes, hipertensão) é onde o risco de dano direto é maior — abandono de tratamento por acreditar em "cura milagrosa".
+O projeto utiliza recuperação de informações externas para fornecer contexto ao modelo de linguagem. Essa abordagem é semelhante a um sistema RAG, porém a implementação atual não utiliza banco vetorial, embeddings ou busca semântica baseada em vetores.
 
----
-
-## Entrada, Análise e Saída
-
-**Entrada:** texto (mensagem enviada pelo usuário)
-
-**Análise:**
-1. **Camada 1 — verificação rápida:** consulta a Google Fact Check Tools API com a afirmação do usuário. Se já existir uma checagem publicada por uma agência (ex: Aos Fatos, Lupa) que corresponda à claim, o sistema responde direto citando essa checagem.
-2. **Camada 2 — análise completa** (só roda se a camada 1 não encontrar correspondência): NLP identifica o tema → busca de evidências (PubMed API + Saúde sem Fake News/PUBHEALTH) e classificador (veracidade/tipo/risco) rodam em paralelo → Groq gera a explicação final combinando os dois.
-
-**Saída:** em vez de simplesmente:
-
-> ❌ Fake News
-
-o sistema retorna:
-
-> **Probabilidade de desinformação: 87%**
->
-> **Classificação:** Enganosa
->
-> **Tema:** Vacinação
->
-> **Nível de risco:** Alto
->
-> **Origem da análise:** verificado por [agência] *(camada 1)* ou análise MedFact *(camada 2)*
->
-> **Evidências encontradas:**
-> - Estudo X contradiz a afirmação.
-> - Organização Y apresenta dados diferentes.
->
-> **Trechos suspeitos:**
->
-> "A vacina causa..." ← afirmação sem evidência científica.
+O sistema atual é, portanto, melhor caracterizado como um pipeline inteligente de recuperação e análise de evidências.
 
 ---
 
-## Tipo de desinformação
+## 2. Problema
 
-Não classificar simplesmente verdadeiro/falso, mas identificar o **mecanismo**:
+A circulação de informações falsas, enganosas ou fora de contexto relacionadas à saúde pode influenciar decisões individuais e coletivas.
 
-| Tipo | Exemplo |
-| --- | --- |
-| Informação falsa | "A vacina X contém vírus vivo." |
-| Informação verdadeira fora de contexto | Estudo antigo apresentado como atual |
-| Exagero | "Remédio X cura 100% dos casos" |
-| Informação parcialmente verdadeira | Mistura de fatos verdadeiros e falsos |
-| Fonte falsa | Site imitando um portal conhecido |
-| Estatística manipulada | Número ou dado distorcido |
-| Alegação sem evidência | Afirmação sem estudo confiável |
+Afirmações relacionadas a vacinação, doenças, tratamentos, medicamentos, alimentação e outros temas médicos podem apresentar diferentes níveis de veracidade e podem exigir fontes especializadas para serem avaliadas.
 
-*(Removemos "imagem fora de contexto" e "conteúdo manipulado por IA" da lista original — eram específicos de entrada visual, que saiu do escopo.)*
+O MedFact busca auxiliar o usuário nesse processo por meio da recuperação automática de verificações existentes e de literatura científica.
 
 ---
 
-## Datasets
+## 3. Objetivo Geral
 
-Como o escopo agora é texto + 3 temas, a base de treino/validação fica assim:
+Desenvolver um sistema capaz de analisar afirmações relacionadas à saúde, recuperar evidências relevantes e classificá-las como:
 
-| Fase | Tema | Dataset | Uso |
-|---|---|---|---|
-| 1 | COVID-19 | **COVID19.BR** | 11.382 mensagens de WhatsApp em PT-BR rotuladas (jan/2020–fev/2021) — treino/classificação |
-| 1 | Vacinação | **WhaVax** | Discurso sobre vacina em WhatsApp PT-BR, anotado por especialistas — desinformação sobre vacinas |
-| 1 | Vacinação | **ANTiVax** | 15k tweets sobre vacina COVID, ~5.7k rotulados como desinformação — aumenta volume de exemplos |
-| 1 | Geral (evidências) | **PUBHEALTH** | 11.8k claims de saúde com explicação padrão-ouro — fact-checking + evidências prontas |
-| 2 | Doenças crônicas | **Monant Medical Misinformation** / **HealthLies** | Câncer, diabetes, doenças crônicas em geral |
-| 2 | Geral (PT-BR) | **Central de Fatos** | 11.6k checagens de 6 agências brasileiras — complementa dados em português |
+- verdadeira;
+- falsa;
+- enganosa;
+- não verificável.
 
-**Ponto de atenção para a fase de dados:** os datasets têm esquemas de rótulo diferentes (COVID19.BR é binário; PUBHEALTH tem 4 classes: true/false/mixture/unproven; Central de Fatos varia por agência). Antes de unificar, é preciso um passo de **padronização de rótulos** — isso deve entrar como tarefa própria no cronograma, não como algo automático. Nenhum desses datasets rotula diretamente o "tipo" de desinformação (mecanismo) — isso provavelmente exige anotação própria, semi-automática (LLM pré-rotula, humano revisa uma amostra).
-
-**Abordagem de modelo:** não vale criar um LLM do zero — os dados disponíveis não sustentam isso. Caminho recomendado: RAG (PubMed + Saúde sem Fake News/PUBHEALTH) + LLM existente (Groq) para gerar a explicação, combinado com um classificador leve fine-tunado (ex: BERTimbau) para as três tarefas estruturadas (veracidade, tipo, risco), treinado nos datasets acima.
+A classificação deve ser acompanhada das evidências utilizadas quando existirem fontes adequadas.
 
 ---
 
-## Guiding Questions
-(Legenda: 🟩 Responda já · 🟦 Planejar · 🟪 Se sobrar tempo · 🟥 Cortar)
+## 4. Objetivos Específicos
 
-**Dados**
-- Quais os sites mais confiáveis sobre saúde que servem como base científica? 🟩
-- Existem informações sensíveis que o chatbot não pode acessar? 🟦
-- O chatbot precisa consultar dados em tempo real? 🟩
+O sistema deve:
 
-**Usuário**
-- Quais são os principais usuários do chatbot? 🟪
-- Como saber se o chatbot realmente resolveu o problema do usuário? 🟦
-- Como saber se o chatbot entendeu a pergunta do usuário? 🟩
-
-**Modelo**
-- Qual tipo de modelo de IA atende melhor a necessidade do chatbot? 🟦
-- O modelo precisa ser treinado ou acessa uma base de conhecimento? 🟩
-- Qual o equilíbrio entre qualidade da resposta, velocidade e custo? 🟪
-
-**Produção**
-- Quantos usuários podem ser acessados simultaneamente? 🟪
-- Como atualizar as informações que o chatbot utiliza? 🟦
-- Qual seria o MVP que já resolve o problema? 🟩
-
-**Ética**
-- Como evitar que o chatbot gere respostas preconceituosas ou discriminatórias? 🟥
-- Como garantir a privacidade do usuário? 🟦
-- Como evitar que o usuário apresente uma informação falsa com muita confiança? 🟦
+1. receber uma afirmação textual do usuário;
+2. consultar bases externas de informação;
+3. verificar se a afirmação já foi analisada por organizações de checagem;
+4. recuperar literatura científica relacionada à afirmação;
+5. avaliar a relevância dos artigos encontrados;
+6. avaliar se os artigos realmente constituem evidência para a afirmação;
+7. diferenciar evidência direta, evidência indireta e ausência de evidência;
+8. utilizar um modelo de linguagem para realizar a classificação;
+9. apresentar uma explicação simples ao usuário;
+10. apresentar as fontes utilizadas na análise;
+11. evitar apresentar resultados apenas por semelhança de palavras;
+12. manter mecanismos de cache e controle de requisições;
+13. permitir a avaliação do sistema utilizando um conjunto de dados de referência.
 
 ---
 
-## Objetivo de Negócio
+## 5. Escopo do MVP
 
-Reduzir o impacto da desinformação sobre saúde entre idosos, oferecendo uma ferramenta acessível que analisa uma mensagem de texto sobre vacinação, COVID-19 ou doenças crônicas e apresenta uma avaliação baseada em evidências científicas — indicando confiabilidade, tipo de desinformação e o motivo da classificação.
+A versão atual do MVP concentra-se na análise de afirmações textuais.
 
-**Antes:** Recebe uma informação → não sabe se é verdadeira → pesquisa em várias fontes → dificuldade para avaliar as evidências → pode compartilhar uma informação falsa.
+O fluxo principal recebe um texto e executa:
 
-**Depois:** Recebe uma informação → envia para o MedFact → sistema analisa o texto → apresenta classificação, nível de risco e evidências → usuário toma uma decisão mais informada.
+1. normalização da afirmação;
+2. consulta ao Google Fact Check;
+3. análise das checagens encontradas;
+4. caso não exista uma checagem adequada, consulta ao PubMed;
+5. recuperação de artigos científicos;
+6. ranking inicial por relevância;
+7. filtragem semântica;
+8. avaliação da relação entre os artigos e a afirmação;
+9. seleção somente de evidências diretas;
+10. classificação da afirmação pelo Groq;
+11. geração da resposta final.
 
-O sistema não só classifica — explica o motivo, para que o usuário desenvolva capacidade própria de avaliar informações de saúde.
-
-### Como medir o impacto
-
-1. **Taxa de identificação correta** — F1-score do classificador frente a conteúdos já classificados por especialistas. Meta de exemplo: F1 ≥ 80% no conjunto de validação do MVP.
-2. **Taxa de respostas fundamentadas** — % de análises com pelo menos uma evidência científica verificável.
-3. **Compreensão do usuário** — % de usuários que, após usar o MedFact, identificam corretamente se um conteúdo é confiável, enganoso ou falso (teste antes/depois).
-4. **Redução do tempo de verificação** — tempo médio para concluir sobre uma informação, manualmente vs. com o MedFact.
-5. **Utilidade percebida** — % de usuários que consideram a análise útil para decidir se confiam ou compartilham o conteúdo.
-
-*(A métrica de "cobertura multimodal" saiu — não se aplica mais, já que a entrada é só texto.)*
-
-**Indicador principal do MVP:** percentual de idosos que, após usar o MedFact, conseguem identificar corretamente desinformação em saúde e compreender os motivos apresentados pela ferramenta.
+A implementação futura poderá expandir o sistema para imagens, vídeos e áudios.
 
 ---
 
-## Objetivo de ML
+## 6. Camada de Fact Check
 
-| Objetivo de ML | O que o modelo prevê | Métrica principal |
-| --- | --- | --- |
-| Detectar desinformação | Verdadeiro, falso ou enganoso | F1-score (macro) |
-| Identificar o tipo de desinformação | Exagero, fora de contexto, fonte falsa, etc. | F1-score (macro) |
-| Classificar o risco | Baixo, médio ou alto | F1-score ponderado / Kappa quadrático |
+A primeira camada de análise utiliza a API do Google Fact Check Tools.
 
-**Notas sobre a métrica**, a partir da discussão sobre viabilidade do F1:
+Seu objetivo é verificar se a afirmação enviada pelo usuário já foi analisada por alguma organização de checagem de fatos.
 
-- Usar **F1 macro**, não micro — os tipos de desinformação não vão aparecer de forma balanceada nos dados.
-- **Risco é ordinal** (baixo/médio/alto): um erro que confunde baixo com alto é pior que confundir baixo com médio. F1 tradicional não captura essa distância — vale complementar com Kappa quadrático ponderado.
-- Reportar separadamente o **recall da classe "falso/enganoso"** como métrica de segurança: deixar passar uma desinformação perigosa como confiável (falso negativo) é mais grave que o oposto.
-- F1 mede o classificador, não o sistema inteiro. O componente de evidências (PubMed/RAG) precisa de métrica própria — precision@k ou recall@k da recuperação. E "compreensão do usuário" (métrica 3 acima) só se mede com teste de usuário, não com F1.
+Quando uma checagem adequada é encontrada, o sistema pode retornar as informações dessa checagem diretamente ao usuário.
 
-**Objetivo geral de ML:** identificar, classificar e avaliar o risco de desinformação sobre vacinação, COVID-19 e doenças crônicas em textos direcionados ao público idoso.
+As informações podem incluir:
 
----
+- afirmação analisada;
+- título da checagem;
+- organização responsável;
+- classificação textual utilizada pela organização;
+- data da revisão;
+- URL da checagem.
 
-## Requisitos Funcionais
+A classificação fornecida pela organização deve ser preservada como originalmente apresentada pela fonte.
 
-| ID | Requisito |
-|---|---|
-| RF1 | O sistema deve consultar a Google Fact Check Tools API (Claim Search) usando a afirmação do usuário como query, antes de qualquer outra análise. |
-| RF2 | Se a camada 1 retornar uma correspondência com confiança suficiente, o sistema deve responder diretamente citando a agência de checagem original, sem acionar o classificador. |
-| RF3 | Se a camada 1 não encontrar correspondência, o sistema deve seguir automaticamente para a camada 2, sem exigir nova ação do usuário. |
-| RF4 | A busca de evidências deve poder consultar a API do PubMed (E-utilities) para artigos científicos relacionados ao tema identificado, sem redirecionar o usuário para fora do chat. |
-| RF5 | A geração da explicação final deve usar a API da Groq como provedor de LLM. |
-| RF6 | Toda resposta final deve citar explicitamente a fonte da evidência usada (agência de fact-check, artigo do PubMed, ou base Saúde sem Fake News/PUBHEALTH). |
-| RF7 | Se nenhuma camada encontrar evidência suficiente, o sistema deve comunicar isso claramente ao usuário em vez de forçar uma classificação sem base. |
+O sistema não deve reinterpretar automaticamente uma classificação externa como sendo uma classificação própria do MedFact.
 
----
+Por exemplo, uma organização pode utilizar classificações como:
 
-## Requisitos Não-Funcionais
+- verdadeiro;
+- falso;
+- enganoso;
+- parcialmente verdadeiro;
+- fora de contexto.
 
-| ID | Requisito | Por quê |
-|---|---|---|
-| RNF1 | Definir timeout e feedback visual ("verificando...") diferente para cada camada | A camada 1 é uma consulta simples e deve ser rápida; a camada 2 tem mais estágios (NLP + RAG + classificador + LLM) e pode demorar mais — o usuário precisa saber em qual etapa está. |
-| RNF2 | Implementar fila e/ou cache para a chamada ao Groq | O plano gratuito da Groq tem limite de faixa de tokens por minuto — em picos de uso simultâneo, chamadas repetidas ou concorrentes podem estourar o limite. Cache de explicações para claims recorrentes reduz esse risco. |
-| RNF3 | Tratar a Google Fact Check API como atalho oportunista, não como camada garantida | Ela só retorna resultado se alguma agência já publicou uma checagem com marcação ClaimReview sobre aquela claim específica. A cobertura para desinformação em saúde em português depende de quanto Aos Fatos, Lupa e outras agências brasileiras publicam nesse formato — não é seguro assumir que toda claim relevante terá correspondência. |
-| RNF4 | Registrar uma API key própria para o PubMed E-utilities | Sem chave, a NCBI limita a poucas requisições por segundo; com chave registrada, o limite sobe. Isso afeta diretamente quantas buscas simultâneas a camada 2 aguenta. |
-| RNF5 | Cache de queries repetidas (claims comuns) nas três APIs | Reduz custo, latência e uso de limite de taxa — especialmente relevante para desinformações que circulam repetidamente entre vários usuários. |
-| RNF6 | Política clara sobre o que é enviado a terceiros (Google, Groq, PubMed) | O texto do usuário pode conter dado de saúde sensível. Antes de enviar a claim para APIs externas, deve estar claro para o usuário o que sai do sistema e para onde vai — isso conecta direto com a guiding question de privacidade já levantada acima. |
-| RNF7 | Fallback quando uma das três APIs estiver fora do ar | O sistema não deve travar se Google Fact Check, PubMed ou Groq falharem — precisa de um caminho degradado (ex: responder só com a evidência disponível, ou avisar que a análise está parcial). |
+Essas classificações pertencem à organização responsável pela checagem e devem ser apresentadas como resultado da fonte.
 
 ---
 
-## Arquitetura
+## 7. Camada de Evidências Científicas
 
-```
-Usuário envia texto
-        │
-        ▼
-Google Fact Check API  ──── encontrou ────▶  Resposta pronta (cita a agência)
-        │
-   não encontrou
-        │
-        ▼
-Pré-processamento NLP
-        │
-   ┌────┴────┐
-   ▼         ▼
-Busca de    Classificador
-evidências  (veracidade/
-(PubMed +    tipo/risco)
-Saúde sem
-Fake News)
-   │         │
-   └────┬────┘
-        ▼
-Groq: geração de explicação
-        │
-        ▼
-Resposta estruturada
-```
+Quando nenhuma checagem adequada é encontrada no Google Fact Check, o sistema consulta o PubMed.
 
-**Camada 1 — Google Fact Check Tools API**
-Consulta rápida usando a Claim Search API. Funciona bem como filtro de primeira passada porque muitas claims de saúde que circulam em massa (ex: sobre uma vacina específica) já foram checadas por alguma agência. Quando há correspondência, o custo de responder é baixíssimo — não precisa rodar classificador nem LLM.
+O PubMed é utilizado como fonte de literatura científica para auxiliar na análise da afirmação.
 
-**Camada 2 — Análise completa**
-Acionada só quando a camada 1 não resolve. NLP identifica o tema → busca de evidências (PubMed API + Saúde sem Fake News/PUBHEALTH) e classificador (BERTimbau fine-tunado) rodam em paralelo → Groq gera a explicação final combinando evidência e classificação → resposta estruturada.
+O processo atual envolve:
 
-**Por que separar em camadas:** evita gastar o orçamento de latência e de limite de taxa do Groq em claims que já têm resposta pronta em outro lugar. Também dá ao MedFact uma forma de citar uma fonte jornalística já estabelecida (a agência de checagem) quando ela existe, em vez de sempre depender da própria análise do sistema.
-
-### Pipeline de treino do classificador
-
-```
-Datasets brutos (6 fontes, esquemas diferentes)
-        │
-        ▼
-Padronização de rótulos (mapeia veracidade e tipo)
-        │
-        ▼
-Dataset unificado (veracidade + tipo + risco + tema)
-        │
-   ┌────┴────┐
-   ▼         ▼
-Treino    Validação/teste
-(80%)         (20%)
-   │         │
-   └────┬────┘
-        ▼
-Fine-tuning do classificador (BERTimbau, 3 tarefas)
-        │
-        ▼
-Avaliação (F1 macro por classe e por tarefa)
-        │
-        ▼
-Deploy em produção ┄┄┄▶ Revisão humana ┄┄▶ ↻ retrain periódico do dataset unificado
-```
+1. identificação de conceitos médicos;
+2. construção de consultas biomédicas;
+3. utilização de termos MeSH quando apropriado;
+4. realização de consultas no PubMed;
+5. recuperação de PMIDs;
+6. remoção de duplicatas;
+7. recuperação dos dados dos artigos;
+8. ranking inicial por relevância;
+9. seleção de candidatos;
+10. filtragem semântica;
+11. avaliação da evidência;
+12. retorno apenas das evidências consideradas diretas.
 
 ---
 
-## Pendências para a próxima iteração
+## 8. Relevância e Evidência
 
-- Definir o limiar de confiança da Google Fact Check API para considerar uma correspondência "boa o suficiente" para pular a camada 2 (claims parecidas mas não idênticas podem gerar falso positivo de correspondência).
-- Medir, na prática, que fração das claims dos 3 temas (vacinação, COVID, doenças crônicas) tem correspondência na Google Fact Check API — isso define o quanto a camada 1 realmente vai poupar da camada 2.
-- Detalhar o mecanismo de cache mencionado no RNF2/RNF5 (o que é armazenado, por quanto tempo, chave de cache por claim normalizada).
-- Escrever a tabela de mapeamento de rótulos entre os 6 datasets e definir o plano de anotação semi-automática para a coluna "tipo de desinformação".
+O sistema diferencia dois conceitos importantes.
+
+### 8.1 Relevância
+
+A avaliação de relevância responde à pergunta:
+
+"Este artigo possui relação suficiente com a afirmação para ser analisado?"
+
+Um artigo pode ser semanticamente relevante sem fornecer evidência direta para a afirmação.
+
+### 8.2 Evidência
+
+A avaliação de evidência responde à pergunta:
+
+"Este artigo realmente fornece evidência utilizável para avaliar a afirmação?"
+
+Essa segunda etapa é necessária porque a simples presença das mesmas palavras no artigo não significa que o artigo sustente a afirmação.
+
+---
+
+## 9. Tipos de Evidência
+
+Cada artigo analisado pode ser classificado internamente como:
+
+- direta;
+- indireta;
+- não evidência.
+
+### 9.1 Evidência direta
+
+Uma evidência é considerada direta quando o artigo apresenta uma relação suficientemente próxima entre a intervenção ou exposição da afirmação e o resultado analisado.
+
+Para ser considerada direta, a evidência deve, de forma geral:
+
+1. abordar a intervenção ou exposição apresentada na afirmação;
+2. abordar o resultado mencionado;
+3. permitir avaliar a relação entre os dois;
+4. possuir metodologia compatível com a conclusão que está sendo analisada.
+
+### 9.2 Evidência indireta
+
+Uma evidência é indireta quando existe alguma relação científica com a afirmação, mas o estudo não testa diretamente aquilo que foi afirmado.
+
+Exemplos:
+
+- estudo com extrato de uma substância quando a afirmação trata do alimento inteiro;
+- estudo com composto isolado quando a afirmação trata do consumo do alimento;
+- estudo em células quando a afirmação trata de tratamento em humanos;
+- estudo em animais quando a afirmação trata de eficácia clínica em humanos;
+- estudo sobre mecanismo biológico sem avaliar o resultado afirmado.
+
+Evidências indiretas não devem ser apresentadas como evidências diretas ao usuário.
+
+### 9.3 Não evidência
+
+Um artigo é considerado não evidência quando não fornece informações suficientes para avaliar a afirmação.
+
+Nesse caso, o artigo deve ser descartado da resposta final.
+
+---
+
+## 10. Critério de Correspondência
+
+A correspondência entre o artigo e a afirmação deve considerar o significado da afirmação e não somente palavras compartilhadas.
+
+A busca por palavras-chave é utilizada para encontrar candidatos.
+
+Ela não é suficiente para determinar que um artigo é evidência.
+
+Por exemplo, uma afirmação como:
+
+"Beber água morna com limão cura câncer."
+
+pode retornar artigos sobre:
+
+- câncer;
+- limão;
+- compostos cítricos;
+- extratos de limão;
+- nanovesículas derivadas de limão;
+- atividade anticâncer em células.
+
+Esses artigos possuem relação temática com a afirmação, mas isso não significa que demonstrem que beber água morna com limão cura câncer.
+
+Portanto, eles não devem ser apresentados como evidências diretas da afirmação.
+
+---
+
+## 11. Exemplo de Validação de Evidência
+
+Para a afirmação:
+
+"Beber água morna com limão cura câncer?"
+
+o PubMed pode retornar estudos relacionados a:
+
+- nanovesículas derivadas de limão;
+- extratos de cítricos;
+- compostos derivados de frutas cítricas;
+- modelos experimentais de câncer.
+
+Esses resultados podem ser relevantes para uma análise científica mais ampla, mas não correspondem diretamente à intervenção apresentada na afirmação.
+
+O sistema deve classificá-los como evidências indiretas ou não evidências e removê-los da lista final de evidências.
+
+Se nenhuma evidência direta for encontrada, o sistema deve retornar zero evidências científicas diretas.
+
+Isso evita que o usuário interprete uma relação temática como comprovação científica.
+
+---
+
+## 12. Classificação da Afirmação
+
+Após a recuperação e avaliação das evidências, o sistema utiliza o modelo de linguagem Groq para classificar a afirmação.
+
+As categorias utilizadas pelo MedFact são:
+
+- verdadeira;
+- falsa;
+- enganosa;
+- não verificável.
+
+### 12.1 Verdadeira
+
+A afirmação é considerada verdadeira quando as informações disponíveis sustentam seu conteúdo principal.
+
+### 12.2 Falsa
+
+A afirmação é considerada falsa quando as evidências ou o conhecimento científico disponível contradizem seu conteúdo.
+
+### 12.3 Enganosa
+
+A afirmação é considerada enganosa quando apresenta uma informação que possui algum elemento verdadeiro, mas utiliza generalizações, omissões, exageros ou contexto inadequado que podem levar a uma interpretação incorreta.
+
+### 12.4 Não verificável
+
+A classificação é utilizada quando não existem informações suficientes para confirmar ou refutar adequadamente a afirmação.
+
+A ausência de evidência direta não significa automaticamente que a afirmação seja falsa.
+
+---
+
+## 13. Uso do Groq
+
+O Groq é utilizado como camada de interpretação e classificação.
+
+O modelo recebe:
+
+- a afirmação original;
+- as evidências consideradas válidas;
+- informações necessárias para a análise.
+
+O modelo pode realizar:
+
+- filtragem semântica;
+- avaliação da evidência;
+- classificação;
+- geração de explicação.
+
+O modelo não deve considerar automaticamente qualquer artigo recuperado pelo PubMed como evidência.
+
+A arquitetura separa explicitamente:
+
+- recuperação;
+- relevância;
+- evidência;
+- classificação.
+
+---
+
+## 14. Conhecimento Geral
+
+Quando não existem evidências diretas suficientes, o modelo ainda pode utilizar conhecimento científico geral para realizar a classificação.
+
+Esse comportamento é necessário porque uma ausência de evidência recuperada não significa necessariamente ausência de conhecimento científico sobre determinado assunto.
+
+Entretanto, quando a resposta for baseada principalmente em conhecimento geral, o sistema deve evitar apresentar artigos não relacionados diretamente como se fossem comprovação da classificação.
+
+---
+
+## 15. Estrutura das Evidências
+
+As evidências retornadas pelo backend possuem estrutura semelhante a:
+
+```json
+{
+  "id": "pmid-123456",
+  "titulo": "Título do artigo",
+  "texto": "Resumo ou conteúdo utilizado na análise",
+  "fonte": "Nome da revista ou fonte",
+  "data": "2025",
+  "url": "https://...",
+  "tipo": "pubmed"
+}
