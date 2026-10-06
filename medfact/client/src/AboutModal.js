@@ -48,7 +48,7 @@ export function AboutModal({ aberto, aoFechar }) {
               Desenvolvido pela equipe <strong>Os Sem Classe</strong>
             </p>
             <p className="modal-disciplina">
-              Disciplina de Sistemas de Machine Learning &mdash; Universidade de Brasília (UnB)
+              Disciplina de Tópicos Especiais em Engenharia de Software &mdash; Universidade de Brasília (UnB)
             </p>
           </section>
         </div>
