@@ -1,0 +1,20 @@
+services:
+  mlflow:
+    build:
+      context: .
+      dockerfile: mlops/Dockerfile
+
+    container_name: medfact-mlflow
+
+    ports:
+      - "5001:5000"
+
+    volumes:
+      - medfact-mlflow-data:/app/data
+
+    restart: unless-stopped
+
+volumes:
+  medfact-mlflow-data:
+    external: true
+    name: medfact-mlflow-data
