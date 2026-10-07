@@ -11,12 +11,12 @@
     "resumo": {
         "total": 10,
         "validos": 10,
-        "corretos": 8,
-        "incorretos": 2,
+        "corretos": 9,
+        "incorretos": 1,
         "erros_api": 0,
-        "acuracia": 80,
+        "acuracia": 90,
         "taxa_erro_api": 0,
-        "tempo_segundos": 185.9
+        "tempo_segundos": 325.1
     },
     "resultados": [
         {
@@ -26,11 +26,19 @@
             "predicao": "falsa",
             "probabilidade_desinformacao": null,
             "tipo": "informação falsa",
-            "tema": "infertilidade feminina e vacina COVID-19",
+            "tema": "COVID-19",
             "nivel_risco": null,
-            "explicacao": "Não há evidência científica que relacione a vacinação contra COVID-19 com infertilidade em mulheres; estudos epidemiológicos e de segurança não encontraram aumento de problemas de fertilidade após a vacinação.",
+            "explicacao": "Os estudos mostram que as vacinas contra a COVID‑19 não causam infertilidade nas mulheres.",
             "trecho_suspeito": null,
-            "evidencias": [],
+            "evidencias": [
+                {
+                    "id": "36137903",
+                    "titulo": "The impact of COVID-19 vaccines on fertility-A systematic review and meta-analysis.",
+                    "revista": "Vaccine",
+                    "data": "2022 Oct 06",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/36137903/"
+                }
+            ],
             "status": "ok",
             "acertou": true
         },
@@ -38,12 +46,12 @@
             "indice": 2,
             "claim": "People vaccinated against the flu can still get the disease, but they generally have milder symptoms.",
             "esperado": "verdadeira",
-            "predicao": "não verificável",
+            "predicao": "verdadeira",
             "probabilidade_desinformacao": null,
-            "tipo": "informação parcialmente verdadeira",
-            "tema": "vacinação contra influenza",
+            "tipo": "informação médica",
+            "tema": "gripe",
             "nivel_risco": null,
-            "explicacao": "A revisão citada indica que o efeito da vacina contra influenza na redução da gravidade da doença ainda é incerto, sem evidência consistente suficiente para afirmar que os sintomas são geralmente mais leves. Portanto, a alegação não pode ser confirmada com os dados disponíveis.",
+            "explicacao": "As pesquisas indicam que, embora a vacina não impeça a gripe, quem a recebe costuma ter sintomas menos intensos.",
             "trecho_suspeito": null,
             "evidencias": [
                 {
@@ -52,10 +60,17 @@
                     "revista": "Vaccine",
                     "data": "2021 Jun 23",
                     "url": "https://pubmed.ncbi.nlm.nih.gov/34090700/"
+                },
+                {
+                    "id": "41150433",
+                    "titulo": "Effect of Influenza Vaccination on the Disease Severity and Viral Load Among Adult Outpatients and Inpatients.",
+                    "revista": "Vaccines",
+                    "data": "2025 Oct 10",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/41150433/"
                 }
             ],
             "status": "ok",
-            "acertou": false
+            "acertou": true
         },
         {
             "indice": 3,
@@ -64,17 +79,17 @@
             "predicao": "verdadeira",
             "probabilidade_desinformacao": null,
             "tipo": "informação verdadeira",
-            "tema": "máscaras e transmissão de COVID-19",
+            "tema": "COVID-19",
             "nivel_risco": null,
-            "explicacao": "Estudos, como o de 2020 que observou ausência de transmissão em voo onde foram usados máscaras, demonstram que o uso de máscaras diminui a transmissão do SARS‑CoV‑2 em ambientes fechados, apoiando a afirmação.",
+            "explicacao": "Estudos mostram que usar máscaras diminui a transmissão do vírus em ambientes fechados.",
             "trecho_suspeito": null,
             "evidencias": [
                 {
-                    "id": "32662832",
-                    "titulo": "Absence of in-flight transmission of SARS-CoV-2 likely due to use of face masks on board.",
-                    "revista": "Journal of travel medicine",
-                    "data": "2020 Dec 23",
-                    "url": "https://pubmed.ncbi.nlm.nih.gov/32662832/"
+                    "id": "32497510",
+                    "titulo": "Physical distancing, face masks, and eye protection to prevent person-to-person transmission of SARS-CoV-2 and COVID-19: a systematic review and meta-analysis.",
+                    "revista": "Lancet (London, England)",
+                    "data": "2020 Jun 27",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/32497510/"
                 }
             ],
             "status": "ok",
@@ -87,11 +102,26 @@
             "predicao": "falsa",
             "probabilidade_desinformacao": null,
             "tipo": "informação falsa",
-            "tema": "tratamento da COVID-19",
+            "tema": "COVID-19",
             "nivel_risco": null,
-            "explicacao": "Ensaios clínicos randomizados e revisões sistemáticas mostraram que a hidroxicloroquina não reduz a mortalidade, hospitalização ou carga viral em pacientes com COVID-19, e pode causar efeitos adversos. Portanto, a afirmação de que é um tratamento eficaz e comprovado carece de suporte científico.",
+            "explicacao": "Os estudos disponíveis mostram que a hidroxicloroquina não tem eficácia comprovada no tratamento da COVID‑19.",
             "trecho_suspeito": null,
-            "evidencias": [],
+            "evidencias": [
+                {
+                    "id": "33624299",
+                    "titulo": "Chloroquine or hydroxychloroquine for prevention and treatment of COVID-19.",
+                    "revista": "The Cochrane database of systematic reviews",
+                    "data": "2021 Feb 12",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/33624299/"
+                },
+                {
+                    "id": "32885373",
+                    "titulo": "Chloroquine and Hydroxychloroquine for the Treatment of COVID-19: a Systematic Review and Meta-analysis.",
+                    "revista": "Journal of general internal medicine",
+                    "data": "2020 Nov",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/32885373/"
+                }
+            ],
             "status": "ok",
             "acertou": true
         },
@@ -101,12 +131,27 @@
             "esperado": "enganosa",
             "predicao": "enganosa",
             "probabilidade_desinformacao": null,
-            "tipo": "exagero",
-            "tema": "diabetes tipo 2",
+            "tipo": "saúde",
+            "tema": "diabetes",
             "nivel_risco": null,
-            "explicacao": "Embora intervenções dietéticas intensas possam levar à remissão parcial ou temporária da diabetes tipo 2 em alguns pacientes, a afirmação de que a doença pode ser \"completamente revertida\" apenas com dieta e sem supervisão médica é exagerada e não suportada por evidência robusta. Estudos mostram remissão em condições controladas e com acompanhamento profissional; não há provas de cura universal ou garantida sem supervisão.",
+            "explicacao": "Dietas podem levar à remissão em alguns casos, mas não garantem cura completa para todos e geralmente requerem acompanhamento médico.",
             "trecho_suspeito": null,
-            "evidencias": [],
+            "evidencias": [
+                {
+                    "id": "34796367",
+                    "titulo": "Diets for weight management in adults with type 2 diabetes: an umbrella review of published meta-analyses and systematic review of trials of diets for diabetes remission.",
+                    "revista": "Diabetologia",
+                    "data": "2022 Jan",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/34796367/"
+                },
+                {
+                    "id": "33441384",
+                    "titulo": "Efficacy and safety of low and very low carbohydrate diets for type 2 diabetes remission: systematic review and meta-analysis of published and unpublished randomized trial data.",
+                    "revista": "BMJ (Clinical research ed.)",
+                    "data": "2021 Jan 13",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/33441384/"
+                }
+            ],
             "status": "ok",
             "acertou": true
         },
@@ -114,24 +159,24 @@
             "indice": 6,
             "claim": "Regular consumption of green tea reduces the risk of developing certain types of cancer.",
             "esperado": "não verificável",
-            "predicao": "enganosa",
+            "predicao": "não verificável",
             "probabilidade_desinformacao": null,
-            "tipo": "exagero",
-            "tema": "câncer",
+            "tipo": "informação de saúde",
+            "tema": "alimentação",
             "nivel_risco": null,
-            "explicacao": "Meta-análises sugerem associação entre consumo de chá verde e risco reduzido de câncer de mama, mas a evidência é limitada a esse tipo e não demonstra efeito consistente para \"certos tipos de câncer\" em geral. A alegação generaliza resultados específicos, extrapolando-os sem suporte suficiente.",
+            "explicacao": "Não há informações suficientes para confirmar que o consumo regular de chá verde reduz o risco de todos os tipos de câncer mencionados.",
             "trecho_suspeito": null,
             "evidencias": [
                 {
-                    "id": "21279436",
-                    "titulo": "Green tea consumption and breast cancer risk: three recent meta-analyses.",
-                    "revista": "Breast cancer research and treatment",
-                    "data": "2011 Jun",
-                    "url": "https://pubmed.ncbi.nlm.nih.gov/21279436/"
+                    "id": "31274008",
+                    "titulo": "Green Tea Consumption and Esophageal Cancer Risk: A Meta-analysis.",
+                    "revista": "Nutrition and cancer",
+                    "data": "2020",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/31274008/"
                 }
             ],
             "status": "ok",
-            "acertou": false
+            "acertou": true
         },
         {
             "indice": 7,
@@ -142,7 +187,7 @@
             "tipo": "informação falsa",
             "tema": "câncer",
             "nivel_risco": null,
-            "explicacao": "Não há evidência científica ou estudos clínicos que demonstrem que água morna com limão, consumida em jejum, cure o câncer. A afirmação contradiz o consenso médico de que o tratamento do câncer requer intervenções comprovadas (cirurgia, quimioterapia, radioterapia, imunoterapia, etc.) e não pode ser eliminado por um simples remédio caseiro.",
+            "explicacao": "Não há evidência científica de que água morna com limão cure o câncer; a afirmação contradiz o conhecimento médico estabelecido.",
             "trecho_suspeito": null,
             "evidencias": [],
             "status": "ok",
@@ -155,9 +200,9 @@
             "predicao": "verdadeira",
             "probabilidade_desinformacao": null,
             "tipo": "informação verdadeira",
-            "tema": "COVID-19 e hipertensão em idosos",
+            "tema": "COVID-19",
             "nivel_risco": null,
-            "explicacao": "Estudos epidemiológicos amplamente publicados mostram que hipertensão, especialmente em adultos mais velhos, está associada a maior risco de hospitalização, necessidade de ventilação mecânica e mortalidade por COVID-19, confirmando a afirmação.",
+            "explicacao": "Estudos mostram que idosos com hipertensão têm maior chance de complicações graves se pegarem COVID-19.",
             "trecho_suspeito": null,
             "evidencias": [],
             "status": "ok",
@@ -167,24 +212,31 @@
             "indice": 9,
             "claim": "High doses of vitamin C cure the common cold and are also effective against COVID-19.",
             "esperado": "enganosa",
-            "predicao": "enganosa",
+            "predicao": "falsa",
             "probabilidade_desinformacao": null,
-            "tipo": "exagero",
-            "tema": "vitamina C e infecções respiratórias",
+            "tipo": "informação falsa",
+            "tema": "saúde",
             "nivel_risco": null,
-            "explicacao": "A afirmação de que altas doses de vitamina C curam o resfriado comum e são eficazes contra a COVID-19 extrapola a evidência disponível. Estudos mostram que a suplementação oral de vitamina C não reduz significativamente o risco de infecções respiratórias em pessoas bem nutridas e não há comprovação clínica de eficácia contra a COVID-19. Portanto, a alegação exagera resultados limitados e não suportados.",
+            "explicacao": "Não há evidência de que doses altas de vitamina C curem o resfriado nem que sejam eficazes contra a COVID‑19.",
             "trecho_suspeito": null,
             "evidencias": [
                 {
-                    "id": "33193359",
-                    "titulo": "The Long History of Vitamin C: From Prevention of the Common Cold to Potential Aid in the Treatment of COVID-19.",
-                    "revista": "Frontiers in immunology",
-                    "data": "2020",
-                    "url": "https://pubmed.ncbi.nlm.nih.gov/33193359/"
+                    "id": "23440782",
+                    "titulo": "Vitamin C for preventing and treating the common cold.",
+                    "revista": "The Cochrane database of systematic reviews",
+                    "data": "2013 Jan 31",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/23440782/"
+                },
+                {
+                    "id": "39803741",
+                    "titulo": "Vitamin C for the common cold and pneumonia.",
+                    "revista": "Polish archives of internal medicine",
+                    "data": "2025 Jan 30",
+                    "url": "https://pubmed.ncbi.nlm.nih.gov/39803741/"
                 }
             ],
             "status": "ok",
-            "acertou": true
+            "acertou": false
         },
         {
             "indice": 10,
@@ -193,19 +245,11 @@
             "predicao": "não verificável",
             "probabilidade_desinformacao": null,
             "tipo": "informação sem evidência",
-            "tema": "Alzheimer e perda de memória",
+            "tema": "Alzheimer",
             "nivel_risco": null,
-            "explicacao": "Nenhum dos artigos fornecidos apresenta dados sobre um fármaco experimental que reverta completamente a perda de memória em Alzheimer; o único estudo citado trata de plasticidade sináptica e não avalia tratamentos. Sem evidência direta, a afirmação não pode ser confirmada nem refutada.",
+            "explicacao": "Não há informações suficientes para confirmar que esse medicamento experimental realmente reverte totalmente a perda de memória em pacientes com Alzheimer.",
             "trecho_suspeito": null,
-            "evidencias": [
-                {
-                    "id": "28088900",
-                    "titulo": "Synaptic Plasticity, Dementia and Alzheimer Disease.",
-                    "revista": "CNS & neurological disorders drug targets",
-                    "data": "2017",
-                    "url": "https://pubmed.ncbi.nlm.nih.gov/28088900/"
-                }
-            ],
+            "evidencias": [],
             "status": "ok",
             "acertou": true
         }

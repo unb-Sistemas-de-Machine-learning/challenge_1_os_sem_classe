@@ -1,5 +1,5 @@
 const express = require('express');
-const { searchFactCheck } = require('../services/googleFactCheck');
+const { searchFactCheck, mapearClassificacaoAgencia } = require('../services/googleFactCheck');
 const { searchPubMed } = require('../services/pubmed');
 const { classificarComGroq } = require('../services/groq');
 
@@ -21,20 +21,24 @@ router.post('/verify', async (req, res) => {
         checagemExistente.encontrado &&
         checagemExistente.evidencias.length > 0
     ) {
+        const principal = checagemExistente.evidencias[0];
+        const classificacao = mapearClassificacaoAgencia(principal.classificacao);
+
         return res.json({
             origem: 'camada_1',
+            classificacao,
+            explicacao: `Segundo ${principal.fonte}, essa informação foi classificada como "${principal.classificacao}".`,
             fonteEvidencia: 'Google Fact Check',
-            evidencias: checagemExistente.evidencias
+            evidencias: checagemExistente.evidencias,
         });
     }
 
-    // Se a camada 1 não encontrou nada (ou estava indisponível por limite de taxa),
-    // segue pra camada 2 do mesmo jeito.
     const evidencias = await searchPubMed(texto);
     const resultado = await classificarComGroq(texto, evidencias);
 
     return res.json({
       origem: 'camada_2',
+      fonteEvidencia: 'PubMed',
       ...resultado,
       evidencias,
     });
