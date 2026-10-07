@@ -382,18 +382,20 @@ function App() {
                       .replace(/\s/g, '-')}`}
                   >
                     <span>
-                      {resultado.origem === 'camada_1'
-                        ? `CHECADO POR ${
-                            resultado.evidencias?.[0]
-                              ?.fonte ||
-                            'UMA FONTE DE CHECAGEM'
-                          }`
-                        : (
-                            resultado.classificacao ||
-                            'RESULTADO INDISPONÍVEL'
-                          ).toUpperCase()}
+                      {(
+                        resultado.classificacao ||
+                        'RESULTADO INDISPONÍVEL'
+                      ).toUpperCase()}
                     </span>
                   </div>
+
+                  {resultado.origem === 'camada_1' && (
+                    <p className="checado-por">
+                      Checado por{' '}
+                      {resultado.evidencias?.[0]?.fonte ||
+                        'uma agência de checagem'}
+                    </p>
+                  )}
                 </div>
 
                 {/* Nível de risco */}

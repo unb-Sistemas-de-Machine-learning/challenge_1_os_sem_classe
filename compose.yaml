@@ -16,5 +16,4 @@ services:
 
 volumes:
   medfact-mlflow-data:
-    external: true
     name: medfact-mlflow-data
