@@ -1,13 +1,19 @@
 from sklearn.metrics import f1_score, precision_score, recall_score
 
 import json
+import os
 import mlflow
 
 CAMINHO_RESULTADO = "medfact/server/scripts/resultados_validacao.json"
 
 CAMINHO_MATRIZ = "mlops/matriz_confusao.png"
 
-mlflow.set_tracking_uri("http://127.0.0.1:5000")
+MLFLOW_TRACKING_URI = os.getenv(
+    "MLFLOW_TRACKING_URI",
+    "http://127.0.0.1:5001"
+)
+
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 mlflow.set_experiment("medfact-validacao")
 
 with open(CAMINHO_RESULTADO, "r", encoding="utf-8") as arquivo:
