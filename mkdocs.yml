@@ -1,0 +1,59 @@
+site_name: MedFact — Detector de Desinformação em Saúde para Idosos
+site_description: Plataforma de Machine Learning e Fact-Checking Biomédico com Base PubMed e Acessibilidade para a Terceira Idade
+site_author: Equipe Os Sem Classe - Sistemas de Machine Learning - UnB
+repo_url: https://github.com/unb-Sistemas-de-Machine-learning/challenge_1_os_sem_classe
+repo_name: unb-Sistemas-de-Machine-learning/challenge_1_os_sem_classe
+
+theme:
+  name: material
+  language: pt-BR
+  palette:
+    - scheme: default
+      primary: teal
+      accent: emerald
+      toggle:
+        icon: material/weather-night
+        name: Mudar para modo escuro
+    - scheme: slate
+      primary: teal
+      accent: emerald
+      toggle:
+        icon: material/weather-sunny
+        name: Mudar para modo claro
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - tables
+  - attr_list
+  - def_list
+
+nav:
+  - Visão Geral: index.md
+  - Escopo e Requisitos: escopo.md
+  - Arquitetura: arquitetura.md
+  - Tecnologias: tecnologias.md
+  - Banco de Dados & PubMed: banco-de-dados.md
+  - Machine Learning & RAG: machine-learning.md
+  - Testes e Cobertura: testes.md
+  - MLOps: mlops.md
+  - DevOps & CI/CD: devops.md
+  - Foco em Idosos & UX: acessibilidade.md
+  - Processos do Software: processos-software.md
+  - Guia de Instalação: instalacao.md

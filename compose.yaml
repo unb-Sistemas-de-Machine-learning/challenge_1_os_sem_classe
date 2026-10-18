@@ -1,17 +1,46 @@
 services:
+  backend:
+    build:
+      context: ./medfact/server_ml
+      dockerfile: Dockerfile
+    container_name: medfact-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - HOST=0.0.0.0
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - GOOGLE_FACTCHECK_KEY=${GOOGLE_FACTCHECK_KEY:-}
+      - PUBMED_API_KEY=${PUBMED_API_KEY:-}
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    volumes:
+      - ./medfact/server_ml/data:/app/data
+    depends_on:
+      - mlflow
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./medfact/client
+      dockerfile: Dockerfile
+    container_name: medfact-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3001
+    depends_on:
+      - backend
+    restart: unless-stopped
+
   mlflow:
     build:
       context: .
       dockerfile: mlops/Dockerfile
-
     container_name: medfact-mlflow
-
     ports:
       - "5001:5000"
-
     volumes:
       - medfact-mlflow-data:/app/data
-
     restart: unless-stopped
 
 volumes:

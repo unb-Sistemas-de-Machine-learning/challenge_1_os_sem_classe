@@ -1,0 +1,61 @@
+{
+  "model_version": "medfact-ml-v2.0",
+  "dataset_size": 31,
+  "f1_macro_topic": 1.0,
+  "f1_macro_veracity": 1.0,
+  "confusion_matrix": [
+    [
+      15,
+      0,
+      0
+    ],
+    [
+      0,
+      6,
+      0
+    ],
+    [
+      0,
+      0,
+      10
+    ]
+  ],
+  "classes": [
+    "falsa",
+    "enganosa",
+    "verdadeira"
+  ],
+  "detailed_report": {
+    "enganosa": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 6.0
+    },
+    "falsa": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 15.0
+    },
+    "verdadeira": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 10.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 31.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 31.0
+    }
+  }
+}
