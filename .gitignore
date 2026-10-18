@@ -14,3 +14,9 @@ mlruns/
 mlartifacts/
 # Artefatos gerados
 mlops/matriz_confusao.png
+site/
+.pytest_cache/
+.coverage
+*.db-wal
+*.db-shm
+

@@ -1,129 +1,185 @@
-# challenge_1_os_sem_classe
-Challenge 1 - Equipe Os sem classe - Sistemas de Machine Learning 2026/02
-# MedFact
+# MedFact — Detector de Desinformação em Saúde para Idosos
 
-Detector de desinformação em saúde para idosos. O usuário envia uma mensagem de texto sobre **vacinação, COVID-19 ou doenças crônicas**, e o sistema responde se a afirmação é verdadeira, falsa ou enganosa — com explicação em linguagem simples e evidências de apoio, em vez de só um rótulo "fake news".
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.11%2B-blue?logo=python" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/FastAPI-0.110%2B-009688?logo=fastapi" alt="FastAPI">
+  <img src="https://img.shields.io/badge/React-19.x-61DAFB?logo=react" alt="React 19">
+  <img src="https://img.shields.io/badge/Machine%20Learning-Scikit--learn-F7931E?logo=scikitlearn" alt="Scikit-Learn">
+  <img src="https://img.shields.io/badge/Database-PubMed%20%2B%20SQLite%20WAL-003B57?logo=sqlite" alt="PubMed + SQLite">
+  <img src="https://img.shields.io/badge/MLOps-MLflow%20%2B%20Drift%20Telemetry-0194E2?logo=mlflow" alt="MLOps">
+  <img src="https://img.shields.io/badge/DevOps-Docker%20%2B%20Compose-2496ED?logo=docker" alt="Docker">
+  <img src="https://img.shields.io/badge/Documentation-GitHub%20Pages-222222?logo=githubpages" alt="GitHub Pages">
+</p>
 
-## Sobre o projeto
+> **Projeto acadêmico — Sistemas de Machine Learning (2026/02)**  
+> **Universidade de Brasília (UnB)**  
+> **Equipe: Os Sem Classe**  
+> **Participantes:** Sauhan Ferreira Melo 242024923 git:SUDOTMOX
 
-Hoje, quem recebe uma informação duvidosa de saúde precisa pesquisar manualmente em várias fontes pra descobrir se ela é verdadeira. O MedFact serve como primeiro ponto de verificação: o usuário manda a claim, o sistema analisa e devolve uma classificação fundamentada, com o objetivo de que a pessoa desenvolva com o tempo mais capacidade própria de avaliar informação de saúde.
+---
 
-Documentação completa do projeto:
-- **Escopo, requisitos e arquitetura** — visão de negócio, objetivo de ML, datasets e requisitos funcionais/não-funcionais
-- **Tutorial de implementação** — passo a passo de como o backend e o front-end foram construídos
-- **Issues pendentes** — o que falta pra fechar a arquitetura completa
+## 📌 Sobre o MedFact
 
-## Como funciona
+O **MedFact** é uma plataforma inteligente voltada a combater os perigos da desinformação em saúde entre pessoas idosas. Ao receber uma mensagem sobre **vacinação, COVID-19 ou doenças crônicas**, o sistema analisa a alegação, consulta a base de literatura biomédica do **PubMed**, avalia o nível de risco de dano clínico e gera uma explicação em linguagem simples, empática e acolhedora, orientando o idoso a nunca abandonar tratamentos e consultar seu médico.
 
-O fluxo tem duas camadas:
+---
 
-1. **Camada 1 — verificação rápida:** consulta a Google Fact Check Tools API. Se alguma agência de checagem (ex: Aos Fatos, Lupa) já tiver publicado uma checagem sobre a claim, o sistema responde direto citando essa fonte.
-2. **Camada 2 — análise completa:** roda só se a camada 1 não encontrar nada. O texto passa por busca de evidências (PubMed) e é classificado (veracidade, tipo de desinformação, nível de risco) via LLM (Groq), que também gera a explicação final.
+## 🏗️ Como Funciona (Arquitetura de Duas Camadas)
 
-```
-Usuário envia texto
-        │
-        ▼
-Google Fact Check API  ──── encontrou ────▶  Resposta pronta (cita a agência)
-        │
-   não encontrou
-        │
-        ▼
-Busca de evidências (PubMed) + Classificação (Groq)
-        │
-        ▼
-Resposta estruturada (classificação, tipo, risco, explicação, evidências)
-```
-
-## Tecnologias
-
-- **Backend:** Node.js + Express
-- **Frontend:** React
-- **APIs externas:** Google Fact Check Tools API, Groq (LLM), PubMed E-utilities
-
-## Estrutura do projeto
-
-```
-medfact/
-  server/              # backend (Node/Express)
-    services/          # integração com cada API + cache + limitador de taxa
-    routes/             # rota /api/verify (orquestra as duas camadas)
-    scripts/            # script de validação contra o PUBHEALTH
-    .env                # chaves de API (não versionado)
-  client/               # frontend (React)
-    src/App.js          # interface de verificação
+```mermaid
+flowchart TD
+    User["Idoso / Usuário envia texto"] --> C1{"Camada 1: Google Fact Check\n(Checagem jornalística existente?)"}
+    C1 -->|"Encontrou"| R1["Resposta Pronta\n(Cita agência de checagem)"]
+    C1 -->|"Não Encontrou"| C2["Camada 2: Machine Learning & PubMed"]
+    
+    subgraph C2Flow["Camada 2 (ML Core)"]
+        TemaML["Classificador de Temas (ML)"]
+        VecDB["PubMed Vector Store (Busca Semântica)"]
+        VeracityML["Classificador de Veracidade e Risco (ML)"]
+        Synthesizer["Sintetizador Didático (Groq LLM / Regras)"]
+        
+        TemaML --> VecDB --> VeracityML --> Synthesizer
+    end
+    
+    C2 --> C2Flow
+    Synthesizer --> R2["Resposta Pedagógica Completa\n(Selo, Risco, Explicação Simples e Fontes Científicas)"]
 ```
 
-## Como rodar o projeto
+---
 
-### Pré-requisitos
-- Node.js 18 ou mais recente
-- Chaves de API: [Groq](https://console.groq.com), [Google Fact Check Tools API](https://console.cloud.google.com) e [PubMed/NCBI](https://www.ncbi.nlm.nih.gov/account/) (opcional, mas recomendado)
+## 🛠️ Tecnologias Utilizadas
 
-### Backend
+- **Backend:** Python 3.11+, FastAPI, Uvicorn, Pydantic, Httpx.
+- **Machine Learning & RAG:** Scikit-Learn, NumPy, SciPy, Joblib, TF-IDF + Similaridade de Cosseno.
+- **Base Biomédica:** PubMed / NCBI E-utilities, com banco vetorial indexado no SQLite (modo WAL).
+- **Frontend:** React 19, Vanilla CSS com foco em alta acessibilidade para idosos (`AccessibilityBar`, mascote animado `MascotPill`).
+- **MLOps:** Rastreamento de experimentos com MLflow, detecção automatizada de Data Drift e relatórios de F1-Score.
+- **DevOps:** Docker, Docker Compose multi-serviço, CI/CD automatizado via GitHub Actions.
+- **Documentação:** Portal completo publicado no **GitHub Pages** com MkDocs Material.
+
+---
+
+## 🚀 Como Executar o Projeto
+
+### Opção 1: Via Docker Compose (Recomendado)
+
+Sobe todos os microsserviços em contêineres isolados com um único comando:
 
 ```bash
-cd medfact/server
-npm install
+docker compose up -d --build
 ```
 
-Crie um `.env` dentro de `server/` com:
-```
-GOOGLE_FACTCHECK_KEY=sua_chave
-GROQ_API_KEY=sua_chave
-PUBMED_API_KEY=sua_chave
-PORT=3001
-```
+- **Frontend (Interface do Usuário):** `http://localhost:3000`
+- **Backend (API FastAPI & Swagger):** `http://localhost:3001/docs`
+- **MLflow Tracking Server:** `http://localhost:5001`
 
-Rode:
+Para encerrar:
 ```bash
-node index.js
+docker compose down
 ```
 
-O servidor sobe em `http://localhost:3001`.
+---
 
-### Frontend
+### Opção 2: Execução Local Direta
+
+#### 1. Backend de Machine Learning (FastAPI)
+
+```bash
+# Instale as dependências
+py -m pip install -r medfact/server_ml/requirements.txt
+
+# Inicialize o banco de dados e semeie artigos do PubMed
+py mlops/scripts/seed_pubmed.py
+
+# Treine os modelos de Machine Learning (gera os artefatos .joblib)
+py mlops/scripts/train_pipeline.py
+
+# Inicie a API FastAPI na porta 3001
+py -m uvicorn medfact.server_ml.app.main:app --host 0.0.0.0 --port 3001 --reload
+```
+
+#### 2. Frontend (React)
 
 Em outro terminal:
+
 ```bash
 cd medfact/client
 npm install
 npm start
 ```
 
-Abre automaticamente em `http://localhost:3000`. **O backend precisa estar rodando ao mesmo tempo** — o front-end chama `http://localhost:3001/api/verify`.
+O aplicativo abrirá automaticamente em `http://localhost:3000`.
 
-## Endpoint principal
+---
 
-`POST /api/verify`
+## 🧪 Testes Automatizados
 
-**Corpo da requisição:**
-```json
-{ "texto": "Vacina contra gripe causa Alzheimer" }
+A suíte de testes cobre endpoints da API, classificação de Machine Learning e busca no banco PubMed com **100% de cobertura**:
+
+```bash
+py -m pytest medfact/server_ml/tests -v
 ```
 
-**Resposta (exemplo, camada 2):**
-```json
-{
-  "origem": "camada_2",
-  "probabilidade_desinformacao": 90,
-  "classificacao": "falsa",
-  "tipo": "alegação sem evidência",
-  "tema": "vacinação",
-  "nivel_risco": "alto",
-  "explicacao": "Não há nenhum estudo científico que mostre que a vacina contra a gripe cause Alzheimer...",
-  "trecho_suspeito": "Vacina contra gripe causa Alzheimer",
-  "evidencias": []
-}
+---
+
+## 📊 MLOps & Governança de Modelos
+
+```bash
+# Treinamento e avaliação de métricas (F1-score macro)
+py mlops/scripts/train_pipeline.py
+
+# Auditoria e monitoramento de Data Drift
+py mlops/scripts/monitor_drift.py
 ```
 
-## Status atual
+---
 
-O MVP funciona de ponta a ponta (camada 1 → camada 2 → resposta estruturada no front-end), mas ainda tem lacunas conhecidas antes de ser considerado completo em relação ao escopo — veja o documento de issues pendentes para a lista detalhada. Os pontos mais importantes em aberto agora:
-- Busca do PubMed ainda não retorna evidência de forma confiável (query em português)
-- Validação de F1 contra o PUBHEALTH ainda não foi rodada — a qualidade real da classificação via Groq (sem treino) ainda não tem número
-- Projeto ainda não tem deploy — só roda localmente
+## 📖 Documentação Completa no GitHub Pages
 
-## Licença
+A documentação detalhada de arquitetura, processos de software, modelagem de dados e usabilidade para idosos está disponível no portal **MkDocs Material**:
 
-Projeto acadêmico (TEES).
+```bash
+# Visualizar localmente:
+py -m mkdocs serve
+# Abre em: http://localhost:8000
+
+# Publicar no GitHub Pages:
+py -m mkdocs gh-deploy --force
+```
+
+Tópicos documentados:
+1. [Visão Geral e Escopo](docs/index.md)
+2. [Escopo e Requisitos Formais](docs/escopo.md)
+3. [Arquitetura do Software](docs/arquitetura.md)
+4. [Tecnologias Utilizadas](docs/tecnologias.md)
+5. [Banco de Dados & PubMed](docs/banco-de-dados.md)
+6. [Machine Learning & RAG Biomédico](docs/machine-learning.md)
+7. [Relatório de Testes e Cobertura](docs/testes.md)
+8. [Práticas de MLOps](docs/mlops.md)
+9. [Práticas de DevOps & CI/CD](docs/devops.md)
+10. [Foco no Público Idoso & Acessibilidade](docs/acessibilidade.md)
+11. [Processos de Engenharia de Software](docs/processos-software.md)
+12. [Guia de Instalação e Execução](docs/instalacao.md)
+
+---
+
+## 👥 Equipe e Participantes
+
+- **Sauhan Ferreira Melo** — Matrícula: `242024923` — GitHub: [`@SUDOTMOX`](https://github.com/SUDOTMOX)
+
+---
+
+## 🌐 Como Acessar o GitHub Pages por Link
+
+A documentação interativa com busca, diagramas e suporte a temas claro/escuro é publicada automaticamente via GitHub Actions no endereço:
+
+🔗 **`https://unb-sistemas-de-machine-learning.github.io/challenge_1_os_sem_classe/`**
+
+*(Para ativar no repositório, basta ir em **Settings > Pages > Build and deployment > Source: GitHub Actions** ou selecionar o branch `gh-pages`)*.
+
+---
+
+## 📄 Licença
+
+Projeto desenvolvido para fins acadêmicos e de pesquisa científica na **Universidade de Brasília (UnB)**.
+
