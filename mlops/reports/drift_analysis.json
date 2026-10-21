@@ -1,0 +1,20 @@
+{
+  "timestamp_analise": "2026-10-21T09:09:16.350730",
+  "total_amostras_analisadas": 6,
+  "tamanho_medio_entrada_chars": 32.8,
+  "latencia_media_ms": 421.68,
+  "distribuicao_temas_pct": {
+    "vacinação": 66.7,
+    "doenças crônicas": 33.3
+  },
+  "distribuicao_veracidade_pct": {
+    "falsa": 100.0
+  },
+  "distribuicao_risco_pct": {
+    "alto": 83.3,
+    "médio": 16.7
+  },
+  "alertas_drift": [
+    "Alerta: Concentração atípica de alegações 'falsas' (>85%). Possível surto de desinformação viral."
+  ]
+}

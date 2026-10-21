@@ -6,7 +6,7 @@
 
 ---
 
-## 📌 Visão Geral do Projeto
+## Visão Geral do Projeto
 
 O **MedFact** é uma plataforma inteligente concebida no contexto da disciplina de **Sistemas de Machine Learning** da Universidade de Brasília (UnB), desenvolvida pela equipe **Os Sem Classe**. 
 
@@ -21,7 +21,7 @@ Ao invés de emitir apenas um selo binário e frio de "Fake News" (o que pouco e
 
 ---
 
-## 🎯 Pilares Estratégicos
+## Pilares Estratégicos
 
 ```mermaid
 mindmap
@@ -50,7 +50,7 @@ mindmap
 
 ---
 
-## 🔍 Temas Centrais de Atuação
+## Temas Centrais de Atuação
 
 Devido à alta vulnerabilidade clínica e volume de desinformação direcionada à terceira idade, o MedFact foca em **três eixos prioritários**:
 
@@ -62,7 +62,7 @@ Devido à alta vulnerabilidade clínica e volume de desinformação direcionada 
 
 ---
 
-## 🚀 Navegação Rápida pela Documentação
+## Navegação Rápida pela Documentação
 
 - [**Escopo e Requisitos**](escopo.md): Detalhamento do problema, delimitação de escopo, Requisitos Funcionais (RF) e Não-Funcionais (RNF).
 - [**Arquitetura do Sistema**](arquitetura.md): Modelo C4, separação em Camada 1 e Camada 2, fluxo de dados de ponta a ponta.

@@ -4,7 +4,7 @@ O MedFact combina tecnologias modernas de desenvolvimento web, engenharia de dad
 
 ---
 
-## 🛠️ Matriz Tecnológica
+## Matriz Tecnológica
 
 | Camada | Tecnologia | Versão | Justificativa da Escolha |
 | :--- | :--- | :--- | :--- |
@@ -25,7 +25,7 @@ O MedFact combina tecnologias modernas de desenvolvimento web, engenharia de dad
 
 ---
 
-## 🔬 Detalhamento dos Componentes
+## Detalhamento dos Componentes
 
 ### 1. Python FastAPI
 Substituiu o antigo backend em Node.js para unificar todo o fluxo de Machine Learning em uma única pilha nativa. O FastAPI expõe a rota `POST /api/verify`, mantendo **100% de compatibilidade** com o contrato que o frontend React já consome. Além disso, fornece documentação interativa automática via Swagger UI em `/docs`.

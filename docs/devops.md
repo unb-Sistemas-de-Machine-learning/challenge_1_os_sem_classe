@@ -4,7 +4,7 @@ O MedFact adota práticas consagradas de **DevOps** para garantir estabilidade, 
 
 ---
 
-## 🐳 Conteinerização com Docker & Docker Compose
+## Conteinerização com Docker & Docker Compose
 
 Toda a infraestrutura do MedFact está conteinerizada, garantindo que o software execute de forma idêntica em qualquer sistema operacional (Linux, macOS ou Windows).
 
@@ -34,7 +34,7 @@ flowchart LR
 
 ---
 
-## ⚙️ Orquestração Multi-Serviço (`compose.yaml`)
+## Orquestração Multi-Serviço (`compose.yaml`)
 
 O arquivo `compose.yaml` (também disponibilizado como `docker-compose.yml`) define a composição dos três microsserviços do sistema:
 
@@ -104,20 +104,20 @@ docker compose down
 
 ---
 
-## 🔄 Pipelines de CI/CD (GitHub Actions)
+## Pipelines de CI/CD (GitHub Actions)
 
 A esteira de integração e entrega contínua está implementada em dois workflows no diretório `.github/workflows/`:
 
 ### 1. Workflow de CI (`ci.yml`)
-Disparado a cada `push` ou `pull_request` nas branches `main` e `dev`. Executa automaticamente três *jobs* paralelos:
+Disparado a cada `push` ou `pull_request` nas branches `main`, `dev` e `feat/**`. Executa automaticamente três *jobs* paralelos:
 
 ```mermaid
 flowchart TD
-    Trigger["Push / Pull Request em main ou dev"] --> CI
+    Trigger["Push / Pull Request em main, dev ou feat/**"] --> CI
     
     subgraph CI["Pipeline de CI (.github/workflows/ci.yml)"]
-        J1["Job 1: Backend & ML Tests\n- Setup Python 3.11\n- Ingestão PubMed Seed\n- Treino do Pipeline ML\n- Pytest (13 testes)\n- Checagem de Drift"]
-        J2["Job 2: Frontend Build\n- Setup Node.js 18\n- npm ci\n- npm run build"]
+        J1["Job 1: Backend ML & Cobertura\n- Setup Python 3.11\n- Ingestão PubMed Seed\n- Treino do Pipeline ML\n- Pytest (46 testes, 90% cobertura)\n- Monitoramento de Data Drift"]
+        J2["Job 2: Frontend Tests & Build\n- Setup Node.js 18\n- npm ci\n- npm test (23 testes unitários e de integração)\n- npm run build"]
         J3["Job 3: Docs Validation\n- Setup MkDocs Material\n- mkdocs build --strict"]
     end
     
@@ -136,7 +136,7 @@ Disparado a cada alteração na pasta `docs/` na branch `main`:
 
 ---
 
-## 🩺 Endpoints de Saúde e Observabilidade
+## Endpoints de Saúde e Observabilidade
 
 O backend implementa endpoints dedicados para integração com *healthchecks* de contêineres e balanceadores de carga:
 

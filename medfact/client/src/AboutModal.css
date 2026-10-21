@@ -131,6 +131,12 @@
   background-color: #0c5548;
 }
 
+.modal-btn-ok:focus-visible,
+.modal-btn-fechar:focus-visible {
+  outline: 3px solid #f4b41a;
+  outline-offset: 2px;
+}
+
 @keyframes fadeInModal {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -140,3 +146,40 @@
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Modo Alto Contraste */
+.pagina.alto-contraste .modal-conteudo {
+  background-color: #000000;
+  border: 3px solid #f4b41a;
+  color: #ffffff;
+}
+
+.pagina.alto-contraste .modal-cabecalho {
+  background-color: #000000;
+  border-bottom: 2px solid #f4b41a;
+}
+
+.pagina.alto-contraste .modal-corpo {
+  color: #ffffff;
+}
+
+.pagina.alto-contraste .modal-subtitulo {
+  color: #f4b41a;
+  border-bottom-color: #f4b41a;
+}
+
+.pagina.alto-contraste .modal-disciplina {
+  color: #d1fae5;
+}
+
+.pagina.alto-contraste .modal-rodape {
+  background-color: #000000;
+  border-top: 2px solid #f4b41a;
+}
+
+.pagina.alto-contraste .modal-btn-ok {
+  background-color: #f4b41a;
+  color: #000000;
+  font-weight: 800;
+}
+

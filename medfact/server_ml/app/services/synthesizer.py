@@ -88,7 +88,8 @@ class ElderlyExplanationSynthesizer:
         tema: str,
         evidencias: List[Dict[str, Any]]
     ) -> str:
-        t = texto.lower()
+        from .ml_engine import ml_engine
+        t = ml_engine.normalizar(texto)
 
         # Specific well-known claims
         if "alzheimer" in t and "vacina" in t:

@@ -4,7 +4,7 @@ O MedFact utiliza uma estratégia híbrida de armazenamento estruturado em **SQL
 
 ---
 
-## 🗄️ Esquema Relacional do Banco de Dados (`medfact_ml.db`)
+## Esquema Relacional do Banco de Dados (`medfact_ml.db`)
 
 ```mermaid
 erDiagram
@@ -60,7 +60,7 @@ erDiagram
 
 ---
 
-## 📊 Dicionário de Dados das Tabelas
+## Dicionário de Dados das Tabelas
 
 ### 1. Tabela `pubmed_articles`
 Armazena a base de conhecimento científico com artigos revisados por pares das principais revistas biomédicas do mundo (*The Lancet*, *New England Journal of Medicine*, *JAMA*, *Journal of Alzheimer's Disease*).
@@ -127,7 +127,7 @@ Mede a eficácia comunicativa e o impacto social do MedFact entre idosos e seus 
 
 ---
 
-## 🧠 Funcionamento do Banco Vetorial (`PubMedVectorStore`)
+## Funcionamento do Banco Vetorial (`PubMedVectorStore`)
 
 O componente `PubMedVectorStore` viabiliza a recuperação semântica de evidências científicas através das seguintes etapas:
 
@@ -148,11 +148,11 @@ flowchart LR
 
 ---
 
-## 🌐 Pipeline de Ingestão Contínua do PubMed
+## Pipeline de Ingestão Contínua do PubMed
 
 Além do banco de sementes inicial pré-carregado com estudos fundamentais, o sistema conta com ingestão dinâmica via API do NCBI:
 
-1. Se uma consulta inédita não atingir o limiar mínimo de similaridade no banco local, a função `_buscar_ncbi_live` traduz os termos-chave do português para o inglês médico (ex: *"pressão alta"* ➡️ *"hypertension"*).
+1. Se uma consulta inédita não atingir o limiar mínimo de similaridade no banco local, a função `_buscar_ncbi_live` traduz os termos-chave do português para o inglês médico (ex: *"pressão alta"* -> *"hypertension"*).
 2. Consulta o `esearch.fcgi` e recupera os PMIDs mais recentes.
 3. Consulta o `esummary.fcgi` para obter os títulos, autores, datas e periódicos.
 4. **Auto-aprendizado da Base:** Os novos artigos são persistidos na tabela `pubmed_articles` e o índice vetorial é atualizado dinamicamente em memória.

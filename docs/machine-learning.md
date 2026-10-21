@@ -4,7 +4,7 @@ O núcleo de Inteligência Artificial do MedFact foi projetado especificamente p
 
 ---
 
-## 🤖 Visão Geral do Pipeline de ML
+## Visão Geral do Pipeline de ML
 
 O pipeline opera como uma arquitetura híbrida que combina **modelos supervisionados clássicos** (garantindo velocidade, interpretabilidade e baixo custo computacional) com **RAG Biomédico (Retrieval-Augmented Generation)** fundamentado em literatura científica revisada por pares.
 
@@ -32,7 +32,7 @@ flowchart TD
 
 ---
 
-## 🔬 Modelos Supervisionados de Produção
+## Modelos Supervisionados de Produção
 
 ### 1. Classificador de Temas Biomédicos (`topic_classifier.joblib`)
 - **Objetivo:** Categorizar a alegação em um dos três eixos prioritários: `vacinação`, `COVID-19` ou `doenças crônicas`.
@@ -49,7 +49,7 @@ flowchart TD
 
 ---
 
-## 📑 Mecanismos de Desinformação Identificados
+## Mecanismos de Desinformação Identificados
 
 O MedFact não apenas rotula a veracidade, mas identifica o mecanismo retórico empregado na fake news:
 
@@ -63,7 +63,7 @@ O MedFact não apenas rotula a veracidade, mas identifica o mecanismo retórico 
 
 ---
 
-## 📈 Métricas de Avaliação e Desempenho
+## Métricas de Avaliação e Desempenho
 
 O pipeline automatizado em `mlops/scripts/train_pipeline.py` gera o relatório de métricas formal para validação em CI/CD:
 

@@ -4,7 +4,7 @@ O MedFact não é um checador de fatos genérico. Ele foi desenhado desde a sua 
 
 ---
 
-## 👵 O Idoso e a Desinformação em Saúde
+## O Idoso e a Desinformação em Saúde
 
 Estudos em gerontologia e comunicação digital demonstram que idosos estão desproporcionalmente expostos e vulneráveis à desinformação por múltiplos fatores convergentes:
 
@@ -32,7 +32,7 @@ flowchart TD
 
 ---
 
-## 🎨 Heurísticas de Design e Interface (Frontend)
+## Heurísticas de Design e Interface (Frontend)
 
 O frontend React do MedFact foi refinado e mantido rigorosamente alinhado a critérios de acessibilidade física e cognitiva:
 
@@ -63,12 +63,12 @@ Em vez de códigos ou siglas enigmáticas, o resultado exibe selos grandes com c
 
 ---
 
-## 🗣️ Síntese Textual Especializada (Prompt Engineering)
+## Síntese Textual Especializada (Prompt Engineering)
 
 O gerador de explicações (`synthesizer.py`) opera sob um conjunto de diretrizes pedagógicas estritas para a terceira idade:
 
 1. **Tom Empático e Respeitoso:**
-   - ❌ *Evitar:* *"Essa alegação é absurda e não faz o menor sentido científico."*
+   - *Evitar:* *"Essa alegação é absurda e não faz o menor sentido científico."*
    -  *Priorizar:* *"É natural termos dúvidas quando lemos mensagens alarmistas na internet. Porém, os médicos e cientistas já investigaram esse assunto..."*
 
 2. **Explicação Biológica Descomplicada:**

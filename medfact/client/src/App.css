@@ -11,6 +11,32 @@ body {
 }
 
 /* =========================================================
+   LINK DE ACESSIBILIDADE DIRETA (PULAR NAVEGAÇÃO)
+   ========================================================= */
+
+.link-pular-conteudo {
+  position: absolute;
+  top: -70px;
+  left: 20px;
+  background-color: #f4b41a;
+  color: #0f4b41;
+  padding: 12px 22px;
+  font-weight: 800;
+  font-size: 1rem;
+  border-radius: 8px;
+  z-index: 10000;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: top 0.2s ease;
+}
+
+.link-pular-conteudo:focus {
+  top: 14px;
+  outline: 3px solid #000000;
+  outline-offset: 2px;
+}
+
+/* =========================================================
    SISTEMA DE ESCALA DE FONTE E ACESSIBILIDADE
    ========================================================= */
 
@@ -653,7 +679,385 @@ body {
   outline-offset: 2px;
 }
 
-/* Responsividade */
+/* =========================================================
+   MASCOTE & SEÇÃO INICIAL
+   ========================================================= */
+
+.secao-mascote-home {
+  margin-bottom: 24px;
+}
+
+.subtitulo-inicial {
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: #3b524e;
+  text-align: center;
+  margin: -16px 0 28px;
+  font-weight: 500;
+}
+
+.pagina.alto-contraste .subtitulo-inicial {
+  color: #d1fae5;
+}
+
+/* =========================================================
+   AÇÕES DO CAMPO DE BUSCA
+   ========================================================= */
+
+.acoes-campo-texto {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.grupo-auxiliares-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-limpar-texto {
+  background: transparent;
+  border: 1.5px solid #94a3b8;
+  color: #334155;
+  border-radius: 9px;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-limpar-texto:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-limpar-texto:focus-visible {
+  outline: 3px solid #f4b41a;
+  outline-offset: 2px;
+}
+
+.contador-caracteres {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.contador-caracteres.valido {
+  color: #0f764e;
+}
+
+.dica-atalho-teclado {
+  font-size: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 2px 7px;
+  border-radius: 5px;
+  margin-left: 6px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   GUIA DE CLASSIFICAÇÕES (DIDÁTICO & ACESSÍVEL)
+   ========================================================= */
+
+.guia-classificacoes {
+  background-color: #ffffff;
+  border: 2px solid #bfe9e2;
+  border-radius: 16px;
+  margin-top: 40px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(15, 107, 92, 0.06);
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.guia-classificacoes-toggle {
+  width: 100%;
+  padding: 18px 22px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f6b5c;
+  text-align: left;
+}
+
+.guia-classificacoes-toggle:hover {
+  background-color: #f0fdf9;
+}
+
+.guia-classificacoes-toggle:focus-visible {
+  outline: 3px solid #f4b41a;
+  outline-offset: -2px;
+}
+
+.icone-toggle-guia {
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.icone-toggle-guia.aberto {
+  transform: rotate(180deg);
+}
+
+.guia-classificacoes-conteudo {
+  padding: 0 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-top: 1.5px solid #eefaf8;
+  padding-top: 16px;
+}
+
+.item-guia {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.badge-guia {
+  flex-shrink: 0;
+  min-width: 135px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.badge-guia-verdadeira {
+  background-color: #e6f7ef;
+  color: #0f764e;
+  border: 1.5px solid #0f764e;
+}
+
+.badge-guia-falsa {
+  background-color: #fcebea;
+  color: #b42318;
+  border: 1.5px solid #b42318;
+}
+
+.badge-guia-enganosa {
+  background-color: #fef3e2;
+  color: #b54708;
+  border: 1.5px solid #b54708;
+}
+
+.badge-guia-nao-verificavel {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1.5px solid #475569;
+}
+
+.texto-guia {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #334155;
+  margin: 0;
+}
+
+/* =========================================================
+   SALVAGUARDA CLÍNICA & AVISO DE SAÚDE
+   ========================================================= */
+
+.alerta-saude-idoso {
+  background-color: #fffbeb;
+  border: 2px solid #f59e0b;
+  border-radius: 14px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.08);
+}
+
+.alerta-icone {
+  flex-shrink: 0;
+  color: #d97706;
+  margin-top: 2px;
+}
+
+.alerta-texto {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: #78350f;
+}
+
+.alerta-texto strong {
+  color: #92400e;
+}
+
+/* =========================================================
+   RODAPÉ ACESSÍVEL
+   ========================================================= */
+
+.rodape-acessivel {
+  background-color: #ffffff;
+  border-top: 2px solid #bfe9e2;
+  padding: 30px 24px 40px;
+  margin-top: 40px;
+}
+
+.rodape-conteudo {
+  max-width: 850px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.rodape-titulo {
+  margin: 0;
+  font-weight: 800;
+  color: #0f6b5c;
+  font-size: 1.05rem;
+}
+
+.rodape-links {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-link-rodape {
+  background: none;
+  border: none;
+  color: #0f6b5c;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.btn-link-rodape:hover {
+  color: #083c34;
+  background-color: #eefaf8;
+}
+
+.btn-link-rodape:focus-visible {
+  outline: 3px solid #f4b41a;
+  outline-offset: 2px;
+}
+
+.rodape-aviso {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  max-width: 650px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   OVERRIDE DE ALTO CONTRASTE PARA NOVOS COMPONENTES
+   ========================================================= */
+
+.pagina.alto-contraste .guia-classificacoes {
+  background-color: #000000;
+  border-color: #f4b41a;
+}
+
+.pagina.alto-contraste .guia-classificacoes-toggle {
+  color: #f4b41a;
+}
+
+.pagina.alto-contraste .guia-classificacoes-toggle:hover {
+  background-color: #0a2e27;
+}
+
+.pagina.alto-contraste .guia-classificacoes-conteudo {
+  border-top-color: #f4b41a;
+}
+
+.pagina.alto-contraste .texto-guia {
+  color: #ffffff;
+}
+
+.pagina.alto-contraste .badge-guia {
+  border-width: 2px;
+}
+
+.pagina.alto-contraste .alerta-saude-idoso {
+  background-color: #000000;
+  border: 3px solid #f4b41a;
+}
+
+.pagina.alto-contraste .alerta-texto {
+  color: #ffffff;
+}
+
+.pagina.alto-contraste .alerta-texto strong {
+  color: #f4b41a;
+}
+
+.pagina.alto-contraste .alerta-icone {
+  color: #f4b41a;
+}
+
+.pagina.alto-contraste .btn-limpar-texto {
+  border-color: #f4b41a;
+  color: #ffffff;
+}
+
+.pagina.alto-contraste .btn-limpar-texto:hover {
+  background-color: #0a2e27;
+  color: #f4b41a;
+}
+
+.pagina.alto-contraste .contador-caracteres {
+  color: #e2e8f0;
+}
+
+.pagina.alto-contraste .contador-caracteres.valido {
+  color: #f4b41a;
+}
+
+.pagina.alto-contraste .rodape-acessivel {
+  background-color: #000000;
+  border-top: 3px solid #f4b41a;
+}
+
+.pagina.alto-contraste .rodape-titulo {
+  color: #ffffff;
+}
+
+.pagina.alto-contraste .btn-link-rodape {
+  color: #f4b41a;
+}
+
+.pagina.alto-contraste .btn-link-rodape:hover {
+  background-color: #0a2e27;
+}
+
+.pagina.alto-contraste .rodape-aviso {
+  color: #cbd5e1;
+}
+
+/* =========================================================
+   RESPONSIVIDADE GERAL
+   ========================================================= */
 
 @media (max-width: 700px) {
   .topo {
@@ -679,6 +1083,24 @@ body {
     width: 100%;
   }
 
+  .acoes-campo-texto {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .grupo-auxiliares-input {
+    justify-content: space-between;
+  }
+
+  .item-guia {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .badge-guia {
+    width: 100%;
+  }
+
   .card-ouvir-resposta {
     flex-direction: column;
     align-items: stretch;
@@ -687,4 +1109,4 @@ body {
   .btn-ouvir-principal {
     justify-content: center;
   }
-}
+}
