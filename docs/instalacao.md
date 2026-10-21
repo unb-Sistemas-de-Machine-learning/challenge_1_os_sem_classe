@@ -4,7 +4,7 @@ O MedFact foi concebido para ser executado tanto em ambiente de desenvolvimento 
 
 ---
 
-## 📋 Pré-requisitos
+## Pré-requisitos
 
 - **Para execução com Docker (Recomendado):**
     - [Docker Desktop](https://www.docker.com/products/docker-desktop/) 24.0+
@@ -16,7 +16,7 @@ O MedFact foi concebido para ser executado tanto em ambiente de desenvolvimento 
 
 ---
 
-## 🐳 Método 1: Execução com Docker Compose (Recomendado)
+## Método 1: Execução com Docker Compose (Recomendado)
 
 Este método sobe toda a infraestrutura com um único comando (Backend FastAPI na porta `3001`, Frontend React na porta `3000` e MLflow Tracking Server na porta `5001`).
 
@@ -42,7 +42,7 @@ docker compose down
 
 ---
 
-## 💻 Método 2: Execução Local Passo a Passo
+## Método 2: Execução Local Passo a Passo
 
 ### 1. Configurando e Inicializando o Backend (FastAPI + ML)
 
@@ -82,7 +82,7 @@ npm start
 
 ---
 
-## 🧪 Execução dos Testes Automatizados
+## Execução dos Testes Automatizados
 
 O MedFact possui uma suíte de testes com **100% de aprovação**:
 
@@ -93,7 +93,7 @@ py -m pytest medfact/server_ml/tests -v
 
 ---
 
-## 📊 Scripts de MLOps
+## Scripts de MLOps
 
 ```bash
 # Treinar os modelos e gerar relatório de métricas F1
@@ -108,7 +108,7 @@ py mlops/scripts/seed_pubmed.py
 
 ---
 
-## 📖 Visualização da Documentação MkDocs
+## Visualização da Documentação MkDocs
 
 Para visualizar este portal de documentação localmente:
 

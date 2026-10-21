@@ -4,7 +4,7 @@ Este documento consolida os objetivos de negócio, a delimitação do MVP, os ob
 
 ---
 
-## 🎯 Objetivo de Negócio
+## Objetivo de Negócio
 
 Reduzir o impacto sanitário e social da desinformação em saúde sobre a população idosa, fornecendo uma ferramenta acessível e segura que analisa afirmações textuais sobre **vacinação, COVID-19 ou doenças crônicas** e apresenta uma avaliação pedagógica baseada em evidências científicas — indicando veracidade, tipo de manipulação, nível de risco e explicação descomplicada.
 
@@ -30,7 +30,7 @@ journey
 
 ---
 
-## 📐 Delimitação de Escopo (MVP)
+## Delimitação de Escopo (MVP)
 
 Para garantir alta acurácia científica, rastreabilidade e viabilidade técnica, o escopo foi refinado conforme a tabela comparativa:
 
@@ -44,7 +44,7 @@ Para garantir alta acurácia científica, rastreabilidade e viabilidade técnica
 
 ---
 
-## 🤖 Objetivos de Machine Learning
+## Objetivos de Machine Learning
 
 O pipeline de Machine Learning visa solucionar simultaneamente três tarefas fundamentais:
 
@@ -59,7 +59,7 @@ O pipeline de Machine Learning visa solucionar simultaneamente três tarefas fun
 
 ---
 
-## 📋 Requisitos Funcionais (RF)
+## Requisitos Funcionais (RF)
 
 | ID | Descrição do Requisito | Camada / Módulo |
 | :--- | :--- | :--- |
@@ -74,7 +74,7 @@ O pipeline de Machine Learning visa solucionar simultaneamente três tarefas fun
 
 ---
 
-## ⚙️ Requisitos Não-Funcionais (RNF)
+## Requisitos Não-Funcionais (RNF)
 
 | ID | Descrição do Requisito | Critério de Aceite / Solução Adotada |
 | :--- | :--- | :--- |

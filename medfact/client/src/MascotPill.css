@@ -172,3 +172,31 @@
     font-size: 1.05rem;
   }
 }
+
+/* =========================================================
+   ALTO CONTRASTE PARA O MASCOTE
+   ========================================================= */
+
+.pagina.alto-contraste .mascote-balao {
+  background-color: #000000;
+  border-color: #f4b41a;
+  box-shadow: 0 0 16px rgba(244, 180, 26, 0.35);
+}
+
+.pagina.alto-contraste .mascote-texto-balao {
+  color: #ffffff;
+}
+
+.pagina.alto-contraste .mascote-balao::after {
+  border-color: transparent transparent transparent #f4b41a;
+}
+
+.pagina.alto-contraste .mascote-balao::before {
+  border-color: transparent transparent transparent #000000;
+}
+
+.pagina.alto-contraste .mascote-container:focus-visible {
+  outline: 3px solid #f4b41a;
+  outline-offset: 4px;
+}
+

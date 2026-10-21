@@ -4,7 +4,7 @@ Este documento descreve os processos de engenharia, governança de dados, qualid
 
 ---
 
-## 🔄 Metodologia de Desenvolvimento
+## Metodologia de Desenvolvimento
 
 A equipe adotou uma abordagem ágil híbrida baseada em **Scrum/Kanban** com ciclos curtos de entrega contínua:
 
@@ -23,7 +23,7 @@ flowchart LR
 
 ---
 
-## 🧪 Estratégia e Pirâmide de Testes
+## Estratégia e Pirâmide de Testes
 
 A integridade do software é assegurada por múltiplas camadas de testes automatizados:
 
@@ -51,7 +51,7 @@ pyramid
 
 ---
 
-## 🛡️ Governança Ética e Privacidade de Dados
+## Governança Ética e Privacidade de Dados
 
 A manipulação de consultas médicas exige rígidos padrões éticos e de proteção à privacidade (LGPD):
 

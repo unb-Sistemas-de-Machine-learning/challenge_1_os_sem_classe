@@ -4,7 +4,7 @@ O MedFact incorpora as melhores práticas de **Machine Learning Operations (MLOp
 
 ---
 
-## 🔄 Ciclo de Vida do Modelo de ML
+## Ciclo de Vida do Modelo de ML
 
 ```mermaid
 flowchart TD
@@ -41,7 +41,7 @@ flowchart TD
 
 ---
 
-## 📊 Rastreamento de Experimentos com MLflow
+## Rastreamento de Experimentos com MLflow
 
 O MedFact utiliza o **MLflow Tracking Server** conteinerizado (`medfact-mlflow` rodando na porta `5001` via Docker Compose):
 
@@ -64,7 +64,7 @@ O MedFact utiliza o **MLflow Tracking Server** conteinerizado (`medfact-mlflow` 
 
 ---
 
-## 🕵️ Detecção de Data Drift e Telemetria
+## Detecção de Data Drift e Telemetria
 
 Em aplicações de combate à desinformação, o vocabulário e os tipos de boatos sofrem mutações constantes (**Concept Drift** e **Covariate Shift**). O script `mlops/scripts/monitor_drift.py` analisa periodicamente as últimas 100 inferências registradas na tabela `ml_inference_logs`:
 
@@ -103,7 +103,7 @@ Exemplo de saída do monitor de drift:
 
 ---
 
-## 🔁 Pipeline de Retreinamento Contínuo
+## Pipeline de Retreinamento Contínuo
 
 Quando novas checagens ou artigos científicos são inseridos na base ou quando o monitor de drift identifica necessidade de calibração, o retreinamento pode ser disparado em um único comando:
 

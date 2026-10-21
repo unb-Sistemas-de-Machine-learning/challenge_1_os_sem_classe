@@ -4,7 +4,7 @@ A arquitetura do **MedFact** foi estruturada sob o paradigma de microsserviços 
 
 ---
 
-## 🏗️ Visão Geral da Arquitetura
+## Visão Geral da Arquitetura
 
 O sistema opera em uma estrutura de duas camadas complementares (**Two-Tier Verification**):
 
@@ -65,7 +65,7 @@ flowchart TD
 
 ---
 
-## 🔄 Fluxo de Execução e Sequência
+## Fluxo de Execução e Sequência
 
 A interação entre o usuário idoso e os componentes internos segue o diagrama de sequência abaixo:
 
@@ -111,7 +111,7 @@ sequenceDiagram
 
 ---
 
-## 🧩 Componentes do Sistema
+## Componentes do Sistema
 
 ### 1. Frontend (Interface do Usuário)
 - **Tecnologia:** React 19 com CSS modular vanilla.
@@ -121,8 +121,8 @@ sequenceDiagram
     - Exibição de selos claros com cores de alto contraste:
         - 🟢 **VERDADEIRA** (Verde esmeralda)
         - 🟡 **ENGANOSA** (Amarelo âmbar)
-        - 🔴 **FALSA** (Vermelho telha suave)
-        - ⚪ **NÃO VERIFICÁVEL** (Cinza neutro)
+        - **FALSA** (Vermelho telha suave)
+        -  **NÃO VERIFICÁVEL** (Cinza neutro)
     - Cartões com links clicáveis para os artigos originais do PubMed.
 
 ### 2. Backend Gateway & Orquestrador
@@ -142,7 +142,7 @@ sequenceDiagram
 - **Subcomponentes:**
     - `ml_engine.py`: Classificadores supervisionados baseados em TF-IDF e regressão logística calibrada.
     - `vector_store.py`: Banco vetorial baseado em embeddings densos e cálculo de similaridade de cosseno em memória persistido no SQLite.
-    - `pubmed_service.py`: Interface com a API oficial do NCBI E-utilities, com dicionário de tradução médica PT-BR ➡️ MeSH Terms.
+    - `pubmed_service.py`: Interface com a API oficial do NCBI E-utilities, com dicionário de tradução médica PT-BR -> MeSH Terms.
     - `synthesizer.py`: Motor de geração em linguagem simples, utilizando a API da Groq (Llama 3.1) com temperatura baixa (0.3) e fallback determinístico baseado em diretrizes médicas.
 
 ### 5. Camada de Persistência (Database)

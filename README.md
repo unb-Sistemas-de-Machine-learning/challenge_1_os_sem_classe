@@ -18,13 +18,13 @@
 
 ---
 
-## 📌 Sobre o MedFact
+## Sobre o MedFact
 
 O **MedFact** é uma plataforma inteligente voltada a combater os perigos da desinformação em saúde entre pessoas idosas. Ao receber uma mensagem sobre **vacinação, COVID-19 ou doenças crônicas**, o sistema analisa a alegação, consulta a base de literatura biomédica do **PubMed**, avalia o nível de risco de dano clínico e gera uma explicação em linguagem simples, empática e acolhedora, orientando o idoso a nunca abandonar tratamentos e consultar seu médico.
 
 ---
 
-## 🏗️ Como Funciona (Arquitetura de Duas Camadas)
+## Como Funciona (Arquitetura de Duas Camadas)
 
 ```mermaid
 flowchart TD
@@ -47,7 +47,7 @@ flowchart TD
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - **Backend:** Python 3.11+, FastAPI, Uvicorn, Pydantic, Httpx.
 - **Machine Learning & RAG:** Scikit-Learn, NumPy, SciPy, Joblib, TF-IDF + Similaridade de Cosseno.
@@ -59,7 +59,7 @@ flowchart TD
 
 ---
 
-## 🚀 Como Executar o Projeto
+## Como Executar o Projeto
 
 ### Opção 1: Via Docker Compose (Recomendado)
 
@@ -112,7 +112,7 @@ O aplicativo abrirá automaticamente em `http://localhost:3000`.
 
 ---
 
-## 🧪 Testes Automatizados
+## Testes Automatizados
 
 A suíte de testes cobre endpoints da API, classificação de Machine Learning e busca no banco PubMed com **100% de cobertura**:
 
@@ -122,7 +122,7 @@ py -m pytest medfact/server_ml/tests -v
 
 ---
 
-## 📊 MLOps & Governança de Modelos
+## MLOps & Governança de Modelos
 
 ```bash
 # Treinamento e avaliação de métricas (F1-score macro)
@@ -134,7 +134,7 @@ py mlops/scripts/monitor_drift.py
 
 ---
 
-## 📖 Documentação Completa no GitHub Pages
+## Documentação Completa no GitHub Pages
 
 A documentação detalhada de arquitetura, processos de software, modelagem de dados e usabilidade para idosos está disponível no portal **MkDocs Material**:
 
@@ -163,23 +163,23 @@ Tópicos documentados:
 
 ---
 
-## 👥 Equipe e Participantes
+##  Equipe e Participantes
 
 - **Sauhan Ferreira Melo** — Matrícula: `242024923` — GitHub: [`@SUDOTMOX`](https://github.com/SUDOTMOX)
 
 ---
 
-## 🌐 Como Acessar o GitHub Pages por Link
+## Como Acessar o GitHub Pages por Link
 
 A documentação interativa com busca, diagramas e suporte a temas claro/escuro é publicada automaticamente via GitHub Actions no endereço:
 
-🔗 **`https://unb-sistemas-de-machine-learning.github.io/challenge_1_os_sem_classe/`**
+ **`https://unb-sistemas-de-machine-learning.github.io/challenge_1_os_sem_classe/`**
 
 *(Para ativar no repositório, basta ir em **Settings > Pages > Build and deployment > Source: GitHub Actions** ou selecionar o branch `gh-pages`)*.
 
 ---
 
-## 📄 Licença
+##  Licença
 
 Projeto desenvolvido para fins acadêmicos e de pesquisa científica na **Universidade de Brasília (UnB)**.
 
