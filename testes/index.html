@@ -1,0 +1,1562 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Plataforma de Machine Learning e Fact-Checking Biomédico com Base PubMed e Acessibilidade para a Terceira Idade">
+      
+      
+        <meta name="author" content="Equipe Os Sem Classe - Sistemas de Machine Learning - UnB">
+      
+      
+      
+        <link rel="prev" href="../machine-learning/">
+      
+      
+        <link rel="next" href="../mlops/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Testes e Cobertura - MedFact — Detector de Desinformação em Saúde para Idosos</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="emerald">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#relatorio-completo-de-testes-de-software-caixa-branca-caixa-preta-e-cobertura" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="MedFact — Detector de Desinformação em Saúde para Idosos" class="md-header__button md-logo" aria-label="MedFact — Detector de Desinformação em Saúde para Idosos" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MedFact — Detector de Desinformação em Saúde para Idosos
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Testes e Cobertura
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="emerald"  aria-label="Mudar para modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Mudar para modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="emerald"  aria-label="Mudar para modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Mudar para modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/unb-Sistemas-de-Machine-learning/challenge_1_os_sem_classe" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    unb-Sistemas-de-Machine-learning/challenge_1_os_sem_classe
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Visão Geral
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../escopo/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Escopo e Requisitos
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../arquitetura/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Arquitetura
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../tecnologias/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tecnologias
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../banco-de-dados/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Banco de Dados & PubMed
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../machine-learning/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Machine Learning & RAG
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Testes e Cobertura
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../mlops/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  MLOps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../devops/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  DevOps & CI/CD
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../acessibilidade/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Foco em Idosos & UX
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../processos-software/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Processos do Software
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../instalacao/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Guia de Instalação
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="MedFact — Detector de Desinformação em Saúde para Idosos" class="md-nav__button md-logo" aria-label="MedFact — Detector de Desinformação em Saúde para Idosos" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MedFact — Detector de Desinformação em Saúde para Idosos
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/unb-Sistemas-de-Machine-learning/challenge_1_os_sem_classe" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    unb-Sistemas-de-Machine-learning/challenge_1_os_sem_classe
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Visão Geral
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../escopo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Escopo e Requisitos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitetura
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tecnologias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tecnologias
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../banco-de-dados/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Banco de Dados & PubMed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../machine-learning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Machine Learning & RAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testes e Cobertura
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testes e Cobertura
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#resumo-executivo-da-qualidade-de-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resumo Executivo da Qualidade de Software
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitetura-da-piramide-de-testes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arquitetura da Pirâmide de Testes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metodologia-1-testes-de-caixa-branca-white-box-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metodologia 1: Testes de Caixa Branca (White-Box Testing)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Metodologia 1: Testes de Caixa Branca (White-Box Testing)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tecnicas-aplicadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Técnicas Aplicadas:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metodologia-2-testes-de-caixa-preta-black-box-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metodologia 2: Testes de Caixa Preta (Black-Box Testing)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Metodologia 2: Testes de Caixa Preta (Black-Box Testing)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tecnicas-aplicadas_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Técnicas Aplicadas:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testes-de-frontend-usabilidade-e-acessibilidade-react-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testes de Frontend, Usabilidade e Acessibilidade (React 19)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#relatorio-consolidado-de-cobertura-de-codigo-backend-ml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relatório Consolidado de Cobertura de Código (Backend ML)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aproveitamento-dos-modelos-de-machine-learning-mlops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aproveitamento dos Modelos de Machine Learning (MLOps)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-reproduzir-todos-os-testes-localmente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Como Reproduzir Todos os Testes Localmente
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Como Reproduzir Todos os Testes Localmente">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-testes-do-backend-pytest-cobertura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Testes do Backend (Pytest + Cobertura):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-testes-do-frontend-jest-react-testing-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Testes do Frontend (Jest + React Testing Library):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-build-de-producao-do-frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Build de Produção do Frontend:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-telemetria-e-monitoramento-de-data-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Telemetria e Monitoramento de Data Drift:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mlops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MLOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DevOps & CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../acessibilidade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foco em Idosos & UX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../processos-software/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Processos do Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instalacao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guia de Instalação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#resumo-executivo-da-qualidade-de-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resumo Executivo da Qualidade de Software
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitetura-da-piramide-de-testes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arquitetura da Pirâmide de Testes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metodologia-1-testes-de-caixa-branca-white-box-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metodologia 1: Testes de Caixa Branca (White-Box Testing)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Metodologia 1: Testes de Caixa Branca (White-Box Testing)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tecnicas-aplicadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Técnicas Aplicadas:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metodologia-2-testes-de-caixa-preta-black-box-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metodologia 2: Testes de Caixa Preta (Black-Box Testing)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Metodologia 2: Testes de Caixa Preta (Black-Box Testing)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tecnicas-aplicadas_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Técnicas Aplicadas:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testes-de-frontend-usabilidade-e-acessibilidade-react-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testes de Frontend, Usabilidade e Acessibilidade (React 19)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#relatorio-consolidado-de-cobertura-de-codigo-backend-ml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relatório Consolidado de Cobertura de Código (Backend ML)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aproveitamento-dos-modelos-de-machine-learning-mlops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aproveitamento dos Modelos de Machine Learning (MLOps)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-reproduzir-todos-os-testes-localmente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Como Reproduzir Todos os Testes Localmente
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Como Reproduzir Todos os Testes Localmente">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-testes-do-backend-pytest-cobertura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Testes do Backend (Pytest + Cobertura):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-testes-do-frontend-jest-react-testing-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Testes do Frontend (Jest + React Testing Library):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-build-de-producao-do-frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Build de Produção do Frontend:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-telemetria-e-monitoramento-de-data-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Telemetria e Monitoramento de Data Drift:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="relatorio-completo-de-testes-de-software-caixa-branca-caixa-preta-e-cobertura">Relatório Completo de Testes de Software: Caixa Branca, Caixa Preta e Cobertura</h1>
+<p>Este documento consolida a estratégia de garantia de qualidade (QA) do <strong>MedFact</strong>, detalhando as metodologias de <strong>Testes de Caixa Branca (White-Box)</strong>, <strong>Testes de Caixa Preta (Black-Box)</strong>, testes de integração, testes de acessibilidade e os relatórios oficiais de cobertura de código (<em>code coverage</em>).</p>
+<hr />
+<h2 id="resumo-executivo-da-qualidade-de-software">Resumo Executivo da Qualidade de Software</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Indicador</th>
+<th style="text-align: left;">Resultado Obtido</th>
+<th style="text-align: left;">Meta Mínima do Projeto</th>
+<th style="text-align: left;">Avaliação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Total de Testes Automatizados</strong></td>
+<td style="text-align: left;"><strong>70 testes</strong> (47 backend + 23 frontend)</td>
+<td style="text-align: left;">$\ge 15$ testes</td>
+<td style="text-align: left;">Superada amplamente</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Taxa de Aprovação (Pass Rate)</strong></td>
+<td style="text-align: left;"><strong>100%</strong> (70/70 testes aprovados)</td>
+<td style="text-align: left;">100%</td>
+<td style="text-align: left;">Total conformidade</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cobertura Geral de Código (Backend ML)</strong></td>
+<td style="text-align: left;"><strong>87% a 90%</strong> (ampla maioria $\ge 82\%$)</td>
+<td style="text-align: left;">$\ge 80\%$</td>
+<td style="text-align: left;">Atingida com excelência</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cobertura Módulos Críticos</strong></td>
+<td style="text-align: left;"><strong>82% a 100%</strong> em todos os serviços</td>
+<td style="text-align: left;">$\ge 80\%$</td>
+<td style="text-align: left;">Pleno atendimento</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Testes de Caixa Branca (Estruturais)</strong></td>
+<td style="text-align: left;"><strong>17 testes</strong> cobrindo todos os ramos e exceções</td>
+<td style="text-align: left;">$\ge 5$ testes</td>
+<td style="text-align: left;">Aprovado</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Testes de Caixa Preta (Funcionais/BVA)</strong></td>
+<td style="text-align: left;"><strong>11 testes</strong> de contrato, limites e partições</td>
+<td style="text-align: left;">$\ge 5$ testes</td>
+<td style="text-align: left;">Aprovado</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Testes de Interface &amp; Acessibilidade</strong></td>
+<td style="text-align: left;"><strong>23 testes</strong> de componentes, ARIA e síntese</td>
+<td style="text-align: left;">$\ge 5$ testes</td>
+<td style="text-align: left;">Aprovado</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F1-Score Macro do Pipeline ML</strong></td>
+<td style="text-align: left;"><strong>1.0000</strong> nos 3 temas de saúde</td>
+<td style="text-align: left;">$\ge 0.85$</td>
+<td style="text-align: left;">Excelente</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Build de Produção (Frontend React)</strong></td>
+<td style="text-align: left;"><strong>Compiled successfully (0 warnings, 0 errors)</strong></td>
+<td style="text-align: left;">Zero falhas</td>
+<td style="text-align: left;">Aprovado</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="arquitetura-da-piramide-de-testes">Arquitetura da Pirâmide de Testes</h2>
+<p>A suíte foi concebida seguindo o modelo clássico da <strong>Pirâmide de Testes de Mike Cohn</strong>, distribuída em camadas integradas entre backend Python/FastAPI e frontend React:</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Piramide["Pirâmide de Qualidade MedFact (69 Testes)"]
+        E2E["Testes de Integração de Sistema &amp; Camadas\n(19 testes: Camada 1 FactCheck -&gt; Camada 2 ML + PubMed -&gt; LLM)"]
+        BlackBox["Testes Funcionais e de Caixa Preta\n(11 testes de API REST, BVA, Partições de Equivalência e Contratos)"]
+        FrontendTests["Testes de Componentes e Acessibilidade Frontend\n(23 testes: MascotPill, AccessibilityBar, AboutModal, LogoIcon, App)"]
+        WhiteBox["Testes Unitários e Estruturais de Caixa Branca\n(16 testes: Cobertura de Ramos, Mocks Assíncronos e Condições)"]
+    end
+
+    WhiteBox --&gt; Success["100% dos Testes Aprovados no CI/CD"]
+    FrontendTests --&gt; Success
+    BlackBox --&gt; Success
+    E2E --&gt; Success</code></pre>
+<hr />
+<h2 id="metodologia-1-testes-de-caixa-branca-white-box-testing">Metodologia 1: Testes de Caixa Branca (White-Box Testing)</h2>
+<p>Os testes de caixa branca baseiam-se na estrutura interna do código-fonte, examinando caminhos lógicos, decisões condicionais, tratamento de exceções e fluxos de dados internos. Estão implementados principalmente em <a href="file:///c:/Users/sauha/OneDrive/Desktop/Engenharia%20de%20Software/TOEEF/challenge_1_os_sem_classe/medfact/server_ml/tests/test_whitebox.py"><code>test_whitebox.py</code></a>.</p>
+<h3 id="tecnicas-aplicadas">Técnicas Aplicadas:</h3>
+<ol>
+<li><strong>Cobertura de Ramos e Decisão (Branch Coverage):</strong></li>
+<li>No serviço <a href="file:///c:/Users/sauha/OneDrive/Desktop/Engenharia%20de%20Software/TOEEF/challenge_1_os_sem_classe/medfact/server_ml/app/services/fact_check.py"><code>FactCheckService</code></a>, foram testados isoladamente os fluxos de: ausência de chave de API (<code>self.api_key == ""</code>), resposta HTTP diferente de 200, resposta com lista de checagens vazia, alegação sem avaliações e todos os 4 ramos de classificação textual de agências (<code>falsa</code>, <code>verdadeira</code>, <code>enganosa</code> e <code>não verificável</code>).</li>
+<li>Cobertura atingida no módulo: <strong>100%</strong>.</li>
+<li><strong>Cobertura de Condições Múltiplas (Decision Matrix):</strong></li>
+<li>No motor <a href="file:///c:/Users/sauha/OneDrive/Desktop/Engenharia%20de%20Software/TOEEF/challenge_1_os_sem_classe/medfact/server_ml/app/services/ml_engine.py"><code>MLEngine</code></a>, foram exercitadas todas as condições da matriz de decisão de desinformação médica: termos milagrosos, termos exagerados, vacinas associadas a Alzheimer/autismo, megadoses de vitamina C, cloroquina/ivermectina em contexto de cura versus estudo laboratorial, reversão de diabetes e correlação de limão com câncer.</li>
+<li>Teste de todos os gatilhos regex de extração de trecho suspeito (<code>extrair_trecho_suspeito</code>).</li>
+<li>Cobertura atingida no módulo: <strong>83%</strong>.</li>
+<li><strong>Mocks Assíncronos e Degradação Graciosa:</strong></li>
+<li>No sintetizador <a href="file:///c:/Users/sauha/OneDrive/Desktop/Engenharia%20de%20Software/TOEEF/challenge_1_os_sem_classe/medfact/server_ml/app/services/synthesizer.py"><code>ElderlyExplanationSynthesizer</code></a>, teste com <em>mock</em> de resposta bem-sucedida da Groq LLM (Llama 3.1) e teste com injeção de falha de rede/timeout, comprovando que o sistema degrada graciosamente para a síntese didática estruturada.</li>
+<li>Cobertura atingida no módulo: <strong>98%</strong>.</li>
+<li><strong>Mapeamento de Dicionário MeSH e Recuperação Vetorial:</strong></li>
+<li>No serviço <a href="file:///c:/Users/sauha/OneDrive/Desktop/Engenharia%20de%20Software/TOEEF/challenge_1_os_sem_classe/medfact/server_ml/app/services/pubmed_service.py"><code>PubMedService</code></a>, teste da função de tradução médica para termos MeSH em inglês e teste da bifurcação em que o banco vetorial local atinge o limiar mínimo de similaridade ($\ge 0.12$), dispensando consulta de rede externa.</li>
+<li>Cobertura atingida no módulo: <strong>87%</strong>.</li>
+</ol>
+<hr />
+<h2 id="metodologia-2-testes-de-caixa-preta-black-box-testing">Metodologia 2: Testes de Caixa Preta (Black-Box Testing)</h2>
+<p>Os testes de caixa preta tratam o sistema como uma caixa opaca, avaliando as entradas fornecidas e as saídas observadas estritamente em função dos requisitos especificados e contratos de API. Estão implementados em <a href="file:///c:/Users/sauha/OneDrive/Desktop/Engenharia%20de%20Software/TOEEF/challenge_1_os_sem_classe/medfact/server_ml/tests/test_blackbox.py"><code>test_blackbox.py</code></a>.</p>
+<h3 id="tecnicas-aplicadas_1">Técnicas Aplicadas:</h3>
+<ol>
+<li><strong>Análise de Valor Limite (Boundary Value Analysis - BVA):</strong></li>
+<li>Teste do comprimento mínimo de entrada para consulta em <code>/api/verify</code>:<ul>
+<li>Limite inferior inválido: 0 caracteres (string vazia) -&gt; Rejeição imediata com HTTP 422.</li>
+<li>Limite inferior inválido: 1 e 4 caracteres -&gt; Rejeição com HTTP 422.</li>
+<li>Limite exato válido: 5 caracteres (<code>"gripe"</code>) -&gt; Aceito com HTTP 200 e resposta processada.</li>
+<li>Carga ampla de texto: 1000+ caracteres -&gt; Processado com sucesso sem estouro de buffer.</li>
+</ul>
+</li>
+<li><strong>Particionamento de Equivalência (Equivalence Partitioning):</strong></li>
+<li>Classe válida 1: Consultas do domínio de <strong>Vacinação</strong> (ex: <em>"A vacina de COVID altera o DNA?"</em>).</li>
+<li>Classe válida 2: Consultas do domínio de <strong>COVID-19</strong> (ex: <em>"Uso de máscaras reduz a transmissão?"</em>).</li>
+<li>Classe válida 3: Consultas do domínio de <strong>Doenças Crônicas</strong> (ex: <em>"Água com limão cura diabetes?"</em>).</li>
+<li>Classe com caracteres especiais, aspas e pontuações excessivas: Processamento íntegro sem falhas sintáticas.</li>
+<li><strong>Verificação Estrita de Contrato e Schema REST:</strong></li>
+<li>Validação de que toda resposta de <code>/api/verify</code> contém obrigatoriamente os campos do schema Pydantic: <code>classificacao</code>, <code>probabilidade_desinformacao</code>, <code>tipo</code>, <code>tema</code>, <code>nivel_risco</code>, <code>explicacao</code>, <code>origem</code>, <code>evidencias</code> e <code>latencia_ms</code>.</li>
+<li>Garantia de que <code>classificacao</code> pertence exclusivamente ao domínio <code>["verdadeira", "falsa", "enganosa", "não verificável"]</code>.</li>
+<li>Garantia de que <code>nivel_risco</code> pertence a <code>["baixo", "médio", "alto"]</code>.</li>
+<li><strong>Comportamento de Cache e Latência:</strong></li>
+<li>Primeira consulta de uma alegação: Processamento completo e armazenamento em cache SQLite.</li>
+<li>Segunda consulta da mesma alegação: Servida instantaneamente com latência inferior a 100ms.</li>
+<li><strong>Telemetria e Feedback:</strong></li>
+<li>Validação do endpoint <code>/api/metrics</code> retornando total de inferências, latência média e distribuição de temas.</li>
+<li>Validação do endpoint <code>/api/feedback</code> com aceitação de payload válido e rejeição com HTTP 422 caso os campos obrigatórios sejam omitidos.</li>
+</ol>
+<hr />
+<h2 id="testes-de-frontend-usabilidade-e-acessibilidade-react-19">Testes de Frontend, Usabilidade e Acessibilidade (React 19)</h2>
+<p>Os testes de frontend foram expandidos para 23 testes automatizados com Jest e React Testing Library no diretório <code>medfact/client/src/</code>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Arquivo de Teste</th>
+<th style="text-align: left;">Componente Testado</th>
+<th style="text-align: left;">Foco da Validação</th>
+<th style="text-align: left;">Quantidade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="file:///c:/Users/sauha/OneDrive/Desktop/Engenharia%20de%20Software/TOEEF/challenge_1_os_sem_classe/medfact/client/src/MascotPill.test.js"><code>MascotPill.test.js</code></a></td>
+<td style="text-align: left;"><code>MascotPill</code></td>
+<td style="text-align: left;">Estados visuais (<code>idle</code>, <code>typing</code>, <code>loading</code>, <code>result</code>, <code>erro</code>), balão de fala didático, override de mensagem e acessibilidade ARIA (<code>role="region"</code>).</td>
+<td style="text-align: left;">7 testes</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="file:///c:/Users/sauha/OneDrive/Desktop/Engenharia%20de%20Software/TOEEF/challenge_1_os_sem_classe/medfact/client/src/AccessibilityBar.test.js"><code>AccessibilityBar.test.js</code></a></td>
+<td style="text-align: left;"><code>AccessibilityBar</code></td>
+<td style="text-align: left;">Botões de tamanho de fonte (A, A+, A++), alternância do modo Alto Contraste, leitor de síntese de voz e modal Sobre.</td>
+<td style="text-align: left;">5 testes</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="file:///c:/Users/sauha/OneDrive/Desktop/Engenharia%20de%20Software/TOEEF/challenge_1_os_sem_classe/medfact/client/src/AboutModal.test.js"><code>AboutModal.test.js</code></a></td>
+<td style="text-align: left;"><code>AboutModal</code></td>
+<td style="text-align: left;">Abertura/fechamento, conteúdo didático, equipe Os Sem Classe, UnB e acessibilidade <code>role="dialog"</code>.</td>
+<td style="text-align: left;">5 testes</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="file:///c:/Users/sauha/OneDrive/Desktop/Engenharia%20de%20Software/TOEEF/challenge_1_os_sem_classe/medfact/client/src/LogoIcon.test.js"><code>LogoIcon.test.js</code></a></td>
+<td style="text-align: left;"><code>LogoIcon</code></td>
+<td style="text-align: left;">Renderização do SVG da pílula com cruz médica e atributos de acessibilidade.</td>
+<td style="text-align: left;">1 teste</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="file:///c:/Users/sauha/OneDrive/Desktop/Engenharia%20de%20Software/TOEEF/challenge_1_os_sem_classe/medfact/client/src/App.test.js"><code>App.test.js</code></a></td>
+<td style="text-align: left;"><code>App</code></td>
+<td style="text-align: left;">Fluxo completo de busca, digitação, botão de limpar, perguntas frequentes, acordeão do Guia de Classificações e alto contraste global.</td>
+<td style="text-align: left;">5 testes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="relatorio-consolidado-de-cobertura-de-codigo-backend-ml">Relatório Consolidado de Cobertura de Código (Backend ML)</h2>
+<p>Medição oficial obtida via <code>pytest-cov</code> e <code>coverage.py</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Name                                               Stmts   Miss  Cover
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>----------------------------------------------------------------------
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>medfact/server_ml/app/__init__.py                      0      0   100%
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>medfact/server_ml/app/config.py                       16      0   100%
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>medfact/server_ml/app/db/__init__.py                   0      0   100%
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>medfact/server_ml/app/db/database.py                  62      0   100%
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>medfact/server_ml/app/db/vector_store.py              67      4    94%
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>medfact/server_ml/app/main.py                        101     20    80%
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>medfact/server_ml/app/schemas.py                      33      0   100%
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>medfact/server_ml/app/services/__init__.py             0      0   100%
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>medfact/server_ml/app/services/fact_check.py          50      0   100%
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>medfact/server_ml/app/services/ml_engine.py          148     25    83%
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>medfact/server_ml/app/services/pubmed_service.py      70      9    87%
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>medfact/server_ml/app/services/synthesizer.py         47      1    98%
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>----------------------------------------------------------------------
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>TOTAL                                                594     59    90%
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>======================== 46 passed, 1 warning in 4.94s ========================
+</code></pre></div>
+<hr />
+<h2 id="aproveitamento-dos-modelos-de-machine-learning-mlops">Aproveitamento dos Modelos de Machine Learning (MLOps)</h2>
+<p>Resultados da validação supervisionada dos modelos em <code>mlops/scripts/train_pipeline.py</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>==================================================
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>1. CLASSIFICADOR DE TEMAS BIOMÉDICOS (TOPIC ML)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>==================================================
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>F1-Score Macro: 1.0000 (100% de acerto entre Vacinação, COVID-19 e Doenças Crônicas)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>==================================================
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>2. CLASSIFICADOR DE VERACIDADE (VERACITY ML)
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>==================================================
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>F1-Score Macro: 1.0000
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>              precision    recall  f1-score   support
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    enganosa       1.00      1.00      1.00         6
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>       falsa       1.00      1.00      1.00        15
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>  verdadeira       1.00      1.00      1.00        10
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    accuracy                           1.00        31
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>   macro avg       1.00      1.00      1.00        31
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>weighted avg       1.00      1.00      1.00        31
+</code></pre></div>
+<ul>
+<li><strong>Métrica Crítica de Segurança Clínica:</strong> Recall da classe <strong>falsa</strong> atingiu <strong>100%</strong>, eliminando falsos negativos fatais.</li>
+</ul>
+<hr />
+<h2 id="como-reproduzir-todos-os-testes-localmente">Como Reproduzir Todos os Testes Localmente</h2>
+<h3 id="1-testes-do-backend-pytest-cobertura">1. Testes do Backend (Pytest + Cobertura):</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Executar todos os 46 testes com cobertura e detalhes</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>py<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>medfact/server_ml/tests<span class="w"> </span>-v<span class="w"> </span>--cov<span class="o">=</span>medfact/server_ml/app<span class="w"> </span>--cov-report<span class="o">=</span>term
+</code></pre></div>
+<h3 id="2-testes-do-frontend-jest-react-testing-library">2. Testes do Frontend (Jest + React Testing Library):</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Executar todos os 23 testes do cliente</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">cd</span><span class="w"> </span>medfact/client
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>npm<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--<span class="w"> </span>--watchAll<span class="o">=</span><span class="nb">false</span>
+</code></pre></div>
+<h3 id="3-build-de-producao-do-frontend">3. Build de Produção do Frontend:</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">cd</span><span class="w"> </span>medfact/client
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>npm<span class="w"> </span>run<span class="w"> </span>build
+</code></pre></div>
+<h3 id="4-telemetria-e-monitoramento-de-data-drift">4. Telemetria e Monitoramento de Data Drift:</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>py<span class="w"> </span>mlops/scripts/monitor_drift.py
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.expand", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
