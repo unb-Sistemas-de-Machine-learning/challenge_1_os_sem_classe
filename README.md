@@ -1,77 +1,160 @@
 # MedFact — Detector de Desinformação em Saúde para Idosos
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Status-Produção%20Ativa-0f6b5c" alt="Status">
+  <img src="https://img.shields.io/badge/Deploy%20Frontend-AWS%20Amplify-FF9900?logo=awsamplify" alt="AWS Amplify">
+  <img src="https://img.shields.io/badge/Docs-GitHub%20Pages-222222?logo=githubpages" alt="GitHub Pages">
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue?logo=python" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/FastAPI-0.110%2B-009688?logo=fastapi" alt="FastAPI">
   <img src="https://img.shields.io/badge/React-19.x-61DAFB?logo=react" alt="React 19">
   <img src="https://img.shields.io/badge/Machine%20Learning-Scikit--learn-F7931E?logo=scikitlearn" alt="Scikit-Learn">
   <img src="https://img.shields.io/badge/Database-PubMed%20%2B%20SQLite%20WAL-003B57?logo=sqlite" alt="PubMed + SQLite">
-  <img src="https://img.shields.io/badge/MLOps-MLflow%20%2B%20Drift%20Telemetry-0194E2?logo=mlflow" alt="MLOps">
+  <img src="https://img.shields.io/badge/Testes-70%20Testes%20(100%25%20Aprovados)-brightgreen" alt="70 Testes">
   <img src="https://img.shields.io/badge/DevOps-Docker%20%2B%20Compose-2496ED?logo=docker" alt="Docker">
-  <img src="https://img.shields.io/badge/Documentation-GitHub%20Pages-222222?logo=githubpages" alt="GitHub Pages">
 </p>
 
-> **Projeto acadêmico — Sistemas de Machine Learning (2026/02)**  
-> **Universidade de Brasília (UnB)**  
+> **Projeto Acadêmico — Sistemas de Machine Learning (2026/02)**  
+> **Universidade de Brasília (UnB) — Engenharia de Software**  
 > **Equipe: Os Sem Classe**  
-> **Participantes:** Sauhan Ferreira Melo 242024923 git:SUDOTMOX
+> **Participante:** Sauhan Ferreira Melo (242024923) — GitHub: [`@SUDOTMOX`](https://github.com/SUDOTMOX)
+
+---
+
+## Acessos Rápidos em Produção
+
+- **Aplicação Web em Produção (AWS Amplify):**  
+  [https://main.d1ld9fjorca4sg.amplifyapp.com/](https://main.d1ld9fjorca4sg.amplifyapp.com/)
+- **Documentação Técnica Oficial (GitHub Pages):**  
+  [https://unb-sistemas-de-machine-learning.github.io/challenge_1_os_sem_classe/](https://unb-sistemas-de-machine-learning.github.io/challenge_1_os_sem_classe/)
+- **Swagger / OpenAPI (Local):**  
+  `http://localhost:3001/docs`
 
 ---
 
 ## Sobre o MedFact
 
-O **MedFact** é uma plataforma inteligente voltada a combater os perigos da desinformação em saúde entre pessoas idosas. Ao receber uma mensagem sobre **vacinação, COVID-19 ou doenças crônicas**, o sistema analisa a alegação, consulta a base de literatura biomédica do **PubMed**, avalia o nível de risco de dano clínico e gera uma explicação em linguagem simples, empática e acolhedora, orientando o idoso a nunca abandonar tratamentos e consultar seu médico.
+O **MedFact** é uma plataforma inteligente concebida para combater os impactos críticos da desinformação em saúde no público idoso. Recebendo alegações sobre **vacinação, COVID-19, diabetes, hipertensão e doenças crônicas**, o sistema:
+
+1. Cruza a alegação com checagens jornalísticas existentes (Google Fact Check Tools API).
+2. Na ausência de checagens consolidadas, aciona o núcleo proprietário de **Machine Learning e RAG**, consultando uma base vetorial local construída a partir do **PubMed / NCBI**.
+3. Classifica a probabilidade de veracidade e calcula o potencial risco de dano clínico ao paciente.
+4. Gera uma síntese didática, empática e acolhedora orientada a pessoas idosas através de LLM (Groq Llama 3 70B) ou motor heurístico de contingência local, enfatizando a continuidade de tratamentos e a consulta com profissionais de saúde.
 
 ---
 
-## Como Funciona (Arquitetura de Duas Camadas)
+## Arquitetura em Duas Camadas
 
 ```mermaid
 flowchart TD
-    User["Idoso / Usuário envia texto"] --> C1{"Camada 1: Google Fact Check\n(Checagem jornalística existente?)"}
-    C1 -->|"Encontrou"| R1["Resposta Pronta\n(Cita agência de checagem)"]
-    C1 -->|"Não Encontrou"| C2["Camada 2: Machine Learning & PubMed"]
+    User["Idoso / Usuário digita ou dita mensagem"] --> C1{"Camada 1: Fact Check Jornalístico\n(Google Fact Check API)"}
+    C1 -->|"Encontrou Checagem"| R1["Resposta Pronta\n(Citação de agência parceira)"]
+    C1 -->|"Não Encontrado"| C2["Camada 2: Machine Learning & RAG Biomédico"]
     
-    subgraph C2Flow["Camada 2 (ML Core)"]
-        TemaML["Classificador de Temas (ML)"]
-        VecDB["PubMed Vector Store (Busca Semântica)"]
+    subgraph C2Flow["Fluxo Camada 2 (ML Core)"]
+        TemaML["Classificador de Temas Clínicos (ML)"]
+        VecDB["PubMed Vector Store (Busca Semântica Cosseno)"]
         VeracityML["Classificador de Veracidade e Risco (ML)"]
-        Synthesizer["Sintetizador Didático (Groq LLM / Regras)"]
+        DecisionMatrix["Matriz de Decisão Clínica (Score ML x Evidência PubMed)"]
+        Synthesizer["Sintetizador Didático (Groq LLM / Regras Didáticas)"]
         
-        TemaML --> VecDB --> VeracityML --> Synthesizer
+        TemaML --> VecDB --> VeracityML --> DecisionMatrix --> Synthesizer
     end
     
     C2 --> C2Flow
-    Synthesizer --> R2["Resposta Pedagógica Completa\n(Selo, Risco, Explicação Simples e Fontes Científicas)"]
+    Synthesizer --> R2["Resultado Pedagógico Completo\n(Selo de Veracidade, Nível de Risco, Explicação em Linguagem Simples e Fontes Científicas)"]
 ```
 
 ---
 
-## Tecnologias Utilizadas
+## Recursos de Acessibilidade e Inclusão
 
-- **Backend:** Python 3.11+, FastAPI, Uvicorn, Pydantic, Httpx.
-- **Machine Learning & RAG:** Scikit-Learn, NumPy, SciPy, Joblib, TF-IDF + Similaridade de Cosseno.
-- **Base Biomédica:** PubMed / NCBI E-utilities, com banco vetorial indexado no SQLite (modo WAL).
-- **Frontend:** React 19, Vanilla CSS com foco em alta acessibilidade para idosos (`AccessibilityBar`, mascote animado `MascotPill`).
-- **MLOps:** Rastreamento de experimentos com MLflow, detecção automatizada de Data Drift e relatórios de F1-Score.
-- **DevOps:** Docker, Docker Compose multi-serviço, CI/CD automatizado via GitHub Actions.
-- **Documentação:** Portal completo publicado no **GitHub Pages** com MkDocs Material.
+Projetado sob as diretrizes **WCAG 2.1 nível AA**, com foco nas necessidades motoras, cognitivas e visuais de pessoas idosas:
+
+- **Mascote Interativo (MascotPill):** Guia visual em formato de pílula acolhedora com expressões reativas aos estados do sistema (`idle`, `typing`, `loading`, `result`, `erro`).
+- **Escalonamento Dinâmico de Tipografia:** Três níveis reais de escala de fonte (Padrão, Grande e Muito Grande) via variáveis CSS globais.
+- **Modo Alto Contraste:** Tema com proporção de contraste estrita superior a 7:1, com bordas reforçadas para baixa visão.
+- **Síntese de Voz (Leitura em Áudio):** Leitura falada automática de laudos através da Web Speech API nativa dos navegadores.
+- **Ditado por Voz:** Reconhecimento de fala via microfone integrado diretamente no campo de busca.
+- **Navegação por Teclado e Foco Visível:** Atalho `Ctrl + Enter` para envio rápido e indicadores de foco em conformidade de acessibilidade.
+- **Salvaguarda Médica:** Aviso clínico permanente esclarecendo que o sistema é informativo e não substitui o médico.
+
+---
+
+## Engenharia de Qualidade e Testes de Software
+
+O projeto conta com **70 testes automatizados** com **100% de taxa de sucesso**, cobrindo o frontend e o backend com testes de **caixa branca** e **caixa preta**:
+
+### Cobertura de Código no Backend (~90% médio)
+
+| Módulo | Tipo de Teste | Cobertura |
+|---|---|---|
+| `app/services/fact_check.py` | Caixa Branca / Caixa Preta | **100%** |
+| `app/services/database.py` | Caixa Branca (Isolamento SQLite) | **98%** |
+| `app/services/synthesizer.py` | Caixa Branca (Branches e Fallbacks) | **98%** |
+| `app/services/vector_store.py` | Caixa Branca (Similaridade Cosseno) | **94%** |
+| `app/services/pubmed_service.py` | Caixa Branca (Tradução MeSH) | **87%** |
+| `app/services/ml_engine.py` | Caixa Branca (Inference Pipeline) | **82%** |
+
+### Tipos de Testes Implementados
+
+1. **Testes de Caixa Branca (`test_whitebox.py`):**
+   - **Branch Coverage:** Mapeamento de todos os caminhos condicionais do `FactCheckService`.
+   - **Tradutor MeSH de Termos Médicos:** Normalização fonética/ortográfica e fallback com termos não mapeados.
+   - **Matriz de Decisão Clínica:** Cobertura de 4 cenários cruzados de pontuação probabilística vs. evidências científicas.
+   - **Injeção de Falhas de LLM:** Simulação de erro 429/timeout na API Groq, garantindo ativação imperceptível do sintetizador heurístico local.
+   - **Vector Store Semântico:** Busca vetorial com filtros restritos por tópico clínico.
+
+2. **Testes de Caixa Preta (`test_blackbox.py`):**
+   - **Análise de Valor Limite (BVA):** Validação estrita de limites de entrada (strings de 0 a 4 caracteres rejeitadas com HTTP 422; 5 caracteres e entradas longas aceitas).
+   - **Particionamento de Equivalência (EP):** Classes de equivalência cobrindo domínios clínicos (`diabetes`, `hipertensao`, `vacinas`).
+   - **Contratos de Schema REST:** Validação de schemas Pydantic nos endpoints `/verify`, `/health`, `/telemetry/metrics` e `/feedback`.
+   - **Efeito de Cache Semântico:** Verificação de integridade e redução de latência em requisições repetidas.
+
+3. **Testes de Frontend (`Jest` + `React Testing Library` — 23 testes):**
+   - Estados, animações e cliques no `MascotPill`.
+   - Alternância de contraste, escalonamento de fontes e síntese de áudio na `AccessibilityBar`.
+   - Comportamento de abertura/fechamento do `AboutModal`.
+   - Renderização SVG e atributos ARIA do `LogoIcon`.
+   - Fluxo completo da experiência do usuário em `App.test.js`.
+
+---
+
+## Ciclos de MLOps & DevOps
+
+### MLOps
+- **Pipelines de Treinamento Automatizado:** Scripts em `mlops/scripts/train_pipeline.py` para geração dos classificadores supervisionados.
+- **Detecção de Data Drift:** Script `mlops/scripts/monitor_drift.py` que audita distribuições de palavras e desvios de vocabulário, gerando relatórios em `mlops/reports/drift_analysis.json`.
+- **Telemetria de Produção:** Registro de consultas, latência, confiança probabilística e feedbacks de utilidade em banco SQLite WAL.
+
+### DevOps & CI/CD
+- **GitHub Actions Pipeline (`ci.yml`):**
+  - Execução dos 47 testes de backend com threshold de cobertura via `pytest-cov`.
+  - Execução dos 23 testes de frontend com `npm test -- --watchAll=false`.
+  - Validação estrita da documentação com `mkdocs build --strict`.
+- **Contêineres e Orquestração:**
+  - `compose.yaml` e `docker-compose.yml` com healthcheck ativo no endpoint `/health` (intervalo de 15s, timeout de 5s, 3 tentativas).
+  - Deploy contínuo automatizado do frontend na AWS Amplify.
 
 ---
 
 ## Como Executar o Projeto
 
+### Pré-requisitos
+- Python 3.11+
+- Node.js 18+ e npm
+- Docker e Docker Compose (opcional para execução em contêineres)
+
 ### Opção 1: Via Docker Compose (Recomendado)
 
-Sobe todos os microsserviços em contêineres isolados com um único comando:
+Inicie todos os microsserviços integrados com saúde monitorada:
 
 ```bash
 docker compose up -d --build
 ```
 
-- **Frontend (Interface do Usuário):** `http://localhost:3000`
-- **Backend (API FastAPI & Swagger):** `http://localhost:3001/docs`
-- **MLflow Tracking Server:** `http://localhost:5001`
+- **Frontend:** `http://localhost:3000`
+- **Backend API & Swagger:** `http://localhost:3001/docs`
+- **MLflow Tracking:** `http://localhost:5001`
 
 Para encerrar:
 ```bash
@@ -91,14 +174,14 @@ py -m pip install -r medfact/server_ml/requirements.txt
 # Inicialize o banco de dados e semeie artigos do PubMed
 py mlops/scripts/seed_pubmed.py
 
-# Treine os modelos de Machine Learning (gera os artefatos .joblib)
+# Treine os modelos de Machine Learning (gera os classificadores .joblib)
 py mlops/scripts/train_pipeline.py
 
-# Inicie a API FastAPI na porta 3001
+# Inicie a API FastAPI
 py -m uvicorn medfact.server_ml.app.main:app --host 0.0.0.0 --port 3001 --reload
 ```
 
-#### 2. Frontend (React)
+#### 2. Frontend Web (React)
 
 Em outro terminal:
 
@@ -108,78 +191,64 @@ npm install
 npm start
 ```
 
-O aplicativo abrirá automaticamente em `http://localhost:3000`.
+A aplicação abrirá em `http://localhost:3000`.
 
 ---
 
-## Testes Automatizados
+## Como Executar os Testes
 
-A suíte de testes cobre endpoints da API, classificação de Machine Learning e busca no banco PubMed com **100% de cobertura**:
-
+### Testes do Backend (Pytest com Cobertura):
 ```bash
-py -m pytest medfact/server_ml/tests -v
+py -m pytest medfact/server_ml/tests -v --cov=app --cov-report=term-missing
+```
+
+### Testes do Frontend (Jest / React Testing Library):
+```bash
+cd medfact/client
+npm test -- --watchAll=false
 ```
 
 ---
 
-## MLOps & Governança de Modelos
+## Documentação Técnica no MkDocs (GitHub Pages)
+
+Para visualizar localmente o portal de documentação:
 
 ```bash
-# Treinamento e avaliação de métricas (F1-score macro)
-py mlops/scripts/train_pipeline.py
-
-# Auditoria e monitoramento de Data Drift
-py mlops/scripts/monitor_drift.py
-```
-
----
-
-## Documentação Completa no GitHub Pages
-
-A documentação detalhada de arquitetura, processos de software, modelagem de dados e usabilidade para idosos está disponível no portal **MkDocs Material**:
-
-```bash
-# Visualizar localmente:
 py -m mkdocs serve
-# Abre em: http://localhost:8000
-
-# Publicar no GitHub Pages:
-py -m mkdocs gh-deploy --force
+# Disponível em: http://localhost:8000
 ```
 
-Tópicos documentados:
+Para validar a integridade de todos os links e sintaxe:
+
+```bash
+py -m mkdocs build --strict
+```
+
+### Páginas Documentadas:
 1. [Visão Geral e Escopo](docs/index.md)
 2. [Escopo e Requisitos Formais](docs/escopo.md)
 3. [Arquitetura do Software](docs/arquitetura.md)
 4. [Tecnologias Utilizadas](docs/tecnologias.md)
 5. [Banco de Dados & PubMed](docs/banco-de-dados.md)
 6. [Machine Learning & RAG Biomédico](docs/machine-learning.md)
-7. [Relatório de Testes e Cobertura](docs/testes.md)
+7. [Relatório de Testes e Qualidade](docs/testes.md)
 8. [Práticas de MLOps](docs/mlops.md)
 9. [Práticas de DevOps & CI/CD](docs/devops.md)
-10. [Foco no Público Idoso & Acessibilidade](docs/acessibilidade.md)
+10. [Acessibilidade & Usabilidade Sênior](docs/acessibilidade.md)
 11. [Processos de Engenharia de Software](docs/processos-software.md)
 12. [Guia de Instalação e Execução](docs/instalacao.md)
 
 ---
 
-##  Equipe e Participantes
+## Equipe e Autoria
 
-- **Sauhan Ferreira Melo** — Matrícula: `242024923` — GitHub: [`@SUDOTMOX`](https://github.com/SUDOTMOX)
-
----
-
-## Como Acessar o GitHub Pages por Link
-
-A documentação interativa com busca, diagramas e suporte a temas claro/escuro é publicada automaticamente via GitHub Actions no endereço:
-
- **`https://unb-sistemas-de-machine-learning.github.io/challenge_1_os_sem_classe/`**
-
-*(Para ativar no repositório, basta ir em **Settings > Pages > Build and deployment > Source: GitHub Actions** ou selecionar o branch `gh-pages`)*.
+- **Sauhan Ferreira Melo** — Matrícula: `242024923`  
+  Universidade de Brasília (UnB) — Sistemas de Machine Learning  
+  GitHub: [`@SUDOTMOX`](https://github.com/SUDOTMOX)
 
 ---
 
-##  Licença
+## Licença
 
-Projeto desenvolvido para fins acadêmicos e de pesquisa científica na **Universidade de Brasília (UnB)**.
-
+Projeto acadêmico e de pesquisa desenvolvido no âmbito da **Universidade de Brasília (UnB)**.
